@@ -1,6 +1,7 @@
 /* Value calculator. Built like Felix's roi-calculator (hourly wage + 30 % employer costs, a month = 4.33 weeks of
    5 working days), but with deliberately conservative starting values so the site never overpromises: 1 hour saved
-   per person a day at €18 an hour, said plainly in a note next to the inputs.
+   per person a day at €18 an hour, said plainly in a note next to the inputs. Four estimates (very cautious to strong)
+   set only the hours saved and the extra deals; team size, wages and profit per deal stay the visitor's own.
    Kept small on purpose: four inputs (salespeople, other staff, extra deals, profit per deal), the time assumptions
    folded away under "Assumptions", and one result for one package. The hours saved and extra deals are entered for
    the Sales System; the other packages scale them by their own factors (t = sales time, s = staff time, d = deals).
@@ -34,11 +35,22 @@
     { k: "employer", min: 0, max: 60, step: 1, def: 30, unit: "%", label: L({ sv: "Arbetsgivarkostnader", fi: "Työnantajakulut", en: "Employer costs" }) },
   ];
   const FIELDS = [...MAIN, ...MORE];
+  // Estimates: hours saved per salesperson and per other employee a day, and extra deals a month (with the Sales
+  // System). Cautious is the starting point; even Strong stays below what Maatori saves (3 h per salesperson a day).
+  const PRESETS = [
+    { id: "very", hours: 0.5, shours: 0.5, deals: 1, name: L({ sv: "Mycket försiktig", fi: "Hyvin varovainen", en: "Very cautious" }) },
+    { id: "cautious", hours: 1, shours: 1, deals: 2, name: L({ sv: "Försiktig", fi: "Varovainen", en: "Cautious" }) },
+    { id: "typical", hours: 1.5, shours: 1.25, deals: 4, name: L({ sv: "Typisk", fi: "Tyypillinen", en: "Typical" }) },
+    { id: "strong", hours: 2.5, shours: 1.5, deals: 6, name: L({ sv: "Stark", fi: "Vahva", en: "Strong" }) },
+  ];
+  const START = "cautious";
+  for (const k of ["hours", "shours", "deals"]) FIELDS.find((f) => f.k === k).def = PRESETS.find((p) => p.id === START)[k];
   const T = {
     more: L({ sv: "Antaganden", fi: "Oletukset", en: "Assumptions" }),
-    note: L({ sv: "Startvärdena är försiktiga: 1 timme sparad per person och dag, med en timlön på 18 €. Ändra löner och timmar under Antaganden så att de passar ditt företag. Om ditt team gör mycket manuellt arbete är den sparade tiden oftast mer än en timme om dagen.",
-              fi: "Lähtöarvot ovat varovaisia: 1 tunti säästöä henkilöä kohden päivässä 18 euron tuntipalkalla. Muuta palkat ja tunnit Oletukset-kohdassa vastaamaan yritystäsi. Jos tiimissäsi on paljon manuaalista työtä, säästö on yleensä yli tunnin päivässä.",
-              en: "The starting values are conservative: 1 hour saved per person a day, at €18 an hour. Change the wages and hours under Assumptions to match your company. If your team does a lot of manual work, the time saved is usually more than an hour a day." }),
+    preset: L({ sv: "Uppskattning", fi: "Arvio", en: "Estimate" }),
+    note: L({ sv: "Vi börjar försiktigt: 1 timme sparad per person och dag, en timlön på 18 € och 2 extra affärer i månaden. Ändra löner och timmar under Antaganden så att de passar ditt företag. Om ditt team gör mycket manuellt arbete är den sparade tiden oftast mer än en timme om dagen.",
+              fi: "Aloitamme varovaisesti: 1 tunnin säästö henkilöä kohden päivässä, 18 euron tuntipalkka ja 2 lisäkauppaa kuukaudessa. Muuta palkat ja tunnit Oletukset-kohdassa vastaamaan yritystäsi. Jos tiimissäsi on paljon manuaalista työtä, säästö on yleensä yli tunnin päivässä.",
+              en: "We start cautiously: 1 hour saved per person a day, €18 an hour and 2 extra deals a month. Change the wages and hours under Assumptions to match your company. If your team does a lot of manual work, the time saved is usually more than an hour a day." }),
     moreSub: (S) => {
       const same = S.wage === S.swage;
       return L({
@@ -75,6 +87,7 @@
     const uid = "calc" + (++seq);
     const S = Object.fromEntries(FIELDS.map((f) => [f.k, f.def]));
     let pick = null; // null = follow the suggestion
+    let preset = START; // null once the visitor changes hours or deals themselves
 
     const field = (f) => `
       <div class="calc-field">
@@ -84,6 +97,7 @@
       </div>`;
     root.innerHTML = `
       <div class="calc-in">
+        <div class="calc-presets"><span class="calc-lbl" id="${uid}-pre">${T.preset}</span><div class="seg calc-pre" role="group" aria-labelledby="${uid}-pre">${PRESETS.map((p) => `<button type="button" data-preset="${p.id}">${p.name}</button>`).join("")}</div></div>
         ${MAIN.map(field).join("")}
         <p class="calc-assume">${T.note}</p>
         <details class="calc-more"><summary><span>${T.more}<small data-n="more"></small></span></summary><div class="calc-fields">${MORE.map(field).join("")}</div><p class="calc-fine">${T.fine}</p></details>
@@ -137,6 +151,7 @@
     function render() {
       const sel = OPTIONS.find((x) => x.id === (pick || suggested()));
       const r = compute(sel);
+      root.querySelectorAll("[data-preset]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.preset === preset)));
       root.querySelectorAll(".calc-seg [data-p]").forEach((b) => {
         const o = OPTIONS.find((x) => x.id === b.dataset.p);
         b.setAttribute("aria-pressed", String(o.id === sel.id));
@@ -162,12 +177,19 @@
       return r;
     }
 
+    const presetName = () => { const p = PRESETS.find((x) => x.id === preset); return p ? ` (${p.name.toLowerCase()})` : ""; };
+    const setField = (k, v) => {
+      S[k] = v;
+      root.querySelector(`#${uid}-${k}`).value = v;
+      root.querySelector(`#${uid}-${k}-r`).value = v;
+    };
+
     function summary(r) {
       const o = r.o;
       const lines = L({
-        sv: [`Värdekalkyl, ${o.name}`, `${S.sellers} säljare à ${S.wage} €/h och ${S.staff} övriga anställda à ${S.swage} €/h, + ${S.employer} % arbetsgivarkostnader`, `Räknat med ${fmtNum(r.hpd, 2)} h sparad per säljare och ${fmtNum(r.shpd, 2)} h per övrig anställd och dag, och ${fmtNum(r.deals, 2)} extra affärer per månad à ${eur(S.profit)} bruttovinst`, `Värde per månad: ${eur(Math.round(r.value))} (säljarnas tid ${eur(Math.round(r.timeValue))}, övrig personals tid ${eur(Math.round(r.staffValue))}, affärer ${eur(Math.round(r.dealValue))})`],
-        fi: [`Arvolaskelma, ${o.name}`, `${S.sellers} myyjää à ${S.wage} €/h ja ${S.staff} muuta työntekijää à ${S.swage} €/h, + ${S.employer} % työnantajakulut`, `Laskettu ${fmtNum(r.hpd, 2)} h säästöllä myyjää ja ${fmtNum(r.shpd, 2)} h muuta työntekijää kohden päivässä sekä ${fmtNum(r.deals, 2)} lisäkaupalla kuukaudessa à ${eur(S.profit)} kate`, `Arvo kuukaudessa: ${eur(Math.round(r.value))} (myyjien aika ${eur(Math.round(r.timeValue))}, muun henkilöstön aika ${eur(Math.round(r.staffValue))}, kaupat ${eur(Math.round(r.dealValue))})`],
-        en: [`Value calculation, ${o.name}`, `${S.sellers} salespeople at €${S.wage}/h and ${S.staff} other employees at €${S.swage}/h, + ${S.employer}% employer costs`, `Calculated with ${fmtNum(r.hpd, 2)} h saved per salesperson and ${fmtNum(r.shpd, 2)} h per other employee a day, and ${fmtNum(r.deals, 2)} extra deals a month at ${eur(S.profit)} gross profit`, `Value per month: ${eur(Math.round(r.value))} (sales team time ${eur(Math.round(r.timeValue))}, other staff's time ${eur(Math.round(r.staffValue))}, deals ${eur(Math.round(r.dealValue))})`],
+        sv: [`Värdekalkyl, ${o.name}${presetName()}`, `${S.sellers} säljare à ${S.wage} €/h och ${S.staff} övriga anställda à ${S.swage} €/h, + ${S.employer} % arbetsgivarkostnader`, `Räknat med ${fmtNum(r.hpd, 2)} h sparad per säljare och ${fmtNum(r.shpd, 2)} h per övrig anställd och dag, och ${fmtNum(r.deals, 2)} extra affärer per månad à ${eur(S.profit)} bruttovinst`, `Värde per månad: ${eur(Math.round(r.value))} (säljarnas tid ${eur(Math.round(r.timeValue))}, övrig personals tid ${eur(Math.round(r.staffValue))}, affärer ${eur(Math.round(r.dealValue))})`],
+        fi: [`Arvolaskelma, ${o.name}${presetName()}`, `${S.sellers} myyjää à ${S.wage} €/h ja ${S.staff} muuta työntekijää à ${S.swage} €/h, + ${S.employer} % työnantajakulut`, `Laskettu ${fmtNum(r.hpd, 2)} h säästöllä myyjää ja ${fmtNum(r.shpd, 2)} h muuta työntekijää kohden päivässä sekä ${fmtNum(r.deals, 2)} lisäkaupalla kuukaudessa à ${eur(S.profit)} kate`, `Arvo kuukaudessa: ${eur(Math.round(r.value))} (myyjien aika ${eur(Math.round(r.timeValue))}, muun henkilöstön aika ${eur(Math.round(r.staffValue))}, kaupat ${eur(Math.round(r.dealValue))})`],
+        en: [`Value calculation, ${o.name}${presetName()}`, `${S.sellers} salespeople at €${S.wage}/h and ${S.staff} other employees at €${S.swage}/h, + ${S.employer}% employer costs`, `Calculated with ${fmtNum(r.hpd, 2)} h saved per salesperson and ${fmtNum(r.shpd, 2)} h per other employee a day, and ${fmtNum(r.deals, 2)} extra deals a month at ${eur(S.profit)} gross profit`, `Value per month: ${eur(Math.round(r.value))} (sales team time ${eur(Math.round(r.timeValue))}, other staff's time ${eur(Math.round(r.staffValue))}, deals ${eur(Math.round(r.dealValue))})`],
       });
       if (!HOLD) lines.push($("[data-n=price]").textContent);
       return lines.join("\n") + "\n\n" + T.fine;
@@ -180,11 +202,18 @@
       if (Number.isNaN(v)) return;
       v = Math.min(f.max, Math.max(f.min, v));
       S[k] = v;
+      if (["hours", "shours", "deals"].includes(k)) preset = null;
       const other = e.target.type === "range" ? root.querySelector(`#${uid}-${k}`) : root.querySelector(`#${uid}-${k}-r`);
       if (other) other.value = v;
       render();
     });
     root.addEventListener("click", async (e) => {
+      const pre = e.target.closest("[data-preset]");
+      if (pre) {
+        const p = PRESETS.find((x) => x.id === pre.dataset.preset);
+        preset = p.id; ["hours", "shours", "deals"].forEach((k) => setField(k, p[k]));
+        render(); return;
+      }
       const pb = e.target.closest("[data-p]");
       if (pb) { pick = pb.dataset.p === suggested() ? null : pb.dataset.p; render(); return; }
       if (e.target.closest("[data-copy]")) {
