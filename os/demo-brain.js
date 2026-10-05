@@ -25,11 +25,101 @@
     done: L({ sv: "Klart", fi: "Valmis", en: "Done" }),
   };
 
+
+  // ---------- Tasks (Linear-style), team chat and working time ----------
+  Object.assign(window.WF_ICONS || (window.WF_ICONS = {}), {
+    "list-todo": '<rect x="3" y="5" width="6" height="6" rx="1"/><path d="m3 17 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/>',
+    clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+    hash: '<line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/>',
+    plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+  });
+  const TK_STATUS = L({ sv: ["Att göra", "Pågår", "Klart"], fi: ["Tehtävänä", "Työn alla", "Valmis"], en: ["To do", "In progress", "Done"] });
+  const TK_PRIO = L({ sv: ["Brådskande", "Hög", "Medel", "Låg"], fi: ["Kiireellinen", "Korkea", "Keskitaso", "Matala"], en: ["Urgent", "High", "Medium", "Low"] });
+  const PEOPLE = { AK: "Anna Kvarnvik", MN: "Mikael Nyström", SL: "Sara Lindholm", JB: "Jonas Back", LH: "Lina Holm", PV: "Peter Vik" };
+  const AV = { AK: ["#DCE9FF", "#0050B8"], MN: ["#E3F6E8", "#1A7533"], SL: ["#FFF0DA", "#995200"], JB: ["#E7E2FF", "#3438EE"], LH: ["#FFE7E5", "#C41D16"], PV: ["#EBEBF0", "#3C3C43"] };
+  const W = {
+    tasks: L({ sv: "Uppgifter", fi: "Tehtävät", en: "Tasks" }),
+    time: L({ sv: "Arbetstid", fi: "Työaika", en: "Working time" }),
+    tasksSub: L({ sv: "Allas arbete på ett ställe: fördelat, prioriterat och uppföljt. Klicka på cirkeln för att byta status.", fi: "Kaikkien työt yhdessä paikassa: jaettu, priorisoitu ja seurattu. Vaihda tilaa klikkaamalla ympyrää.", en: "Everyone's work in one place: assigned, prioritised and followed up. Click the circle to change the status." }),
+    list: L({ sv: "Lista", fi: "Lista", en: "List" }), board: L({ sv: "Tavla", fi: "Taulu", en: "Board" }),
+    newTask: L({ sv: "Ny uppgift", fi: "Uusi tehtävä", en: "New task" }),
+    today: L({ sv: "I dag", fi: "Tänään", en: "Today" }), tomorrow: L({ sv: "I morgon", fi: "Huomenna", en: "Tomorrow" }),
+    created: (id) => L({ sv: `KVA-${id} skapad och given till Mikael`, fi: `KVA-${id} luotu ja annettu Mikaelille`, en: `KVA-${id} created and given to Mikael` }),
+    fromMsg: L({ sv: "KVA-24 skapad från meddelandet och given till Mikael", fi: "KVA-24 luotu viestistä ja annettu Mikaelille", en: "KVA-24 created from the message and given to Mikael" }),
+    isDone: (id) => L({ sv: `KVA-${id} är klar`, fi: `KVA-${id} on valmis`, en: `KVA-${id} is done` }),
+    msgSub: L({ sv: "Teamets chatt bredvid arbetet. Gör vilket meddelande som helst till en uppgift.", fi: "Tiimin chat työn vieressä. Tee mistä tahansa viestistä tehtävä.", en: "The team's chat next to the work. Turn any message into a task." }),
+    channels: L({ sv: "Kanaler", fi: "Kanavat", en: "Channels" }), dms: L({ sv: "Direktmeddelanden", fi: "Yksityisviestit", en: "Direct messages" }),
+    mkTask: L({ sv: "Gör till uppgift", fi: "Tee tehtäväksi", en: "Turn into a task" }),
+    send: L({ sv: "Skicka", fi: "Lähetä", en: "Send" }), write: L({ sv: "Skriv ett meddelande …", fi: "Kirjoita viesti …", en: "Write a message …" }),
+    timeSub: L({ sv: "Stämpla in och ut, dina skift och din ledighet. Syns bara för dig, din teamledare och admin.", fi: "Leimaa sisään ja ulos, vuorosi ja vapaasi. Näkyy vain sinulle, tiiminvetäjällesi ja ylläpitäjille.", en: "Clock in and out, your shifts and your time off. Seen only by you, your team lead and admins." }),
+    teamSub: L({ sv: "Vem som är på jobbet, borta eller på semester. Syns bara för teamledare och admin.", fi: "Kuka on töissä, poissa tai lomalla. Näkyy vain tiiminvetäjille ja ylläpitäjille.", en: "Who is at work, away or on holiday. Seen only by team leads and admins." }),
+    myTime: L({ sv: "Min tid", fi: "Oma aika", en: "My time" }), team: L({ sv: "Teamet", fi: "Tiimi", en: "Team" }),
+    teamOnly: L({ sv: "Teamvyn är för teamledare och admin.", fi: "Tiiminäkymä on tiiminvetäjille ja ylläpitäjille.", en: "The team view is for team leads and admins." }),
+    notIn: L({ sv: "Du har inte stämplat in", fi: "Et ole leimannut sisään", en: "You haven't clocked in" }),
+    shiftToday: L({ sv: "Dagens skift 08:00–16:00", fi: "Tämän päivän vuoro 8.00–16.00", en: "Today's shift 08:00–16:00" }),
+    clockIn: L({ sv: "Stämpla in", fi: "Leimaa sisään", en: "Clock in" }), clockOut: L({ sv: "Stämpla ut", fi: "Leimaa ulos", en: "Clock out" }),
+    atWork: (t) => L({ sv: `På jobbet sedan ${t}`, fi: `Töissä klo ${t} alkaen`, en: `At work since ${t}` }),
+    worked: (a, b) => L({ sv: `Stämplade in ${a} och ut ${b}`, fi: `Sisään ${a}, ulos ${b}`, en: `Clocked in at ${a}, out at ${b}` }),
+    thisWeek: L({ sv: "Den här veckan", fi: "Tällä viikolla", en: "This week" }), holidayLeft: L({ sv: "Semester kvar", fi: "Lomaa jäljellä", en: "Holiday left" }),
+    days18: L({ sv: "18 dagar", fi: "18 päivää", en: "18 days" }), flex: L({ sv: "Flexsaldo", fi: "Liukumasaldo", en: "Flexitime" }),
+    shifts: L({ sv: "Mina skift den här veckan", fi: "Omat vuoroni tällä viikolla", en: "My shifts this week" }),
+    dayOff: L({ sv: "Ledig", fi: "Vapaa", en: "Day off" }), planned: L({ sv: "Planerat", fi: "Suunniteltu", en: "Planned" }),
+    workedTag: (h) => L({ sv: `Jobbat ${h}`, fi: `Töissä ${h}`, en: `Worked ${h}` }),
+    weeks: L({ sv: "De senaste veckorna", fi: "Viime viikot", en: "The last few weeks" }),
+    legend: L({ sv: ["Jobbat", "Semester", "Borta", "Oförklarat", "Ledigt"], fi: ["Töissä", "Loma", "Poissa", "Selvittämätön", "Vapaa"], en: ["Worked", "Holiday", "Away", "Unexplained", "Day off"] }),
+    wd: L({ sv: ["må", "ti", "on", "to", "fr", "lö", "sö"], fi: ["ma", "ti", "ke", "to", "pe", "la", "su"], en: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"] }),
+    timeOff: L({ sv: "Ansök om ledigt", fi: "Hae vapaata", en: "Ask for time off" }), timeOffSent: L({ sv: "Ansökan skickad till Robin", fi: "Pyyntö lähetetty Robinille", en: "Request sent to Robin" }),
+    person: L({ sv: "Person", fi: "Henkilö", en: "Person" }), hours: L({ sv: "Timmar", fi: "Tunnit", en: "Hours" }),
+    holiday: L({ sv: "Semester", fi: "Loma", en: "Holiday" }), away: L({ sv: "Borta", fi: "Poissa", en: "Away" }), unexplained: L({ sv: "Oförklarat", fi: "Selvittämätön", en: "Unexplained" }),
+    inAt: (t) => L({ sv: `In ${t}`, fi: `Sisään ${t}`, en: `In ${t}` }), notYet: L({ sv: "Inte in än", fi: "Ei vielä sisällä", en: "Not in yet" }),
+    waiting: L({ sv: "Väntar på dig", fi: "Odottaa sinua", en: "Waiting for you" }),
+    jonasReq: L({ sv: "Jonas Back: semester mån–ons nästa vecka · 3 dagar", fi: "Jonas Back: loma ma–ke ensi viikolla · 3 päivää", en: "Jonas Back: holiday Mon–Wed next week · 3 days" }),
+    approve: L({ sv: "Godkänn", fi: "Hyväksy", en: "Approve" }), decline: L({ sv: "Avslå", fi: "Hylkää", en: "Decline" }),
+    approved: L({ sv: "Godkänd", fi: "Hyväksytty", en: "Approved" }), declined: L({ sv: "Avslagen", fi: "Hylätty", en: "Declined" }),
+    check: L({ sv: "Behöver kollas", fi: "Tarkistettava", en: "Check needed" }),
+    checkText: L({ sv: "Planerad arbetsdag utan instämpling. Kolla med personen först, sedan:", fi: "Suunniteltu työpäivä ilman leimausta. Kysy ensin häneltä, sitten:", en: "A planned workday with no clock-in. Check with them first, then:" }),
+    awayPaid: L({ sv: "Borta, betalt", fi: "Poissa, palkallinen", en: "Away, paid" }),
+  };
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const hm = (d) => (lang === "fi" ? `${d.getHours()}.${pad2(d.getMinutes())}` : `${pad2(d.getHours())}:${pad2(d.getMinutes())}`);
+  const dayOffset = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d; };
+  const workTime = (fallback) => { const d = new Date(); if (d.getHours() < 6 || d.getHours() > 19) d.setHours(...fallback, 0); return d; };
+  const dayLabel = (n) => `${cap(weekday(n)).slice(0, lang === "fi" ? 2 : 3)} ${dm(n)}`;
+  const WORK = () => [
+    { id: 22, t: L({ sv: "Svara Lövdal Lantbruk om värmepumpsofferten", fi: "Vastaa Lövdal Lantbrukille lämpöpumpputarjouksesta", en: "Reply to Lövdal Lantbruk about the heat pump offer" }), who: "SL", p: 0, s: 1, due: 0, label: "Lövdal" },
+    { id: 14, t: L({ sv: "Förbered anbudshandlingarna för Ekby skola", fi: "Valmistele Ekbyn koulun tarjousasiakirjat", en: "Prepare the tender documents for Ekby school" }), who: "MN", p: 1, s: 1, due: 4, label: L({ sv: "Anbud", fi: "Tarjouskilpailu", en: "Tender" }) },
+    { id: 17, t: L({ sv: "Beställ 2 × 12 kW värmepumpar till Strandgården", fi: "Tilaa 2 × 12 kW lämpöpumput Strandgårdeniin", en: "Order 2 × 12 kW heat pumps for Strandgården" }), who: "JB", p: 1, s: 0, due: 1, label: "Strandgården" },
+    { id: 19, t: L({ sv: "Boka platsbesöket hos Bostads Ab Solbacken", fi: "Varaa kohdekäynti: Bostads Ab Solbacken", en: "Book the site visit at Bostads Ab Solbacken" }), who: "SL", p: 2, s: 0, due: 3, label: "Solbacken" },
+    { id: 21, t: L({ sv: "Uppdatera prislistan för nästa år", fi: "Päivitä ensi vuoden hinnasto", en: "Update the price list for next year" }), who: "AK", p: 3, s: 0, due: 7, label: L({ sv: "Internt", fi: "Sisäinen", en: "Internal" }) },
+    { id: 12, t: L({ sv: "Skicka driftsättningsrapporten till Tallmon", fi: "Lähetä käyttöönottoraportti Tallmonille", en: "Send the commissioning report to Tallmon" }), who: "JB", p: 2, s: 2, due: -1, label: "Tallmon" },
+  ];
+  const NEW_TASK = () => ({ id: 25, t: L({ sv: "Kontrollera elarbetet hos Havsbrisen", fi: "Tarkista Havsbrisenin sähkötyöt", en: "Check the electrical work at Havsbrisen" }), who: "MN", p: 2, s: 0, due: 7, label: "Havsbrisen" });
+  const MSG_TASK = () => ({ id: 24, t: L({ sv: "Revidera offerten till Kustbo: en pump i stället för två", fi: "Päivitä Kustbon tarjous: yksi pumppu kahden sijaan", en: "Revise the Kustbo quote: one pump instead of two" }), who: "MN", p: 1, s: 0, due: 1, label: "Kustbo" });
+  const CHANNELS = [
+    { id: "inst", name: L({ sv: "installationer", fi: "asennukset", en: "installations" }), say: L({ sv: "Bra jobbat med Tallmon, Jonas!", fi: "Hyvää työtä Tallmonin kanssa, Jonas!", en: "Great work on Tallmon, Jonas!" }),
+      msgs: [
+        { who: "JB", at: "07:42", t: L({ sv: "Tallmon är klart. Driftsättningsrapporten ligger i mappen.", fi: "Tallmon on valmis. Käyttöönottoraportti on kansiossa.", en: "Tallmon is done. The commissioning report is in the folder." }) },
+        { who: "SL", at: "08:15", task: true, t: L({ sv: "Kustbo vill ha offerten reviderad: en pump i stället för två. Kan någon ta det?", fi: "Kustbo haluaa tarjouksen päivitettynä: yksi pumppu kahden sijaan. Voiko joku ottaa sen?", en: "Kustbo wants the quote revised: one pump instead of two. Can someone take it?" }) },
+        { who: "MN", at: "08:21", t: L({ sv: "Jag tar Kustbo efter lunch.", fi: "Otan Kustbon lounaan jälkeen.", en: "I'll take Kustbo after lunch." }) },
+      ] },
+    { id: "sales", name: L({ sv: "försäljning", fi: "myynti", en: "sales" }), say: L({ sv: "Lycka till på torsdag, Mikael!", fi: "Onnea torstaille, Mikael!", en: "Good luck on Thursday, Mikael!" }),
+      msgs: [
+        { who: "MN", at: "09:05", t: L({ sv: "Karin Wiik på Solgläntan svarade. Möte på torsdag kl. 13.", fi: "Karin Wiik Solgläntanista vastasi. Tapaaminen torstaina klo 13.", en: "Karin Wiik at Solgläntan replied. Meeting on Thursday at 1 pm." }) },
+        { who: "AK", at: "09:07", t: L({ sv: "Snyggt! Ta med referensen från Tallmon.", fi: "Hienoa! Ota Tallmonin referenssi mukaan.", en: "Nice! Bring the reference from Tallmon." }) },
+        { who: "SL", at: "09:30", t: L({ sv: "Lövdal väntar fortfarande på svar, jag ringer dem i dag.", fi: "Lövdal odottaa yhä vastausta, soitan heille tänään.", en: "Lövdal is still waiting for an answer, I'll call them today." }) },
+      ] },
+    { id: "sara", dm: true, name: "Sara Lindholm", say: L({ sv: "Godkänt, njut av ledigheten!", fi: "Hyväksytty, nauti lomasta!", en: "Approved, enjoy your time off!" }),
+      msgs: [{ who: "SL", at: "10:02", t: L({ sv: "Kan du godkänna min semesteransökan för veckan efter nästa?", fi: "Voitko hyväksyä lomapyyntöni ensi viikon jälkeiselle viikolle?", en: "Could you approve my holiday request for the week after next?" }) }] },
+  ];
+
   const fresh = () => ({
     view: "today", role: "vd", quoteOpen: null, preview: false, askQ: null, free: "",
     quote: "wait", assigned: false, reminded: false, sellerDone: {},
     conns: { mail: "on", crm: "on", cal: "on", netvisor: "off", form: "off", claude: "off", chatgpt: "off" },
-    tasks: { quote: false, ask: false, netvisor: false },
+    tasks: { quote: false, ask: false, clock: false, msg: false },
+    work: WORK(), workMode: "list", workMoved: null,
+    channel: "inst", sent: [], converted: false, draft: null, seenMsgs: false,
+    clock: null, timeTab: "me", timeOff: false, req: null, check: null,
     moved: null,
     deals: [
       { id: "d1", n: "Bostads Ab Strandgården", v: 18420, o: "MN", s: 1 },
@@ -51,17 +141,17 @@
     const pipe = () => S.deals.filter((d) => d.s === 1 || d.s === 2).reduce((a, d) => a + d.v, 0);
     const open = () => 15 + S.deals.filter((d) => d.s < 3).length;
     const doneCount = () => Object.values(S.tasks).filter(Boolean).length;
-    const VIEWS = ["today", "deals", "ask", "quotes", "conns"];
+    const NAV = [["today", "brain", T.nav[0]], ["tasks", "list-todo", W.tasks], ["msgs", "messages-square", T.nav[5]], ["deals", "handshake", T.nav[1]],
+      ["ask", "message-circle-question-mark", T.nav[2]], ["quotes", "file-text", T.nav[3]], ["time", "clock", W.time], ["conns", "plug", T.nav[4]]];
     const left = () => (S.quote === "wait" ? 1 : 0) + (S.assigned ? 0 : 1) + (S.reminded ? 0 : 1);
-    const navCount = (id) => (id === "today" ? left() : id === "quotes" && S.quote === "wait" ? 1 : 0);
+    const navCount = (id) => (id === "today" ? left() : id === "quotes" && S.quote === "wait" ? 1
+      : id === "tasks" ? S.work.filter((t) => t.who === (S.role === "vd" ? "AK" : "MN") && t.s < 2).length : id === "msgs" && !S.seenMsgs ? 2 : 0);
     const head = (title, sub, actions) => page(title, sub, actions);
-    const NAV_ICONS = ["brain", "handshake", "message-circle-question-mark", "file-text", "plug"];
-    const PATHS = { today: "", deals: "/deals", ask: "/ask", quotes: "/quotes", conns: "/connectors" };
+    const PATHS = { today: "", tasks: "/tasks", msgs: "/messages", deals: "/deals", ask: "/ask", quotes: "/quotes", time: "/time", conns: "/connectors" };
 
     function shell() {
       const nav = [
-        ...VIEWS.map((id, i) => ({ id, label: T.nav[i], icon: NAV_ICONS[i], current: S.view === id, count: navCount(id) })),
-        { label: T.nav[5], icon: "messages-square", off: true },
+        ...NAV.map(([id, ic, label]) => ({ id, label, icon: ic, current: S.view === id, count: navCount(id) })),
         { label: T.nav[6], icon: "chart-column", off: true },
       ];
       const account = S.role === "vd"
@@ -83,8 +173,97 @@
       if (S.view === "deals") return deals();
       if (S.view === "ask") return ask();
       if (S.view === "quotes") return S.quoteOpen ? quoteDetail() : quotes();
+      if (S.view === "tasks") return work();
+      if (S.view === "msgs") return msgs();
+      if (S.view === "time") return time();
       return conns();
     }
+
+    // ---------- Tasks ----------
+    const me = () => (S.role === "vd" ? "AK" : "MN");
+    const av = (who) => `<span class="tk-av" style="background:${AV[who][0]};color:${AV[who][1]}" title="${PEOPLE[who]}">${who}</span>`;
+    const prio = (p) => p === 0 ? `<span class="tk-prio urgent" title="${TK_PRIO[0]}">!</span>` : `<span class="tk-prio p${p}" title="${TK_PRIO[p]}"><i></i><i></i><i></i></span>`;
+    const stIc = (s, id) => `<button type="button" class="tk-st s${s}" data-a="tstat" data-v="${id}" aria-label="${TK_STATUS[s]} · KVA-${id}">${s === 2 ? icon("check") : ""}</button>`;
+    const due = (d) => (d === 0 ? W.today : d === 1 ? W.tomorrow : d < 0 ? dm(d) : dayLabel(d));
+    function work() {
+      const modes = `<div class="seg" role="group"><button type="button" data-a="tmode" data-v="list" aria-pressed="${S.workMode === "list"}">${W.list}</button><button type="button" data-a="tmode" data-v="board" aria-pressed="${S.workMode === "board"}">${W.board}</button></div>
+        <button type="button" class="act" data-a="tnew"${S.work.some((t) => t.id === 25) ? " disabled" : ""}>${icon("plus")}${W.newTask}</button>`;
+      const cls = (t) => `${t.who === me() ? " mine" : ""}${S.workMoved === t.id ? " moved" : ""}`;
+      const body = S.workMode === "board"
+        ? `<div class="board three">${[0, 1, 2].map((s) => { const list = S.work.filter((t) => t.s === s); return `<div class="col"><header>${TK_STATUS[s]}<span>${list.length}</span></header>${list.map((t) => `
+            <div class="deal tk-card${cls(t)}"><b>${t.t}</b><div class="v"><span>KVA-${t.id} · ${due(t.due)}</span><span class="tk-meta">${prio(t.p)}${av(t.who)}${s < 2 ? `<button type="button" data-a="tnext" data-v="${t.id}" aria-label="${TK_STATUS[s + 1]}">→</button>` : ""}</span></div></div>`).join("")}</div>`; }).join("")}</div>`
+        : [1, 0, 2].map((s) => { const list = S.work.filter((t) => t.s === s); return list.length ? `<section class="ax-card tk-group"><header class="tk-gh"><span class="tk-st s${s} static">${s === 2 ? icon("check") : ""}</span>${TK_STATUS[s]}<span>${list.length}</span></header>${list.map((t) => `
+            <div class="tk-row${cls(t)}">${stIc(t.s, t.id)}<span class="tk-id">KVA-${t.id}</span><span class="tk-t">${t.t}<span class="tag">${t.label}</span></span>${prio(t.p)}<span class="tk-due${t.due <= 0 && t.s < 2 ? " late" : ""}">${due(t.due)}</span>${av(t.who)}</div>`).join("")}</section>` : ""; }).join("");
+      return `${head(W.tasks, W.tasksSub, modes)}${body}`;
+    }
+
+    // ---------- Messages ----------
+    function msgs() {
+      const ch = CHANNELS.find((c) => c.id === S.channel);
+      const list = [...ch.msgs, ...S.sent.filter((m) => m.ch === ch.id)];
+      const side = `<nav class="msg-side"><span class="msg-h">${W.channels}</span>${CHANNELS.filter((c) => !c.dm).map((c) => `<button type="button" data-a="chan" data-v="${c.id}" aria-current="${S.channel === c.id}">${icon("hash")}${c.name}</button>`).join("")}
+        <span class="msg-h">${W.dms}</span>${CHANNELS.filter((c) => c.dm).map((c) => `<button type="button" data-a="chan" data-v="${c.id}" aria-current="${S.channel === c.id}">${av("SL")}${c.name}</button>`).join("")}</nav>`;
+      const thread = list.map((m) => `<div class="msg${m.mine ? " mine" : ""}">${av(m.who)}<div><div class="msg-meta"><b>${PEOPLE[m.who]}</b><time>${m.at}</time></div><p>${esc(m.t)}</p>
+        ${m.task ? (S.converted ? `<span class="tag accent">${icon("list-todo")}KVA-24 · Mikael Nyström</span>` : `<button type="button" class="ghost msg-task" data-a="mktask">${icon("list-todo")}${W.mkTask}</button>`) : ""}</div></div>`).join("");
+      return `${head(L({ sv: "Meddelanden", fi: "Viestit", en: "Messages" }), W.msgSub)}
+        <section class="ax-card msg-wrap">${side}<div class="msg-main"><header class="msg-top">${ch.dm ? av("SL") : icon("hash")}<b>${ch.name}</b></header><div class="msg-list">${thread}</div>
+          <form class="msg-form" data-a-form="msg"><input aria-label="${W.write}" placeholder="${W.write}" value="${esc(S.draft ?? ch.say)}"><button class="act" type="submit">${W.send}</button></form></div></section>`;
+    }
+
+    // ---------- Working time ----------
+    function time() {
+      const admin = S.role === "vd";
+      const tabs = admin ? `<div class="seg" role="group"><button type="button" data-a="ttab" data-v="me" aria-pressed="${S.timeTab === "me"}">${W.myTime}</button><button type="button" data-a="ttab" data-v="team" aria-pressed="${S.timeTab === "team"}">${W.team}</button></div>` : `<span class="tag">${W.teamOnly}</span>`;
+      if (admin && S.timeTab === "team") return timeTeam(tabs);
+      const c = S.clock;
+      const clock = !c ? `<div class="tm-clock"><div><b>${W.notIn}</b><span>${W.shiftToday}</span></div><button type="button" class="act" data-a="clock">${icon("clock")}${W.clockIn}</button></div>`
+        : !c.out ? `<div class="tm-clock is-in"><div><b><i class="tm-dot"></i>${W.atWork(hm(c.in))}</b><span>${W.shiftToday}</span></div><button type="button" class="ghost" data-a="clock">${W.clockOut}</button></div>`
+          : `<div class="tm-clock"><div><b>${W.worked(hm(c.in), hm(c.out))}</b><span>${W.shiftToday}</span></div><span class="tag good">${T.done}</span></div>`;
+      const mon = -((new Date().getDay() + 6) % 7);
+      const shiftRows = [0, 1, 2, 3, 4, 5, 6].map((i) => {
+        const n = mon + i, weekend = i >= 5;
+        const shift = weekend ? W.dayOff : i === 4 ? (lang === "fi" ? "8.00–14.00" : "08:00–14:00") : (lang === "fi" ? "8.00–16.00" : "08:00–16:00");
+        const tag = weekend ? "" : n < 0 ? `<span class="tag good">${W.workedTag(["8 h 05", "7 h 55", "8 h 10", "8 h 00"][i % 4])}</span>`
+          : n === 0 ? (c ? `<span class="tag ${c.out ? "good" : "accent"}">${c.out ? W.worked(hm(c.in), hm(c.out)) : W.atWork(hm(c.in))}</span>` : `<span class="tag warn">${W.notIn}</span>`)
+            : `<span class="tag">${W.planned}</span>`;
+        return `<div class="tm-shift${n === 0 ? " today" : ""}${weekend ? " off" : ""}"><b>${dayLabel(n)}</b><span>${shift}</span>${tag}</div>`;
+      }).join("");
+      let cells = "";
+      for (let i = 0; i < 35; i++) {
+        const n = mon - 28 + i, wd = i % 7, week = Math.floor(i / 7);
+        let k = n > 0 ? "plan" : wd >= 5 ? "off" : week === 1 && wd >= 2 ? "hol" : week === 3 && wd === 1 ? "away" : "work";
+        if (n === 0) k = c ? "work" : "plan";
+        cells += `<span class="tm-day ${k}${n === 0 ? " today" : ""}">${dayOffset(n).getDate()}<i></i></span>`;
+      }
+      return `${head(W.time, W.timeSub, tabs)}${clock}
+        <div class="kpis three"><div class="kpi"><span>${W.thisWeek}</span><b>31 h 20 min</b><i>/ 37 h 30 min</i></div><div class="kpi"><span>${W.holidayLeft}</span><b>${W.days18}</b></div><div class="kpi"><span>${W.flex}</span><b>+2 h 15 min</b></div></div>
+        <div class="ax-split">${card(W.shifts, "", `<div class="tm-shifts">${shiftRows}</div>`)}
+          ${card(W.weeks, "", `<div class="tm-cal">${W.wd.map((w) => `<b>${w}</b>`).join("")}${cells}</div><div class="tm-legend">${["work", "hol", "away", "bad", "off"].map((k, i) => `<span><i class="${k}"></i>${W.legend[i]}</span>`).join("")}</div>
+            <div class="tm-off">${S.timeOff ? `<span class="tag good">${W.timeOffSent}</span>` : `<button type="button" class="ghost" data-a="timeoff">${W.timeOff}</button>`}</div>`, "ax-card--side")}</div>`;
+    }
+    function timeTeam(tabs) {
+      // The last five working days, ending today.
+      const cols = []; for (let n = 0; cols.length < 5 && n > -14; n--) { const d = dayOffset(n).getDay(); if (d !== 0 && d !== 6) cols.unshift(n); }
+      const chip = (k, txt) => `<span class="tm-chip ${k}">${txt}</span>`;
+      const cell = (who, i, n) => {
+        if (who === "LH") return chip("hol", W.holiday);
+        if (who === "SL" && i === 0) return chip("away", W.away);
+        if (who === "PV" && i === 2) return S.check === "away" ? chip("away", W.away) : chip("bad", "?");
+        if (n === 0) return who === "PV" ? chip("plan", W.notYet) : chip("work", W.inAt({ MN: "07:58", SL: "08:12", JB: "07:30" }[who] || "08:00"));
+        return chip("work", ["8 h", "7 h 55", "8 h 10", "8 h 05", "7 h 45"][(i + who.charCodeAt(0)) % 5]);
+      };
+      const rows = ["MN", "SL", "JB", "LH", "PV"].map((who) => `<tr><td><span class="tm-person">${av(who)}${PEOPLE[who]}</span></td>${cols.map((n, i) => `<td>${cell(who, i, n)}</td>`).join("")}<td class="n">${{ MN: "31 h 20", SL: "23 h 50", JB: "32 h 10", LH: "0 h", PV: "24 h 10" }[who]}</td></tr>`).join("");
+      const pvDay = cols[2] < 0 ? dayLabel(cols[2]) : "";
+      const req = S.req ? `<span class="tag ${S.req === "ok" ? "good" : "bad"}">${S.req === "ok" ? W.approved : W.declined}</span>`
+        : `<button type="button" class="act" data-a="treq" data-v="ok">${W.approve}</button><button type="button" class="ghost" data-a="treq" data-v="no">${W.decline}</button>`;
+      const chk = S.check ? `<span class="tag ${S.check === "away" ? "warn" : "bad"}">${S.check === "away" ? W.awayPaid : W.unexplained}</span>`
+        : `<button type="button" class="ghost" data-a="tcheck" data-v="away">${W.awayPaid}</button><button type="button" class="ghost tm-bad" data-a="tcheck" data-v="bad">${W.unexplained}</button>`;
+      return `${head(W.time, W.teamSub, tabs)}
+        <section class="ax-card"><div class="table-scroll"><table class="mini-table tm-team"><thead><tr><th>${W.person}</th>${cols.map((n) => `<th${n === 0 ? ' class="today"' : ""}>${dayLabel(n)}</th>`).join("")}<th style="text-align:right">${W.hours}</th></tr></thead><tbody>${rows}</tbody></table></div></section>
+        ${card(W.waiting, String(pvDay ? 2 : 1), `<div class="rows">${row("act-row", W.jonasReq, L({ sv: "Semesterdagar kvar efter: 12", fi: "Lomapäiviä jää jäljelle: 12", en: "Holiday days left after: 12" }), req)}
+          ${pvDay ? row("warn-row", `${W.check}: Peter Vik · ${pvDay}`, W.checkText, chk) : ""}</div>`)}`;
+    }
+
 
     const row = (cls, t, m, actions) => `<div class="row ${cls}"><div><div class="t">${t}</div><div class="m">${m}</div></div><div class="row-actions">${actions}</div></div>`;
 
@@ -296,7 +475,8 @@
         tasks: [
           { done: t.quote, text: L({ sv: "Godkänn offerten till Strandgården", fi: "Hyväksy Strandgårdenin tarjous", en: "Approve the Strandgården quote" }) },
           { done: t.ask, text: L({ sv: "Fråga vilka offerter som är äldre än en vecka", fi: "Kysy, mitkä tarjoukset ovat yli viikon vanhoja", en: "Ask which quotes are older than a week" }) },
-          { done: t.netvisor, text: L({ sv: "Koppla in Netvisor", fi: "Yhdistä Netvisor", en: "Connect Netvisor" }) },
+          { done: t.clock, text: L({ sv: "Stämpla in under Arbetstid", fi: "Leimaa sisään Työaika-sivulla", en: "Clock in on Working time" }) },
+          { done: t.msg, text: L({ sv: "Gör ett meddelande till en uppgift", fi: "Tee viestistä tehtävä", en: "Turn a message into a task" }) },
         ],
         done: `<b>${L({ sv: "Så jobbar en Company Brain.", fi: "Näin Company Brain toimii.", en: "That's how a Company Brain works." })}</b> <span>${L({ sv: "Vill du se den med dina egna system?", fi: "Haluatko nähdä sen omilla järjestelmilläsi?", en: "Want to see it with your own systems?" })}</span> <a class="act" href="${route("contact")}">${L({ sv: "Boka en demo", fi: "Varaa demo", en: "Book a demo" })}</a>`,
         note: L({ sv: "Allt här är påhittat: företaget, personerna och siffrorna. Inget sparas, och demon börjar om när sidan laddas om.", fi: "Kaikki tässä on keksittyä: yritys, ihmiset ja luvut. Mitään ei tallenneta, ja demo alkaa alusta, kun sivu ladataan uudelleen.", en: "Everything here is made up: the company, the people and the numbers. Nothing is saved, and the demo starts over when the page reloads." }),
@@ -305,7 +485,7 @@
 
     let lastKey = "";
     function render() {
-      const key = S.view + S.role + (S.quoteOpen || "");
+      const key = S.view + S.role + (S.quoteOpen || "") + (S.view === "time" ? S.timeTab : "") + (S.view === "msgs" ? S.channel : "");
       const top = key === lastKey ? window.WF.scrollOf(root) : 0;
       root.innerHTML = shell();
       window.WF.restoreScroll(root, top);
@@ -315,7 +495,20 @@
     root.addEventListener("click", (e) => {
       const b = e.target.closest("[data-a]"); if (!b || !root.contains(b)) return;
       const a = b.dataset.a, v = b.dataset.v;
-      if (a === "view") { S.view = v; S.quoteOpen = null; }
+      if (a === "view") { S.view = v; S.quoteOpen = null; if (v === "msgs") S.seenMsgs = true; }
+      else if (a === "tmode") { S.workMode = v; }
+      else if (a === "tnew") { S.work.unshift(NEW_TASK()); S.workMoved = 25; toast(root, W.created(25)); }
+      else if (a === "tstat" || a === "tnext") {
+        const t = S.work.find((x) => x.id === Number(v));
+        if (t) { t.s = a === "tnext" ? Math.min(2, t.s + 1) : (t.s + 1) % 3; S.workMoved = t.id; if (t.s === 2) toast(root, W.isDone(t.id)); }
+      }
+      else if (a === "chan") { S.channel = v; S.draft = null; }
+      else if (a === "mktask") { S.converted = true; S.tasks.msg = true; S.work.unshift(MSG_TASK()); S.workMoved = 24; toast(root, W.fromMsg); }
+      else if (a === "ttab") { S.timeTab = v; }
+      else if (a === "clock") { S.clock = !S.clock ? { in: workTime([7, 58]) } : { ...S.clock, out: workTime([16, 4]) }; S.tasks.clock = true; }
+      else if (a === "timeoff") { S.timeOff = true; toast(root, T.nothingSent); }
+      else if (a === "treq") { S.req = v; toast(root, T.nothingSent); }
+      else if (a === "tcheck") { S.check = v; }
       else if (a === "role") { S.role = v; S.view = "today"; }
       else if (a === "reset") { S = fresh(); render(); toast(root, T.resetDone); return; }
       else if (a === "openquote") { S.view = "quotes"; S.quoteOpen = "d1"; }
@@ -343,13 +536,21 @@
         if (cur === "on") { S.conns[v] = "off"; }
         else if (cur === "off") {
           S.conns[v] = "syncing"; render();
-          setTimeout(() => { S.conns[v] = "on"; if (v === "netvisor") S.tasks.netvisor = true; render(); }, 1300);
+          setTimeout(() => { S.conns[v] = "on"; render(); }, 1300);
           return;
         }
       }
       render();
     });
     root.addEventListener("submit", (e) => {
+      if (e.target.matches("[data-a-form='msg']")) {
+        e.preventDefault();
+        const input = e.target.querySelector("input"), text = input.value.trim();
+        if (text) { const now = new Date(); S.sent.push({ ch: S.channel, who: S.role === "vd" ? "AK" : "MN", at: hm(now), t: text, mine: true }); }
+        S.draft = ""; render();
+        const list = root.querySelector(".msg-list"); if (list) list.scrollTop = list.scrollHeight;
+        return;
+      }
       if (!e.target.matches("[data-a-form='free']")) return;
       e.preventDefault();
       const val = e.target.querySelector("input").value.trim();
