@@ -1,5 +1,6 @@
-/* Value calculator. Same assumptions as Felix's roi-calculator: hourly wage + 30 % employer costs,
-   a month = 4.33 weeks of 5 working days.
+/* Value calculator. Built like Felix's roi-calculator (hourly wage + 30 % employer costs, a month = 4.33 weeks of
+   5 working days), but with deliberately conservative starting values so the site never overpromises: 1 hour saved
+   per person a day at €18 an hour, said plainly in a note next to the inputs.
    Kept small on purpose: four inputs (salespeople, other staff, extra deals, profit per deal), the time assumptions
    folded away under "Assumptions", and one result for one package. The hours saved and extra deals are entered for
    the Sales System; the other packages scale them by their own factors (t = sales time, s = staff time, d = deals).
@@ -26,19 +27,25 @@
     { k: "profit", min: 0, max: 50000, step: 100, def: 2500, unit: "€", label: L({ sv: "Bruttovinst per affär", fi: "Myyntikate per kauppa", en: "Gross profit per deal" }) },
   ];
   const MORE = [
-    { k: "hours", min: 0, max: 5, step: 0.5, def: 3, unit: "h", label: L({ sv: "Sparad tid per säljare och dag", fi: "Säästetty aika myyjää kohden päivässä", en: "Hours saved per salesperson a day" }) },
+    { k: "hours", min: 0, max: 5, step: 0.5, def: 1, unit: "h", label: L({ sv: "Sparad tid per säljare och dag", fi: "Säästetty aika myyjää kohden päivässä", en: "Hours saved per salesperson a day" }) },
     { k: "shours", min: 0, max: 4, step: 0.25, def: 1, unit: "h", label: L({ sv: "Sparad tid per övrig anställd och dag", fi: "Säästetty aika muuta työntekijää kohden päivässä", en: "Hours saved per other employee a day" }) },
-    { k: "wage", min: 15, max: 120, step: 1, def: 30, unit: "€/h", label: L({ sv: "Säljarnas timlön", fi: "Myyjien tuntipalkka", en: "Salespeople's hourly wage" }) },
-    { k: "swage", min: 15, max: 120, step: 1, def: 25, unit: "€/h", label: L({ sv: "Övrig personals timlön", fi: "Muun henkilöstön tuntipalkka", en: "Other staff's hourly wage" }) },
+    { k: "wage", min: 15, max: 120, step: 1, def: 18, unit: "€/h", label: L({ sv: "Säljarnas timlön", fi: "Myyjien tuntipalkka", en: "Salespeople's hourly wage" }) },
+    { k: "swage", min: 15, max: 120, step: 1, def: 18, unit: "€/h", label: L({ sv: "Övrig personals timlön", fi: "Muun henkilöstön tuntipalkka", en: "Other staff's hourly wage" }) },
     { k: "employer", min: 0, max: 60, step: 1, def: 30, unit: "%", label: L({ sv: "Arbetsgivarkostnader", fi: "Työnantajakulut", en: "Employer costs" }) },
   ];
   const FIELDS = [...MAIN, ...MORE];
   const T = {
     more: L({ sv: "Antaganden", fi: "Oletukset", en: "Assumptions" }),
-    moreSub: (S) => L({
-      sv: `${fmtNum(S.hours, 2)} h per säljare och ${fmtNum(S.shours, 2)} h per övrig anställd och dag · ${S.wage} och ${S.swage} €/h + ${S.employer} %`,
-      fi: `${fmtNum(S.hours, 2)} h myyjää ja ${fmtNum(S.shours, 2)} h muuta työntekijää kohden päivässä · ${S.wage} ja ${S.swage} €/h + ${S.employer} %`,
-      en: `${fmtNum(S.hours, 2)} h per salesperson and ${fmtNum(S.shours, 2)} h per other employee a day · €${S.wage} and €${S.swage}/h + ${S.employer}%` }),
+    note: L({ sv: "Startvärdena är försiktiga: 1 timme sparad per person och dag, med en timlön på 18 €. Ändra löner och timmar under Antaganden så att de passar ditt företag. Om ditt team gör mycket manuellt arbete är den sparade tiden oftast mer än en timme om dagen.",
+              fi: "Lähtöarvot ovat varovaisia: 1 tunti säästöä henkilöä kohden päivässä 18 euron tuntipalkalla. Muuta palkat ja tunnit Oletukset-kohdassa vastaamaan yritystäsi. Jos tiimissäsi on paljon manuaalista työtä, säästö on yleensä yli tunnin päivässä.",
+              en: "The starting values are conservative: 1 hour saved per person a day, at €18 an hour. Change the wages and hours under Assumptions to match your company. If your team does a lot of manual work, the time saved is usually more than an hour a day." }),
+    moreSub: (S) => {
+      const same = S.wage === S.swage;
+      return L({
+        sv: `${fmtNum(S.hours, 2)} h per säljare och ${fmtNum(S.shours, 2)} h per övrig anställd och dag · ${same ? S.wage : `${S.wage} och ${S.swage}`} €/h + ${S.employer} %`,
+        fi: `${fmtNum(S.hours, 2)} h myyjää ja ${fmtNum(S.shours, 2)} h muuta työntekijää kohden päivässä · ${same ? S.wage : `${S.wage} ja ${S.swage}`} €/h + ${S.employer} %`,
+        en: `${fmtNum(S.hours, 2)} h per salesperson and ${fmtNum(S.shours, 2)} h per other employee a day · ${same ? `€${S.wage}` : `€${S.wage} and €${S.swage}`}/h + ${S.employer}%` });
+    },
     auto: L({ sv: "föreslaget", fi: "ehdotettu", en: "suggested" }),
     pkg: (name, n, sug) => sug ? L({ sv: `${name}, föreslaget för ${n} användare`, fi: `${name}, ehdotettu ${n} käyttäjälle`, en: `${name}, suggested for ${n} users` }) : name,
     value: L({ sv: "Värde per månad", fi: "Arvo kuukaudessa", en: "Value per month" }),
@@ -78,6 +85,7 @@
     root.innerHTML = `
       <div class="calc-in">
         ${MAIN.map(field).join("")}
+        <p class="calc-assume">${T.note}</p>
         <details class="calc-more"><summary><span>${T.more}<small data-n="more"></small></span></summary><div class="calc-fields">${MORE.map(field).join("")}</div><p class="calc-fine">${T.fine}</p></details>
       </div>
       <div class="calc-out" aria-live="polite">

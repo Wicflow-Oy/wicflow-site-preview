@@ -745,6 +745,7 @@ mark { background: var(--accent-soft); color: var(--ink); padding: 0 2px; border
 .calc-num input { border: 0; outline: 0; width: 100%; min-width: 0; padding: 6px 0; background: transparent; color: var(--ink); font: 500 14.5px var(--f-mono); text-align: right; font-variant-numeric: tabular-nums; -moz-appearance: textfield; appearance: textfield; }
 .calc-num input::-webkit-inner-spin-button, .calc-num input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 .calc-num i { font: 400 12.5px var(--f-mono); color: var(--ink-3); margin-left: 5px; font-style: normal; white-space: nowrap; }
+.calc-assume { padding: 10px 12px; border-radius: 10px; background: var(--accent-soft); font-size: 13px; line-height: 1.5; color: var(--ink-2); }
 .calc-more { border-top: 1px solid var(--line); padding-top: 12px; }
 .calc-more summary { display: flex; align-items: start; justify-content: space-between; gap: 12px; cursor: pointer; list-style: none; font-size: 14px; font-weight: 600; }
 .calc-more summary::-webkit-details-marker { display: none; }
@@ -778,7 +779,7 @@ mark { background: var(--accent-soft); color: var(--ink); padding: 0 2px; border
 @media (max-width: 600px) {
   .calc { padding: 12px; gap: 14px; }
   .calc-in, .calc-more .calc-fields { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
-  .calc-more { grid-column: 1 / -1; }
+  .calc-more, .calc-assume { grid-column: 1 / -1; }
   .calc-field { align-content: space-between; }
   .calc-field input[type="range"] { display: none; }
   .calc-top { flex-direction: column; align-items: stretch; gap: 5px; }
