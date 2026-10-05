@@ -67,6 +67,9 @@
     </div>`;
   };
 
+  /** The Wicflow mark on its own (the phone demo's app icon). */
+  const brandMark = (cls = "") => `<svg class="${cls}" viewBox="319 285 640 413" fill="currentColor" aria-hidden="true"><path d="${MARK_PATH}"/></svg>`;
+
   // The window has a fixed size and its page scrolls inside it; a redraw keeps the reader's place unless the view changed.
   const scrollOf = (root) => root.querySelector(".ax-main")?.scrollTop || 0;
   const restoreScroll = (root, top) => { const main = root.querySelector(".ax-main"); if (main && top) main.scrollTop = top; };
@@ -74,5 +77,5 @@
   // Toasts appear over the window (iOS-style), not over the controls around it.
   const toast = (root, msg) => baseToast(root.querySelector(".ax") || root, msg);
 
-  Object.assign(window.WF, { icon, frame, page, card, demoBar, guide, toast, scrollOf, restoreScroll });
+  Object.assign(window.WF, { icon, frame, page, card, demoBar, guide, toast, scrollOf, restoreScroll, brandMark });
 })();
