@@ -121,8 +121,10 @@
         audio = el;
         const go = () => {
           const per = Math.max(180, ((el.duration || 5) * 1000 - 400) / text.split(" ").length);
-          clear(); scene(0, per); el.currentTime = 0; el.play().catch(() => stopSound());
-          el.onended = () => { if (!withSound) return; if (next) at(1800, next); else at(2600, stopSound); };
+          clear(); const total = scene(0, per); el.currentTime = 0; el.play().catch(() => stopSound());
+          // Let the scene finish (the written message, the ticked actions) before the next recording or the end.
+          const rest = Math.max(800, total - (el.duration || 0) * 1000);
+          el.onended = () => { if (!withSound) return; at(rest, next || stopSound); };
         };
         el.readyState >= 1 ? go() : (el.onloadedmetadata = go);
       };
