@@ -6,13 +6,13 @@
    folded away under "Assumptions", and one result for one package. The hours saved and extra deals are entered for
    the Sales System; the other packages scale them by their own factors (t = sales time, s = staff time, d = deals).
    The package follows the number of users (salespeople + other staff) until the visitor picks one. Nothing is sent
-   or stored. While prices are held (window.WF_HOLD, see build.py), it shows value only: no price, net or payback. */
+   or stored. The package prices are shown here even while the rest of the site holds them (Emil, 2026-10-05):
+   what is left each month after the price, and how fast the setup is paid back. */
 (() => {
   const { L, eur, route, lang } = window.WF;
-  const HOLD = !!window.WF_HOLD;
   const DAYS_PER_MONTH = 4.33 * 5;
-  // Drafted prices; the held build removes them from this file (see build.py).
-  const PRICES = null || {};
+  // Monthly price and setup, excluding VAT (drafts, shown before Felix's approval at Emil's request).
+  const PRICES = { sys: [5490, 6900], pro: [6900, 11900], gro: [11900, 24900] };
   const OPTIONS = [
     { id: "sys", price: PRICES.sys?.[0], setup: PRICES.sys?.[1], t: 1, s: 1, d: 1, name: L({ sv: "Säljsystemet", fi: "Myyntijärjestelmä", en: "Sales System" }) },
     { id: "pro", price: PRICES.pro?.[0], setup: PRICES.pro?.[1], t: 1.15, s: 1.4, d: 1.05, short: "+ Brain Pro", name: L({ sv: "Säljsystemet + Brain Pro", fi: "Myyntijärjestelmä + Brain Pro", en: "Sales System + Brain Pro" }) },
@@ -66,11 +66,12 @@
     staff: L({ sv: "Övrig personals tid", fi: "Muun henkilöstön aika", en: "Other staff's time" }),
     deals: L({ sv: "Extra affärer", fi: "Lisäkaupat", en: "Extra deals" }),
     hours: (h, fte) => L({ sv: `≈ ${h} timmar tillbaka i månaden, ungefär ${fte} heltidstjänster.`, fi: `≈ ${h} tuntia takaisin kuukaudessa, noin ${fte} kokoaikaista työntekijää.`, en: `≈ ${h} hours back a month, about ${fte} full-time people.` }),
-    price: (p, net, pay) => L({ sv: `Pris ${p}/mån · netto ${net}/mån · ${pay}`, fi: `Hinta ${p}/kk · netto ${net}/kk · ${pay}`, en: `Price ${p}/mo · net ${net}/mo · ${pay}` }),
-    payback: (n) => L({ sv: `uppstarten betald efter ${n}`, fi: `käyttöönotto maksettu ${n}`, en: `setup paid back after ${n}` }),
-    under1: L({ sv: "mindre än en månad", fi: "alle kuukaudessa", en: "less than a month" }),
-    months: (n) => L({ sv: `${n} månader`, fi: `${n} kuukaudessa`, en: `${n} months` }),
-    never: L({ sv: "lönar sig inte med de här siffrorna", fi: "ei kannata näillä luvuilla", en: "doesn't pay off with these numbers" }),
+    net: L({ sv: "Kvar efter priset", fi: "Jää hinnan jälkeen", en: "Left after the price" }),
+    pay: L({ sv: "Uppstarten betald", fi: "Käyttöönotto maksettu takaisin", en: "Setup paid back" }),
+    under1: L({ sv: "på under en månad", fi: "alle kuukaudessa", en: "in under a month" }),
+    months: (n) => L({ sv: `på ${n} ${n === 1 ? "månad" : "månader"}`, fi: `${n} kuukaudessa`, en: `in ${n} ${n === 1 ? "month" : "months"}` }),
+    never: L({ sv: "Inte med de här siffrorna", fi: "Ei näillä luvuilla", en: "Not with these numbers" }),
+    price: (name, p, setup) => L({ sv: `${name}: ${p} i månaden och ${setup} för uppstarten, exklusive moms.`, fi: `${name}: ${p} kuukaudessa ja käyttöönotto ${setup}, alv 0 %.`, en: `${name}: ${p} a month and ${setup} for the setup, excluding VAT.` }),
     copy: L({ sv: "Kopiera", fi: "Kopioi", en: "Copy" }),
     copied: L({ sv: "Kopierad. Klistra in i ett mejl till ekonomichefen.", fi: "Kopioitu. Liitä sähköpostiin talousjohtajalle.", en: "Copied. Paste it into an email to your CFO." }),
     copyFail: L({ sv: "Kunde inte kopiera. Markera texten nedan.", fi: "Kopiointi ei onnistunut. Valitse teksti alta.", en: "Couldn't copy. Select the text below." }),
@@ -108,7 +109,11 @@
         <div class="calc-bar"><i class="v1"></i><i class="v3"></i><i class="v2"></i></div>
         <div class="calc-legend"><span><em><i class="v1"></i>${T.time}</em><b data-l="t"></b></span><span><em><i class="v3"></i>${T.staff}</em><b data-l="s"></b></span><span><em><i class="v2"></i>${T.deals}</em><b data-l="d"></b></span></div>
         <p class="calc-note" data-n="hours"></p>
-        <p class="calc-note" data-n="price"${HOLD ? " hidden" : ""}></p>
+        <div class="calc-pay">
+          <div><span class="calc-lbl">${T.net}</span><b data-n="net"></b></div>
+          <div><span class="calc-lbl">${T.pay}</span><b data-n="pay"></b></div>
+        </div>
+        <p class="calc-note" data-n="price"></p>
         <div class="calc-actions"><a class="btn btn-ink btn-sm" href="${route("contact")}">${T.book}</a><button type="button" class="btn btn-line btn-sm" data-copy>${T.copy}</button></div>
         <p class="calc-copied small muted" hidden></p>
         <textarea class="calc-text" readonly hidden rows="7"></textarea>
@@ -170,10 +175,12 @@
       $("[data-l=d]").textContent = eur(Math.round(r.dealValue));
       $("[data-n=hours]").textContent = T.hours(fmtNum(Math.round(r.hours)), fmtNum(r.fte, 1));
       $("[data-n=more]").textContent = T.moreSub(S);
-      if (!HOLD) {
-        const pay = r.payback === null ? T.never : T.payback(r.payback < 1 ? T.under1 : T.months(fmtNum(Math.ceil(r.payback))));
-        $("[data-n=price]").textContent = T.price(eur(sel.price), signedEur(r.net), pay);
-      }
+      const netEl = $("[data-n=net]"), payEl = $("[data-n=pay]");
+      netEl.classList.toggle("neg", r.net < 0);
+      tween("net", netEl, r.net, (v) => signedEur(v) + T.perMonth);
+      payEl.classList.toggle("neg", r.payback === null);
+      payEl.textContent = r.payback === null ? T.never : r.payback < 1 ? T.under1 : T.months(Math.ceil(r.payback));
+      $("[data-n=price]").textContent = T.price(sel.name, eur(sel.price), eur(sel.setup));
       return r;
     }
 
@@ -191,7 +198,7 @@
         fi: [`Arvolaskelma, ${o.name}${presetName()}`, `${S.sellers} myyjää à ${S.wage} €/h ja ${S.staff} muuta työntekijää à ${S.swage} €/h, + ${S.employer} % työnantajakulut`, `Laskettu ${fmtNum(r.hpd, 2)} h säästöllä myyjää ja ${fmtNum(r.shpd, 2)} h muuta työntekijää kohden päivässä sekä ${fmtNum(r.deals, 2)} lisäkaupalla kuukaudessa à ${eur(S.profit)} kate`, `Arvo kuukaudessa: ${eur(Math.round(r.value))} (myyjien aika ${eur(Math.round(r.timeValue))}, muun henkilöstön aika ${eur(Math.round(r.staffValue))}, kaupat ${eur(Math.round(r.dealValue))})`],
         en: [`Value calculation, ${o.name}${presetName()}`, `${S.sellers} salespeople at €${S.wage}/h and ${S.staff} other employees at €${S.swage}/h, + ${S.employer}% employer costs`, `Calculated with ${fmtNum(r.hpd, 2)} h saved per salesperson and ${fmtNum(r.shpd, 2)} h per other employee a day, and ${fmtNum(r.deals, 2)} extra deals a month at ${eur(S.profit)} gross profit`, `Value per month: ${eur(Math.round(r.value))} (sales team time ${eur(Math.round(r.timeValue))}, other staff's time ${eur(Math.round(r.staffValue))}, deals ${eur(Math.round(r.dealValue))})`],
       });
-      if (!HOLD) lines.push($("[data-n=price]").textContent);
+      lines.push($("[data-n=price]").textContent, `${T.net}: ${$("[data-n=net]").textContent} · ${T.pay}: ${$("[data-n=pay]").textContent}`);
       return lines.join("\n") + "\n\n" + T.fine;
     }
 

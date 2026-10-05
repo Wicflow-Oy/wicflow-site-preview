@@ -772,6 +772,10 @@ mark { background: var(--accent-soft); color: var(--ink); padding: 0 2px; border
 .calc-legend i { display: inline-block; width: 9px; height: 9px; margin-right: 8px; border-radius: 3px; }
 .calc-legend b { font: 500 13px var(--f-mono); color: var(--ink); font-variant-numeric: tabular-nums; }
 .calc-note { font-size: 13.5px; color: var(--ink-2); }
+.calc-pay { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.calc-pay > div { padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); }
+.calc-pay b { display: block; margin-top: 2px; font: 600 1.3rem/1.2 var(--f-mono); letter-spacing: -0.02em; color: var(--good); }
+.calc-pay b.neg { color: var(--bad); }
 .calc-note[hidden] { display: none; }
 .calc-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .calc-text { width: 100%; font: 400 12.5px/1.5 var(--f-mono); border: 1px solid var(--line); border-radius: 10px; padding: 10px; background: var(--paper); color: var(--ink); }
