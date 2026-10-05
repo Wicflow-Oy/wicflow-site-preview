@@ -1,6 +1,6 @@
 /* Value calculator for the Wicflow OS variant (build.py --os): one product in three tiers.
    Price = the tier's platform fee for the company's revenue band + full users + light users; setup grows with the
-   number of users. The revenue choice is shared with the pricing page's switch (the "wf:band" event). Value is built
+   number of users (the base includes 10). The revenue choice is shared with the pricing page's switch (the "wf:band" event). Value is built
    like calc.js (hourly wage + employer costs, a month = 4.33 weeks of 5 working days) with conservative starting
    values. Extra deals come from Sales Radar and Outreach, so Lite counts none. Draft prices. Nothing is sent or stored. */
 (() => {
@@ -8,12 +8,12 @@
   const DAYS_PER_MONTH = 4.33 * 5;
   // t = time saved factor, d = extra deals factor (Max: advanced automations and Outreach at full scale).
   const TIERS = [
-    { id: "lite", name: "Lite", base: [490, 990, 1490], full: 49, light: 9, t: 1, d: 0 },
-    { id: "standard", name: "Standard", base: [1990, 3900, 5900], full: 129, light: 15, t: 1, d: 1 },
-    { id: "max", name: "Max", base: [3900, 6900, 9900], full: 179, light: 19, t: 1.15, d: 1.5 },
+    { id: "lite", name: "Lite", base: [490, 990, 1490], full: 49, light: 9, setup: 990, t: 1, d: 0 },
+    { id: "standard", name: "Standard", base: [1990, 3900, 5900], full: 129, light: 15, setup: 2900, t: 1, d: 1 },
+    { id: "max", name: "Max", base: [3900, 6900, 9900], full: 179, light: 19, setup: 9900, t: 1.15, d: 1.5 },
   ];
   const BANDS = L({ sv: ["Under 5 milj. €", "5–20 milj. €", "Över 20 milj. €"], fi: ["Alle 5 milj. €", "5–20 milj. €", "Yli 20 milj. €"], en: ["Under €5M", "€5M–20M", "Over €20M"] });
-  const SETUP = [[20, 2900], [100, 7900], [300, 14900], [Infinity, 24900]];
+  const SETUP_INCLUDED = 10, SETUP_FULL = 150, SETUP_LIGHT = 50;
   const PRESETS = [
     { id: "very", hours: 0.5, mins: 5, deals: 1, name: L({ sv: "Mycket försiktig", fi: "Hyvin varovainen", en: "Very cautious" }) },
     { id: "cautious", hours: 1, mins: 15, deals: 2, name: L({ sv: "Försiktig", fi: "Varovainen", en: "Cautious" }) },
@@ -59,9 +59,9 @@
     months: (n) => L({ sv: `på ${n} ${n === 1 ? "månad" : "månader"}`, fi: `${n} kuukaudessa`, en: `in ${n} ${n === 1 ? "month" : "months"}` }),
     never: L({ sv: "Inte med de här siffrorna", fi: "Ei näillä luvuilla", en: "Not with these numbers" }),
     price: (t, base, f, l, total, setup) => L({
-      sv: `${t.name}: ${eur(base)} + ${f} × ${eur(t.full)} + ${l} × ${eur(t.light)} = ${eur(total)} i månaden med årsavtal. Uppstart från ${eur(setup)}. Exklusive moms.`,
-      fi: `${t.name}: ${eur(base)} + ${f} × ${eur(t.full)} + ${l} × ${eur(t.light)} = ${eur(total)} kuukaudessa vuosisopimuksella. Käyttöönotto alkaen ${eur(setup)}. Alv 0 %.`,
-      en: `${t.name}: ${eur(base)} + ${f} × ${eur(t.full)} + ${l} × ${eur(t.light)} = ${eur(total)} a month with a yearly agreement. Setup from ${eur(setup)}. Excluding VAT.` }),
+      sv: `${t.name}: ${eur(base)} + ${f} × ${eur(t.full)} + ${l} × ${eur(t.light)} = ${eur(total)} i månaden med årsavtal. Uppstart ${eur(setup)}. Exklusive moms.`,
+      fi: `${t.name}: ${eur(base)} + ${f} × ${eur(t.full)} + ${l} × ${eur(t.light)} = ${eur(total)} kuukaudessa vuosisopimuksella. Käyttöönotto ${eur(setup)}. Alv 0 %.`,
+      en: `${t.name}: ${eur(base)} + ${f} × ${eur(t.full)} + ${l} × ${eur(t.light)} = ${eur(total)} a month with a yearly agreement. Setup ${eur(setup)}. Excluding VAT.` }),
     copy: L({ sv: "Kopiera", fi: "Kopioi", en: "Copy" }),
     copied: L({ sv: "Kopierad. Klistra in i ett mejl till ekonomichefen.", fi: "Kopioitu. Liitä sähköpostiin talousjohtajalle.", en: "Copied. Paste it into an email to your CFO." }),
     copyFail: L({ sv: "Kunde inte kopiera. Markera texten nedan.", fi: "Kopiointi ei onnistunut. Valitse teksti alta.", en: "Couldn't copy. Select the text below." }),
@@ -114,7 +114,8 @@
       </div>`;
 
     const $ = (q) => root.querySelector(q);
-    const setupFor = (users) => SETUP.find(([max]) => users <= max)[1];
+    // The included users are counted from the full users first.
+    const setupFor = (t, f, l) => t.setup + Math.max(0, f - SETUP_INCLUDED) * SETUP_FULL + Math.max(0, l - Math.max(0, SETUP_INCLUDED - f)) * SETUP_LIGHT;
     function compute() {
       const t = TIERS.find((x) => x.id === tier);
       const k = 1 + S.employer / 100;
@@ -125,7 +126,7 @@
       const value = fullValue + lightValue + dealValue;
       const base = t.base[band];
       const price = base + S.full * t.full + S.light * t.light;
-      const setup = setupFor(S.full + S.light);
+      const setup = setupFor(t, S.full, S.light);
       const net = value - price;
       const hours = fullHours + lightHours;
       return { t, base, fullValue, lightValue, dealValue, value, price, setup, net, hours, payback: net > 0 ? setup / net : null, fte: hours / (40 * 4.33) };

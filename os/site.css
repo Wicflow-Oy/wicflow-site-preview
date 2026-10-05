@@ -868,6 +868,7 @@ mark { background: var(--accent-soft); color: var(--ink); padding: 0 2px; border
 .band-table th { font-size: 12.5px; font-weight: 600; color: var(--ink-3); }
 .band-table tr:last-child td { border-bottom: 0; }
 .band-table .band-users td { font-size: 13px; color: var(--ink-3); background: var(--surface); }
+.os-setup-list ul { margin: 8px 0 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14.5px; line-height: 1.45; color: var(--ink-2); }
 .calc-band { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .calc-band button { padding: 7px 6px; line-height: 1.25; text-align: center; }
 
