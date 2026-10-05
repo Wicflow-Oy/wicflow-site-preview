@@ -858,6 +858,53 @@ mark { background: var(--accent-soft); color: var(--ink); padding: 0 2px; border
   .hl-meet { top: 580px; right: 0; width: 76%; }
 }
 
+/* Voice control and dictation, shown at work (dictation.js), inside the Company Brain plugin library. */
+.dc-split { margin-top: clamp(48px, 7vw, 88px); align-items: center; }
+.dc-h { font-size: clamp(1.75rem, 3.4vw, 2.6rem); }
+.dc { --dc-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, "Segoe UI", Roboto, sans-serif; position: relative; display: grid; gap: 8px; min-width: 0; font: 400 13.5px/1.45 var(--dc-font); color: #0b0b0c; }
+.dc::before { content: ""; position: absolute; inset: 6% 0 12% 6%; z-index: -1; border-radius: 50%; background: radial-gradient(closest-side, rgba(123, 92, 255, 0.2), rgba(52, 81, 230, 0.08) 60%, transparent); filter: blur(30px); }
+.dc-card { display: grid; gap: 14px; min-height: 360px; align-content: start; padding: 20px; border: 1px solid rgba(0, 0, 0, 0.06); border-radius: 22px; background: rgba(255, 255, 255, 0.96); box-shadow: 0 1px 2px rgba(20, 20, 40, 0.05), 0 34px 70px -32px rgba(20, 20, 60, 0.4); }
+.dc-top { display: flex; align-items: center; gap: 12px; }
+.dc-mic { position: relative; display: grid; place-items: center; flex: none; width: 46px; height: 46px; border-radius: 50%; background: #E9E9EE; color: #3c3c43; transition: background-color .3s ease, color .3s ease; }
+.dc-mic svg { position: relative; z-index: 1; width: 20px; height: 20px; }
+.dc-mic i { position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(52, 81, 230, 0.5); opacity: 0; }
+.dc-card.is-listening .dc-mic { background: linear-gradient(140deg, #3451e6, #7b5cff); color: #fff; }
+.dc-card.is-listening .dc-mic i { animation: dc-ring 1.6s ease-out infinite; }
+.dc-card.is-listening .dc-mic i + i { animation-delay: .8s; }
+@keyframes dc-ring { 0% { opacity: .8; transform: scale(1); } 100% { opacity: 0; transform: scale(1.9); } }
+.dc-card.is-done .dc-mic { background: #E3F6E8; color: #1A7533; }
+.dc-who { display: grid; min-width: 0; }
+.dc-who b { font-size: 14.5px; }
+.dc-who small { font-size: 12px; color: #66666b; }
+.dc-sound { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px; background: #fff; font: 600 12.5px var(--dc-font); color: #0b0b0c; cursor: pointer; }
+.dc-sound svg { width: 12px; height: 12px; fill: currentColor; }
+.dc-sound[hidden] { display: none; }
+.dc-wave { display: flex; align-items: center; gap: 3px; height: 40px; }
+.dc-wave i { flex: 1; height: 100%; border-radius: 3px; background: linear-gradient(180deg, #7b5cff, #3451e6); transform: scaleY(.08); transform-origin: center; opacity: .35; transition: transform .4s ease, opacity .4s ease; }
+.dc-card.is-listening .dc-wave i { opacity: 1; animation: dc-bar var(--d) ease-in-out infinite alternate; }
+@keyframes dc-bar { 0% { transform: scaleY(.12); } 100% { transform: scaleY(var(--h)); } }
+.dc-text { min-height: 66px; margin: 0; font-size: 17px; line-height: 1.45; letter-spacing: -0.01em; color: #1c1c1e; }
+.dc-text .is-new { color: #3451e6; }
+.dc-actions { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.dc-actions li { display: grid; grid-template-columns: 30px minmax(0, 1fr) 22px; gap: 10px; align-items: center; padding: 9px 10px; border-radius: 12px; background: #F2F2F7; font-size: 13.5px; font-weight: 500; opacity: 0; transform: translateY(10px); transition: opacity .4s ease, transform .6s var(--ease-spring), background-color .3s ease; }
+.dc-actions li.is-in { opacity: 1; transform: none; }
+.dc-actions li.is-done { background: #EEF8F1; }
+.dc-ic { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: #fff; color: #3451e6; }
+.dc-ic svg { width: 15px; height: 15px; }
+.dc-ok { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #34C759; color: #fff; transform: scale(0); transition: transform .4s var(--ease-spring); }
+.dc-ok svg { width: 13px; height: 13px; stroke-width: 3; }
+.dc-actions li.is-done .dc-ok { transform: none; }
+.dc-mail { display: grid; gap: 10px; padding: 14px; border-radius: 14px; background: #F7F7FA; animation: dc-in .5s var(--ease-spring); }
+@keyframes dc-in { from { opacity: 0; transform: translateY(10px); } }
+.dc-mail-h { display: grid; gap: 2px; font-size: 12.5px; color: #66666b; }
+.dc-mail-h b { font-size: 14px; color: #0b0b0c; }
+.dc-mail-b { min-height: 92px; white-space: pre-line; font-size: 13.5px; }
+.dc-mail-f { display: flex; align-items: center; justify-content: space-between; }
+.dc-ready { font-size: 12.5px; font-weight: 600; color: #7b5cff; }
+.dc-ready.is-ok { color: #1A7533; }
+.dc-send { padding: 7px 14px; border-radius: 999px; background: #0066D6; color: #fff; font-size: 12.5px; font-weight: 600; }
+.dc-note { justify-self: end; font-size: 11.5px; color: var(--ink-3); }
+
 /* Wicflow OS variant (build.py --os): systems in the product, tier tags and inclusion cards. */
 .os-systems { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .os-sys { gap: 12px; }

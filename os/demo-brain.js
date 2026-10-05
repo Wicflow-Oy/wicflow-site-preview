@@ -28,7 +28,7 @@
   const fresh = () => ({
     view: "today", role: "vd", quoteOpen: null, preview: false, askQ: null, free: "",
     quote: "wait", assigned: false, reminded: false, sellerDone: {},
-    conns: { mail: "on", crm: "on", cal: "on", netvisor: "off", form: "off" },
+    conns: { mail: "on", crm: "on", cal: "on", netvisor: "off", form: "off", claude: "off", chatgpt: "off" },
     tasks: { quote: false, ask: false, netvisor: false },
     moved: null,
     deals: [
@@ -267,6 +267,12 @@
       ["form", L({ sv: "Webbplatsens formulär", fi: "Verkkosivun lomake", en: "Website form" }), null,
         L({ sv: "Nya förfrågningar från din webbplats", fi: "uudet yhteydenotot verkkosivuiltasi", en: "New enquiries from your website" }),
         L({ sv: "Svarar automatiskt", fi: "vastaa automaattisesti", en: "Replies automatically" })],
+      ["claude", "Claude", "i-claude.png",
+        L({ sv: "Dina frågor till Company Brain från Claude, med samma behörigheter som du har", fi: "kysymyksesi Company Brainille Claudesta, samoilla oikeuksilla kuin sinulla", en: "Your questions to Company Brain from Claude, with the same permissions you have" }),
+        L({ sv: "Visar något du inte får se", fi: "näytä mitään, mitä et saa nähdä", en: "Shows anything you're not allowed to see" })],
+      ["chatgpt", "ChatGPT", "i-chatgpt.svg",
+        L({ sv: "Dina frågor till Company Brain från ChatGPT, med samma behörigheter som du har", fi: "kysymyksesi Company Brainille ChatGPT:stä, samoilla oikeuksilla kuin sinulla", en: "Your questions to Company Brain from ChatGPT, with the same permissions you have" }),
+        L({ sv: "Visar något du inte får se", fi: "näytä mitään, mitä et saa nähdä", en: "Shows anything you're not allowed to see" })],
     ];
     function conns() {
       const sees = L({ sv: "Ser", fi: "Näkee", en: "Sees" }), never = L({ sv: "Gör aldrig", fi: "Ei koskaan", en: "Never" });
@@ -277,7 +283,7 @@
           const label = st === "syncing" ? `<span class="tag accent">${L({ sv: "Kopplar …", fi: "Yhdistetään …", en: "Connecting …" })}</span>`
             : st === "on" ? (id === "netvisor" ? `<span class="tag good">${L({ sv: "1 284 fakturor lästa", fi: "1 284 laskua luettu", en: "1,284 invoices read" })}</span>` : `<span class="tag good">${L({ sv: "Kopplad", fi: "Yhdistetty", en: "Connected" })}</span>`)
               : `<span class="tag">${L({ sv: "Av", fi: "Pois", en: "Off" })}</span>`;
-          const icon = logo ? `<img src="${lang === "sv" ? "" : "../"}assets/logos/${logo}" alt="">` : `<span style="width:20px;height:20px;border-radius:5px;background:var(--ink);color:var(--paper);font:700 10px/20px var(--f-mono);text-align:center">${name[0]}</span>`;
+          const icon = logo ? `<img src="${window.WF.asset(`assets/logos/${logo}`)}" alt="">` : `<span style="width:20px;height:20px;border-radius:5px;background:var(--ink);color:var(--paper);font:700 10px/20px var(--f-mono);text-align:center">${name[0]}</span>`;
           return `<div class="conn"><header><b>${icon}${name}</b>
             <button type="button" class="switch" role="switch" aria-checked="${st === "on" || st === "syncing"}" aria-label="${name}" data-a="conn" data-v="${id}"></button></header>
             <dl><dt>${sees}</dt><dd>${s}</dd><dt>${never}</dt><dd>${nv}</dd></dl>${label}</div>`;

@@ -45,7 +45,10 @@ window.WF = (() => {
     const t = document.createElement("div"); t.className = "toast"; t.setAttribute("role", "status"); t.textContent = msg;
     app.appendChild(t); setTimeout(() => t.remove(), 2600);
   };
-  return { lang, L, today, dm, weekday, onDay, nextWeekday, month, cap, eur, pct, esc, hello, route, toast };
+  // Shared files (assets/…) relative to this page: the root language sits at the top, the others one folder down.
+  const assetBase = (document.querySelector('link[rel="stylesheet"][href$="site.css"]')?.getAttribute("href") || "site.css").replace(/site\.css$/, "");
+  const asset = (path) => assetBase + path;
+  return { lang, L, today, dm, weekday, onDay, nextWeekday, month, cap, eur, pct, esc, hello, route, toast, asset };
 })();
 
 document.addEventListener("DOMContentLoaded", () => {
