@@ -2,9 +2,9 @@
    applies these over its own answers. Draft prices. */
 window.WF_CHAT_OVERRIDES = {
   pris: {
-    a: { sv: "Wicflow OS har tre nivåer. Lite kostar 490 € i månaden plus 49 € per fullanvändare, Standard 990 € plus 89 € och Max 2 990 € plus 129 €. Lättanvändare, som främst använder mobilappen, kostar 9–15 €. Uppstarten är en engångsavgift från 2 900 € beroende på företagets storlek. Alla priser är exklusive moms.",
-         fi: "Wicflow OS:ssä on kolme tasoa. Lite maksaa 490 € kuukaudessa ja 49 € / täysi käyttäjä, Standard 990 € ja 89 € ja Max 2 990 € ja 129 €. Kevytkäyttäjät, jotka käyttävät lähinnä mobiilisovellusta, maksavat 9–15 €. Käyttöönotto on kertamaksu alkaen 2 900 € yrityksen koon mukaan. Hinnat alv 0 %.",
-         en: "Wicflow OS has three tiers. Lite is €490 a month plus €49 per full user, Standard €990 plus €89 and Max €2,990 plus €129. Light users, who mainly use the mobile app, cost €9 to €15. Setup is a one-time fee from €2,900, depending on company size. All prices exclude VAT." },
+    a: { sv: "Wicflow OS har tre nivåer, och priset är en plattformsavgift som följer företagets omsättning plus användarna. Lite från 490 € i månaden plus 49 € per fullanvändare, Standard från 1 990 € plus 129 € och Max från 3 900 € plus 179 €. Lättanvändare, som främst använder mobilappen, kostar 9–19 €. Uppstarten är en engångsavgift från 2 900 €. Priserna gäller med årsavtal och är exklusive moms.",
+         fi: "Wicflow OS:ssä on kolme tasoa, ja hinta on yrityksen liikevaihdon mukainen alustamaksu ja käyttäjät. Lite alkaen 490 € kuukaudessa ja 49 € / täysi käyttäjä, Standard alkaen 1 990 € ja 129 € ja Max alkaen 3 900 € ja 179 €. Kevytkäyttäjät, jotka käyttävät lähinnä mobiilisovellusta, maksavat 9–19 €. Käyttöönotto on kertamaksu alkaen 2 900 €. Hinnat vuosisopimuksella, alv 0 %.",
+         en: "Wicflow OS has three tiers, and the price is a platform fee set by your company's revenue plus your users. Lite starts at €490 a month plus €49 per full user, Standard at €1,990 plus €129 and Max at €3,900 plus €179. Light users, who mainly use the mobile app, cost €9 to €19. Setup is a one-time fee from €2,900. Prices are for a yearly agreement and exclude VAT." },
     link: [{ sv: "Se priserna", fi: "Katso hinnat", en: "See pricing" }, "pricing"], next: ["paket", "custom", "demo"] },
   paket: {
     addKeys: ["nivå", "nivåer", "taso", "tasot", "tier", "lite", "standard"],

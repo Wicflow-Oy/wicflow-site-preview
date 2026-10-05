@@ -1,5 +1,6 @@
-/* Value calculator for the Wicflow OS variant (build.py --os): one product in three tiers, priced per user.
-   Price = the tier's platform fee + full users + light users; setup grows with the number of users. Value is built
+/* Value calculator for the Wicflow OS variant (build.py --os): one product in three tiers.
+   Price = the tier's platform fee for the company's revenue band + full users + light users; setup grows with the
+   number of users. The revenue choice is shared with the pricing page's switch (the "wf:band" event). Value is built
    like calc.js (hourly wage + employer costs, a month = 4.33 weeks of 5 working days) with conservative starting
    values. Extra deals come from Sales Radar and Outreach, so Lite counts none. Draft prices. Nothing is sent or stored. */
 (() => {
@@ -7,10 +8,11 @@
   const DAYS_PER_MONTH = 4.33 * 5;
   // t = time saved factor, d = extra deals factor (Max: advanced automations and Outreach at full scale).
   const TIERS = [
-    { id: "lite", name: "Lite", base: 490, full: 49, light: 9, t: 1, d: 0 },
-    { id: "standard", name: "Standard", base: 990, full: 89, light: 12, t: 1, d: 1 },
-    { id: "max", name: "Max", base: 2990, full: 129, light: 15, t: 1.15, d: 1.5 },
+    { id: "lite", name: "Lite", base: [490, 990, 1490], full: 49, light: 9, t: 1, d: 0 },
+    { id: "standard", name: "Standard", base: [1990, 3900, 5900], full: 129, light: 15, t: 1, d: 1 },
+    { id: "max", name: "Max", base: [3900, 6900, 9900], full: 179, light: 19, t: 1.15, d: 1.5 },
   ];
+  const BANDS = L({ sv: ["Under 5 milj. €", "5–20 milj. €", "Över 20 milj. €"], fi: ["Alle 5 milj. €", "5–20 milj. €", "Yli 20 milj. €"], en: ["Under €5M", "€5M–20M", "Over €20M"] });
   const SETUP = [[20, 2900], [100, 7900], [300, 14900], [Infinity, 24900]];
   const PRESETS = [
     { id: "very", hours: 0.5, mins: 5, deals: 1, name: L({ sv: "Mycket försiktig", fi: "Hyvin varovainen", en: "Very cautious" }) },
@@ -34,6 +36,7 @@
   const FIELDS = [...MAIN, ...MORE];
   const T = {
     tier: L({ sv: "Nivå", fi: "Taso", en: "Tier" }),
+    revenue: L({ sv: "Företagets omsättning", fi: "Yrityksen liikevaihto", en: "Company revenue" }),
     preset: L({ sv: "Uppskattning", fi: "Arvio", en: "Estimate" }),
     note: L({ sv: "Vi börjar försiktigt: 1 timme sparad per fullanvändare och 15 minuter per lättanvändare och dag, en timlön på 18 € och 2 extra affärer i månaden. Ändra timmar och lön under Antaganden så att de passar ditt företag. Om ditt team gör mycket manuellt arbete är den sparade tiden oftast större.",
               fi: "Aloitamme varovaisesti: 1 tunti säästöä täyttä käyttäjää ja 15 minuuttia kevytkäyttäjää kohden päivässä, 18 euron tuntipalkka ja 2 lisäkauppaa kuukaudessa. Muuta tunnit ja palkka Oletukset-kohdassa vastaamaan yritystäsi. Jos tiimissäsi on paljon manuaalista työtä, säästö on yleensä suurempi.",
@@ -55,10 +58,10 @@
     under1: L({ sv: "på under en månad", fi: "alle kuukaudessa", en: "in under a month" }),
     months: (n) => L({ sv: `på ${n} ${n === 1 ? "månad" : "månader"}`, fi: `${n} kuukaudessa`, en: `in ${n} ${n === 1 ? "month" : "months"}` }),
     never: L({ sv: "Inte med de här siffrorna", fi: "Ei näillä luvuilla", en: "Not with these numbers" }),
-    price: (t, f, l, total, setup) => L({
-      sv: `${t.name}: ${eur(t.base)} + ${f} × ${eur(t.full)} + ${l} × ${eur(t.light)} = ${eur(total)} i månaden. Uppstart från ${eur(setup)}. Exklusive moms.`,
-      fi: `${t.name}: ${eur(t.base)} + ${f} × ${eur(t.full)} + ${l} × ${eur(t.light)} = ${eur(total)} kuukaudessa. Käyttöönotto alkaen ${eur(setup)}. Alv 0 %.`,
-      en: `${t.name}: ${eur(t.base)} + ${f} × ${eur(t.full)} + ${l} × ${eur(t.light)} = ${eur(total)} a month. Setup from ${eur(setup)}. Excluding VAT.` }),
+    price: (t, base, f, l, total, setup) => L({
+      sv: `${t.name}: ${eur(base)} + ${f} × ${eur(t.full)} + ${l} × ${eur(t.light)} = ${eur(total)} i månaden med årsavtal. Uppstart från ${eur(setup)}. Exklusive moms.`,
+      fi: `${t.name}: ${eur(base)} + ${f} × ${eur(t.full)} + ${l} × ${eur(t.light)} = ${eur(total)} kuukaudessa vuosisopimuksella. Käyttöönotto alkaen ${eur(setup)}. Alv 0 %.`,
+      en: `${t.name}: ${eur(base)} + ${f} × ${eur(t.full)} + ${l} × ${eur(t.light)} = ${eur(total)} a month with a yearly agreement. Setup from ${eur(setup)}. Excluding VAT.` }),
     copy: L({ sv: "Kopiera", fi: "Kopioi", en: "Copy" }),
     copied: L({ sv: "Kopierad. Klistra in i ett mejl till ekonomichefen.", fi: "Kopioitu. Liitä sähköpostiin talousjohtajalle.", en: "Copied. Paste it into an email to your CFO." }),
     copyFail: L({ sv: "Kunde inte kopiera. Markera texten nedan.", fi: "Kopiointi ei onnistunut. Valitse teksti alta.", en: "Couldn't copy. Select the text below." }),
@@ -76,7 +79,7 @@
   function mount(root) {
     const uid = "calcos" + (++seq);
     const S = Object.fromEntries(FIELDS.map((f) => [f.k, f.def]));
-    let tier = "standard";
+    let tier = "standard", band = 0;
     let preset = START; // null once the visitor changes hours or deals themselves
 
     const field = (f) => `
@@ -88,6 +91,7 @@
     root.innerHTML = `
       <div class="calc-in">
         <div class="calc-presets"><span class="calc-lbl" id="${uid}-pre">${T.preset}</span><div class="seg calc-pre" role="group" aria-labelledby="${uid}-pre">${PRESETS.map((p) => `<button type="button" data-preset="${p.id}">${p.name}</button>`).join("")}</div></div>
+        <div class="calc-presets"><span class="calc-lbl" id="${uid}-rev">${T.revenue}</span><div class="seg calc-band" role="group" aria-labelledby="${uid}-rev">${BANDS.map((b, i) => `<button type="button" data-cband="${i}">${b}</button>`).join("")}</div></div>
         ${MAIN.map(field).join("")}
         <p class="calc-assume">${T.note}</p>
         <details class="calc-more"><summary><span>${T.more}<small data-n="more"></small></span></summary><div class="calc-fields">${MORE.map(field).join("")}</div><p class="calc-fine">${T.fine}</p></details>
@@ -119,11 +123,12 @@
       const fullValue = fullHours * S.wage * k, lightValue = lightHours * S.wage * k;
       const dealValue = S.deals * t.d * S.profit;
       const value = fullValue + lightValue + dealValue;
-      const price = t.base + S.full * t.full + S.light * t.light;
+      const base = t.base[band];
+      const price = base + S.full * t.full + S.light * t.light;
       const setup = setupFor(S.full + S.light);
       const net = value - price;
       const hours = fullHours + lightHours;
-      return { t, fullValue, lightValue, dealValue, value, price, setup, net, hours, payback: net > 0 ? setup / net : null, fte: hours / (40 * 4.33) };
+      return { t, base, fullValue, lightValue, dealValue, value, price, setup, net, hours, payback: net > 0 ? setup / net : null, fte: hours / (40 * 4.33) };
     }
 
     const shown = {};
@@ -146,6 +151,7 @@
       const r = compute();
       root.querySelectorAll("[data-tier]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.tier === tier)));
       root.querySelectorAll("[data-preset]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.preset === preset)));
+      root.querySelectorAll("[data-cband]").forEach((b) => b.setAttribute("aria-pressed", String(Number(b.dataset.cband) === band)));
       tween("value", $("[data-n=value]"), r.value, (v) => eur(Math.round(v)));
       $("[data-n=pkg]").textContent = T.users(r.t.name, fmtNum(S.full), fmtNum(S.light));
       const w = (n) => Math.max(0, (n / Math.max(r.value, 1)) * 100).toFixed(2) + "%";
@@ -164,7 +170,7 @@
       tween("net", netEl, r.net, (v) => signedEur(v) + T.perMonth);
       payEl.classList.toggle("neg", r.payback === null);
       payEl.textContent = r.payback === null ? T.never : r.payback < 1 ? T.under1 : T.months(Math.ceil(r.payback));
-      $("[data-n=price]").textContent = T.price(r.t, fmtNum(S.full), fmtNum(S.light), r.price, r.setup);
+      $("[data-n=price]").textContent = T.price(r.t, r.base, fmtNum(S.full), fmtNum(S.light), r.price, r.setup);
       return r;
     }
 
@@ -191,6 +197,8 @@
     root.addEventListener("click", async (e) => {
       const tb = e.target.closest("[data-tier]");
       if (tb) { tier = tb.dataset.tier; render(); return; }
+      const cb = e.target.closest("[data-cband]");
+      if (cb) { document.dispatchEvent(new CustomEvent("wf:band", { detail: Number(cb.dataset.cband) })); return; }
       const pre = e.target.closest("[data-preset]");
       if (pre) { const p = PRESETS.find((x) => x.id === pre.dataset.preset); preset = p.id; ["hours", "mins", "deals"].forEach((k) => setField(k, p[k])); render(); return; }
       if (e.target.closest("[data-copy]")) {
@@ -201,7 +209,17 @@
         msg.hidden = false;
       }
     });
+    document.addEventListener("wf:band", (e) => { band = e.detail; render(); });
     render();
   }
+  // The pricing page's revenue switch: the platform fee in each tier card follows it, and so do the calculators.
+  document.addEventListener("wf:band", (e) => {
+    document.querySelectorAll("[data-band-pick] [data-band]").forEach((b) => b.setAttribute("aria-pressed", String(Number(b.dataset.band) === e.detail)));
+    document.querySelectorAll("[data-bands]").forEach((el) => { el.textContent = eur(Number(el.dataset.bands.split(",")[e.detail])); });
+  });
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-band-pick] [data-band]");
+    if (b) document.dispatchEvent(new CustomEvent("wf:band", { detail: Number(b.dataset.band) }));
+  });
   document.addEventListener("DOMContentLoaded", () => document.querySelectorAll("[data-calc-os]").forEach(mount));
 })();
