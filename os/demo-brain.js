@@ -193,7 +193,7 @@
         ? `<div class="board three">${[0, 1, 2].map((s) => { const list = S.work.filter((t) => t.s === s); return `<div class="col"><header>${TK_STATUS[s]}<span>${list.length}</span></header>${list.map((t) => `
             <div class="deal tk-card${cls(t)}"><b>${t.t}</b><div class="v"><span>KVA-${t.id} · ${due(t.due)}</span><span class="tk-meta">${prio(t.p)}${av(t.who)}${s < 2 ? `<button type="button" data-a="tnext" data-v="${t.id}" aria-label="${TK_STATUS[s + 1]}">→</button>` : ""}</span></div></div>`).join("")}</div>`; }).join("")}</div>`
         : [1, 0, 2].map((s) => { const list = S.work.filter((t) => t.s === s); return list.length ? `<section class="ax-card tk-group"><header class="tk-gh"><span class="tk-st s${s} static">${s === 2 ? icon("check") : ""}</span>${TK_STATUS[s]}<span>${list.length}</span></header>${list.map((t) => `
-            <div class="tk-row${cls(t)}">${stIc(t.s, t.id)}<span class="tk-id">KVA-${t.id}</span><span class="tk-t">${t.t}<span class="tag">${t.label}</span></span>${prio(t.p)}<span class="tk-due${t.due <= 0 && t.s < 2 ? " late" : ""}">${due(t.due)}</span>${av(t.who)}</div>`).join("")}</section>` : ""; }).join("");
+            <div class="tk-row${cls(t)}">${stIc(t.s, t.id)}<span class="tk-id">KVA-${t.id}</span><span class="tk-t"><span class="tk-tt">${t.t}</span><span class="tag">${t.label}</span></span>${prio(t.p)}<span class="tk-due${t.due <= 0 && t.s < 2 ? " late" : ""}">${due(t.due)}</span>${av(t.who)}</div>`).join("")}</section>` : ""; }).join("");
       return `${head(W.tasks, W.tasksSub, modes)}${body}`;
     }
 
