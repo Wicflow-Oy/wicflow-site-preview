@@ -14,11 +14,11 @@ window.WF_CHAT_OVERRIDES = {
          en: "Lite gets the whole team into one system: Company Brain, tasks, working time and the app. Standard adds Sales Radar and Outreach for more deals. Max is for larger companies and groups, with every system, the most advanced plugins and a named contact at Wicflow." },
     link: [{ sv: "Jämför nivåerna", fi: "Vertaa tasoja", en: "Compare the tiers" }, "pricing"], next: ["tillvaxt", "demo"] },
   tillvaxt: {
-    addKeys: ["max"],
+    addKeys: ["max", "logo", "logga", "brand", "brändi", "varumärke", "white label", "värit", "färger", "colours", "colors"],
     label: { sv: "Vad ingår i Max?", fi: "Mitä Maxiin kuuluu?", en: "What's in Max?" },
-    a: { sv: "Max är Wicflow OS i full skala: prospektering och sociala medier på flera marknader, Company Brain för hela organisationen, de mest avancerade tilläggen, en ny webbplats med AI-chatt och en ansvarig hos oss med kvartalsgenomgång. AI-användning upp till 5 000 € i månaden ingår.",
-         fi: "Max on Wicflow OS täydessä laajuudessa: prospektointi ja some useilla markkinoilla, Company Brain koko organisaatiolle, edistyneimmät lisäosat, uudet verkkosivut tekoälychatilla ja oma vastuuhenkilö neljännesvuosikatsauksineen. Tekoälyn käyttöä sisältyy jopa 5 000 € kuukaudessa.",
-         en: "Max is Wicflow OS at full scale: Outreach and social media across several markets, Company Brain for the whole organisation, the most advanced plugins, a new website with an AI chat and a named contact with a quarterly review. AI use up to €5,000 a month is included." },
+    a: { sv: "Max är Wicflow OS i full skala: prospektering och sociala medier på flera marknader, Company Brain för hela organisationen, de mest avancerade tilläggen, systemet med ditt företags logga och färger, en ny webbplats med AI-chatt och en ansvarig hos oss med kvartalsgenomgång. AI-användning upp till 5 000 € i månaden ingår.",
+         fi: "Max on Wicflow OS täydessä laajuudessa: prospektointi ja some useilla markkinoilla, Company Brain koko organisaatiolle, edistyneimmät lisäosat, järjestelmä yrityksesi logolla ja väreillä, uudet verkkosivut tekoälychatilla ja oma vastuuhenkilö neljännesvuosikatsauksineen. Tekoälyn käyttöä sisältyy jopa 5 000 € kuukaudessa.",
+         en: "Max is Wicflow OS at full scale: Outreach and social media across several markets, Company Brain for the whole organisation, the most advanced plugins, the system in your own logo and colours, a new website with an AI chat and a named contact with a quarterly review. AI use up to €5,000 a month is included." },
     link: [{ sv: "Läs om Max", fi: "Lue Maxista", en: "Read about Max" }, "growth"] },
   brain: {
     a: { sv: "Company Brain är kärnan i Wicflow OS och ingår i alla nivåer. Den läser dina mejl, affärer, kalendrar och fakturor, visar varje person vad som behöver göras i dag och svarar på frågor om verksamheten. Vi sätter upp den med tillägg från vårt bibliotek, och den körs i EU.",
