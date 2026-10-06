@@ -68,7 +68,7 @@
     weeks: L({ sv: "De senaste veckorna", fi: "Viime viikot", en: "The last few weeks" }),
     legend: L({ sv: ["Jobbat", "Semester", "Borta", "Oförklarat", "Ledigt"], fi: ["Töissä", "Loma", "Poissa", "Selvittämätön", "Vapaa"], en: ["Worked", "Holiday", "Away", "Unexplained", "Day off"] }),
     wd: L({ sv: ["må", "ti", "on", "to", "fr", "lö", "sö"], fi: ["ma", "ti", "ke", "to", "pe", "la", "su"], en: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"] }),
-    timeOff: L({ sv: "Ansök om ledigt", fi: "Hae vapaata", en: "Ask for time off" }), timeOffSent: L({ sv: "Ansökan skickad till Robin", fi: "Pyyntö lähetetty Robinille", en: "Request sent to Robin" }),
+    timeOff: L({ sv: "Ansök om ledigt", fi: "Hae vapaata", en: "Ask for time off" }), timeOffSent: L({ sv: "Ansökan skickad till din chef", fi: "Pyyntö lähetetty esihenkilöllesi", en: "Request sent to your manager" }),
     person: L({ sv: "Person", fi: "Henkilö", en: "Person" }), hours: L({ sv: "Timmar", fi: "Tunnit", en: "Hours" }),
     holiday: L({ sv: "Semester", fi: "Loma", en: "Holiday" }), away: L({ sv: "Borta", fi: "Poissa", en: "Away" }), unexplained: L({ sv: "Oförklarat", fi: "Selvittämätön", en: "Unexplained" }),
     inAt: (t) => L({ sv: `In ${t}`, fi: `Sisään ${t}`, en: `In ${t}` }), notYet: L({ sv: "Inte in än", fi: "Ei vielä sisällä", en: "Not in yet" }),

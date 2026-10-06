@@ -61,7 +61,7 @@
     holidayLeft: L({ sv: "Semester kvar", fi: "Lomaa jäljellä", en: "Holiday left" }),
     days: (n) => L({ sv: `${n} dagar`, fi: `${n} päivää`, en: `${n} days` }),
     timeOff: L({ sv: "Ansök om ledigt", fi: "Hae vapaata", en: "Ask for time off" }),
-    timeOffSent: L({ sv: "Ansökan skickad till Robin", fi: "Pyyntö lähetetty Robinille", en: "Request sent to Robin" }),
+    timeOffSent: L({ sv: "Ansökan skickad till din chef", fi: "Pyyntö lähetetty esihenkilöllesi", en: "Request sent to your manager" }),
   };
 
   const NEEDS = [

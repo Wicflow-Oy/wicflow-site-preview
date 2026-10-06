@@ -122,9 +122,9 @@
       link: [{ sv: "Prova appen", fi: "Kokeile sovellusta", en: "Try the app" }, "brain#mobile"], next: ["brain", "demo"] },
     { id: "demo", label: { sv: "Boka en demo", fi: "Varaa demo", en: "Book a demo" },
       keys: ["demo", "boka", "möte", "träffa", "kontakt", "ring", "prata med", "människa", "varaa", "tapaa", "yhteys", "soita", "ihminen", "book", "meet", "contact", "call", "human"],
-      a: { sv: "Gärna! En demo tar 30 minuter med Felix eller Robin. Vi visar systemen med exempel från din bransch och säger direkt vad det skulle kosta hos dig.",
-           fi: "Mielellään! Demo kestää 30 minuuttia Felixin tai Robinin kanssa. Näytämme järjestelmät esimerkeillä omalta toimialaltasi ja kerromme heti, mitä se maksaisi teillä.",
-           en: "Happy to! A demo takes 30 minutes with Felix or Robin. We show the systems with examples from your industry and tell you straight away what it would cost for you." },
+      a: { sv: "Gärna! En demo tar 30 minuter med Felix. Vi visar systemen med exempel från din bransch och säger direkt vad det skulle kosta hos dig.",
+           fi: "Mielellään! Demo kestää 30 minuuttia Felixin kanssa. Näytämme järjestelmät esimerkeillä omalta toimialaltasi ja kerromme heti, mitä se maksaisi teillä.",
+           en: "Happy to! A demo takes 30 minutes with Felix. We show the systems with examples from your industry and tell you straight away what it would cost for you." },
       link: [{ sv: "Boka demo", fi: "Varaa demo", en: "Book a demo" }, "contact"] },
   ];
   // While prices, terms and figures are held (window.WF_HOLD, see build.py), the answers leave them out. The held
@@ -164,7 +164,7 @@
     send: L({ sv: "Skicka", fi: "Lähetä", en: "Send" }),
     note: L({ sv: "Förinställda svar. Den riktiga chatten svarar med AI och kan ingå i din webbplats.", fi: "Valmiit vastaukset. Oikea chat vastaa tekoälyllä, ja sen voi saada omille verkkosivuillesi.", en: "Preset answers. The real chat answers with AI, and you can have it on your own website." }),
     hello: L({ sv: "Hej! Jag svarar på frågor om Wicflow, våra system och priser. Vad undrar du?", fi: "Hei! Vastaan kysymyksiin Wicflowsta, järjestelmistämme ja hinnoista. Mitä haluaisit tietää?", en: "Hi! I answer questions about Wicflow, our systems and prices. What would you like to know?" }),
-    unsure: L({ sv: "Det vet jag inte säkert. Felix eller Robin svarar gärna, oftast inom en arbetsdag.", fi: "En ole varma. Felix tai Robin vastaa mielellään, yleensä yhden työpäivän sisällä.", en: "I'm not sure about that. Felix or Robin will happily answer, usually within one working day." }),
+    unsure: L({ sv: "Det vet jag inte säkert. Felix svarar gärna, oftast inom en arbetsdag.", fi: "En ole varma. Felix vastaa mielellään, yleensä yhden työpäivän sisällä.", en: "I'm not sure about that. Felix will happily answer, usually within one working day." }),
     book: L({ sv: "Boka demo", fi: "Varaa demo", en: "Book a demo" }),
   };
   const linkHref = (target) => { const [id, hash] = target.split("#"); return route(id) + (hash ? "#" + hash : ""); };
