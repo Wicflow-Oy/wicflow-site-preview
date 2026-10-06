@@ -2,7 +2,7 @@
    Sales Radar finds a tender and gives the lead to Mikael, Outreach writes the first email and Mikael approves it,
    the customer replies and the meeting lands in the calendar. Each step sends a line of light into Company Brain on
    the right, where the deal's row moves from "New lead" to "Email sent" to "Meeting", Anna ticks off a quote and the
-   time back this week counts up. People stay in the loop: the system does the groundwork, they decide.
+   pipeline added this week counts up in euros. People stay in the loop: the system does the groundwork, they decide.
    Drawn at a design width of 600 px and scaled to fit, so nothing overlaps; on narrow screens the three systems take
    turns in one slot above Company Brain. Decorative (the clickable demo is further down); runs only while visible and
    shows the finished scene, still, when reduced motion is on.
@@ -45,8 +45,8 @@
       L({ sv: "Boka servicebesöket hos Havsbrisen", fi: "Varaa huoltokäynti Havsbriseniin", en: "Book the service visit at Havsbrisen" }),
       L({ sv: "Kolla veckans arbetstider", fi: "Tarkista viikon työajat", en: "Check this week's hours" }),
     ],
-    saved: L({ sv: "Tid tillbaka den här veckan", fi: "Aikaa säästetty tällä viikolla", en: "Time back this week" }),
-    savedSub: L({ sv: "för 14 personer", fi: "14 hengelle", en: "across 14 people" }),
+    saved: L({ sv: "Nytt i säljtratten den här veckan", fi: "Uutta myyntiputkeen tällä viikolla", en: "Added to the pipeline this week" }),
+    savedSub: L({ sv: "från 3 nya leads", fi: "3 uudesta liidistä", en: "from 3 new leads" }),
     note: L({ sv: "Exempel med påhittade data", fi: "Esimerkki keksityllä datalla", en: "Example with made-up data" }),
     shareSubject: L({ sv: "Värt en titt: Wicflow", fi: "Katsomisen arvoinen: Wicflow", en: "Worth a look: Wicflow" }),
     shareBody: (url) => L({
@@ -70,6 +70,7 @@
   const CURSOR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 2.5v17.2l4.6-4.5 2.9 6.6 2.7-1.2-2.9-6.5h6.4z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round"/></svg>';
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const DESIGN = 600, NARROW = 500, DEAL_H = 46;
+  const PIPE = [24180, 66780]; // this week's new pipeline before and after the Ekby deal (€42,600)
   const SYSTEMS = ["radar", "mail", "meet"];
   let seq = 0;
 
@@ -114,7 +115,7 @@
             ${T.items.map((t, i) => `<li class="hl-item" data-x="item${i}">${TICK}<span>${t}</span></li>`).join("")}
           </ul>
           <div class="hl-foot">
-            <div><small>${T.saved}</small><b data-x="hours">24 h</b><small>${T.savedSub}</small></div>
+            <div><small>${T.saved}</small><b data-x="hours">${eur(PIPE[0])}</b><small>${T.savedSub}</small></div>
             <svg class="hl-spark" viewBox="0 0 140 36" preserveAspectRatio="none" aria-hidden="true"><polyline points="2,32 24,28 46,30 68,20 90,22 112,10 138,4"/></svg>
           </div>
         </div>
@@ -191,7 +192,7 @@
       const t0 = performance.now();
       const step = (now) => {
         const k = Math.min(1, (now - t0) / ms), e = 1 - Math.pow(1 - k, 3);
-        $("hours").textContent = `${Math.round(from + (to - from) * e)} h`;
+        $("hours").textContent = eur(Math.round(from + (to - from) * e));
         if (k < 1) raf = requestAnimationFrame(step);
       };
       raf = requestAnimationFrame(step);
@@ -219,7 +220,7 @@
       $("booked").classList.remove("is-in");
       $("deal").classList.remove("is-in", "is-settled"); $("pill").className = "hl-pill lead"; $("pill").textContent = T.pill.lead;
       $("item0").classList.remove("is-done");
-      spark.classList.remove("is-in"); cancelAnimationFrame(raf); $("hours").textContent = "24 h";
+      spark.classList.remove("is-in"); cancelAnimationFrame(raf); $("hours").textContent = eur(PIPE[0]);
       SYSTEMS.forEach((k) => link(k, false)); $("port").classList.remove("is-on");
       root.querySelectorAll(".hl-comet").forEach((c) => c.classList.remove("is-on"));
       cursor.classList.remove("is-in", "is-click");
@@ -236,7 +237,7 @@
       $("booked").classList.add("is-in");
       $("deal").classList.add("is-in", "is-settled"); $("pill").className = "hl-pill meet"; $("pill").textContent = T.pill.meet;
       $("item0").classList.add("is-done");
-      spark.classList.add("is-in"); cancelAnimationFrame(raf); $("hours").textContent = "31 h";
+      spark.classList.add("is-in"); cancelAnimationFrame(raf); $("hours").textContent = eur(PIPE[1]);
       links.classList.remove("is-hidden"); SYSTEMS.forEach((k) => link(k, true)); $("port").classList.add("is-on");
       root.querySelectorAll(".hl-comet").forEach((c) => c.classList.remove("is-on"));
       cursor.classList.remove("is-in");
@@ -262,17 +263,17 @@
       at(8000, () => { card("meet").classList.add("is-in"); if (narrow) card("mail").classList.add("is-past"); });
       at(8900, () => $("booked").classList.add("is-in"));
       at(9100, () => fire("meet", () => { pill("meet"); $("deal").classList.add("is-settled"); }));
-      // 4. Anna approves a quote from her list, and the time back this week counts up.
+      // 4. Anna approves a quote from her list, and the pipeline added this week counts up.
       at(10500, () => cursorTo($("item0"), hub, 0, 0.5, 16));
       at(11550, () => { click(); $("item0").classList.add("is-done"); });
-      at(11900, () => { spark.classList.add("is-in"); count(24, 31, 1100); });
+      at(11900, () => { spark.classList.add("is-in"); count(PIPE[0], PIPE[1], 1300); });
       at(12500, () => cursor.classList.remove("is-in"));
       // Out: the systems step back, Company Brain returns to the start of the day, and it begins again.
       at(16200, () => {
         sats.forEach((c, i) => at(i * 110, () => c.classList.add("is-out")));
         links.classList.add("is-hidden"); $("port").classList.remove("is-on");
       });
-      at(16700, () => { $("deal").classList.remove("is-in", "is-settled"); $("item0").classList.remove("is-done"); spark.classList.remove("is-in"); count(31, 24, 600); });
+      at(16700, () => { $("deal").classList.remove("is-in", "is-settled"); $("item0").classList.remove("is-done"); spark.classList.remove("is-in"); count(PIPE[1], PIPE[0], 600); });
       at(17700, () => { if (running) play(); });
     }
 

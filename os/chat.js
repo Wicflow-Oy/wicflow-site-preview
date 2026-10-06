@@ -5,12 +5,20 @@
   const KB = [
     { id: "pris", label: { sv: "Vad kostar det?", fi: "Mitä se maksaa?", en: "What does it cost?" },
       keys: ["pris", "kost", "betal", "avgift", "budget", "dyr", "€", "euro", "hinta", "maksa", "kustan", "price", "cost", "how much"],
-      a: null,
-      link: [{ sv: "Se alla priser", fi: "Katso kaikki hinnat", en: "See all prices" }, "pricing"], next: ["paket", "custom", "avtal"] },
-    { id: "paket", label: { sv: "Vilket paket passar oss?", fi: "Mikä paketti sopii meille?", en: "Which package suits us?" },
-      keys: ["paket", "passar", "välja", "vilket", "säljsystem", "paketti", "sopii", "package", "which", "suit"],
-      a: null,
-      link: [{ sv: "Jämför paketen", fi: "Vertaa paketteja", en: "Compare the packages" }, "pricing"], next: ["tillvaxt", "demo"] },
+      // Drafted prices only where the build shows them (/*prices*/); otherwise the answer without numbers.
+      a: /*prices*/{ sv: "Varje produkt har ett startpris, och det slutliga priset beror på ditt företag och vad du behöver. Webbplats + CMS från 200 € i månaden, Company Brain från 480 €, Säljradarn från 800 € och Prospekteringen från 1 600 €. Paketen kostar mindre: Säljpaketet från 2 000 €, Synlighetspaketet från 640 € och Wicflow OS Complete från 3 600 €. Det är priser med årsavtal; månad för månad kostar 25 % mer. Uppstarten ingår, och priserna är exklusive moms.",
+           fi: "Jokaisella tuotteella on aloitushinta, ja lopullinen hinta riippuu yrityksestäsi ja tarpeistasi. Verkkosivut + CMS alkaen 200 € kuukaudessa, Company Brain alkaen 480 €, Myyntitutka alkaen 800 € ja Prospektointi alkaen 1 600 €. Paketit ovat edullisempia: Myyntipaketti alkaen 2 000 €, Näkyvyyspaketti alkaen 640 € ja Wicflow OS Complete alkaen 3 600 €. Hinnat ovat vuosisopimuksella; kuukausittain 25 % enemmän. Käyttöönotto sisältyy, ja hinnat ovat alv 0 %.",
+           en: "Every product has a starting price, and the final price depends on your company and what you need. Website + CMS starts at €200 a month, Company Brain at €480, Sales Radar at €800 and Outreach at €1,600. Bundles cost less: the Sales bundle from €2,000, the Visibility bundle from €640 and Wicflow OS Complete from €3,600. These are yearly prices; month to month costs 25% more. Setup is included, and prices exclude VAT." }/*/prices*/
+        || { sv: "Varje produkt har ett startpris, och det slutliga priset beror på ditt företag och vad du behöver. Du får det skriftligt i offerten innan du bestämmer dig, och uppstarten ingår. Felix går gärna igenom det med dig i ett samtal på 30 minuter.",
+             fi: "Jokaisella tuotteella on aloitushinta, ja lopullinen hinta riippuu yrityksestäsi ja tarpeistasi. Saat sen kirjallisena tarjouksessa ennen päätöstä, ja käyttöönotto sisältyy. Felix käy sen mielellään läpi kanssasi 30 minuutin puhelussa.",
+             en: "Every product has a starting price, and the final price depends on your company and what you need. You get it in writing in the quote before you decide, and setup is included. Felix is happy to go through it with you in a 30-minute call." },
+      link: [{ sv: "Se alla priser", fi: "Katso kaikki hinnat", en: "See all prices" }, "pricing"], next: ["pengar", "paket", "demo"] },
+    { id: "paket", label: { sv: "Vilket paket passar oss?", fi: "Mikä paketti sopii meille?", en: "Which bundle suits us?" },
+      keys: ["paket", "passar", "välja", "vilket", "paketti", "sopii", "package", "bundle", "which", "suit"],
+      a: { sv: "Vill du ha fler affärer börjar du med Säljpaketet: Säljradarn och Prospekteringen. Vill du att fler kunder hittar dig passar Synlighetspaketet: webbplats, SEO/GEO och sociala medier. Wicflow OS Complete har allt, med Company Brain för hela företaget och systemet i ditt eget varumärke. Du kan också börja med en enda produkt.",
+           fi: "Jos haluat lisää kauppoja, aloita Myyntipaketista: Myyntitutka ja Prospektointi. Jos haluat, että useampi asiakas löytää sinut, valitse Näkyvyyspaketti: verkkosivut, SEO/GEO ja some. Wicflow OS Complete sisältää kaiken, Company Brainin koko yritykselle ja järjestelmän yrityksesi omalla ilmeellä. Voit myös aloittaa yhdellä tuotteella.",
+           en: "If you want more deals, start with the Sales bundle: Sales Radar and Outreach. If you want more customers to find you, the Visibility bundle covers the website, SEO/GEO and social media. Wicflow OS Complete has everything, with Company Brain for the whole company and the system in your own brand. You can also start with a single product." },
+      link: [{ sv: "Jämför paketen", fi: "Vertaa paketteja", en: "Compare the bundles" }, "pricing"], next: ["tillvaxt", "demo"] },
     { id: "brain", label: { sv: "Vad är Company Brain?", fi: "Mikä on Company Brain?", en: "What is Company Brain?" },
       keys: ["brain", "hjärna", "intern", "vardag", "offert", "avtal", "rapport", "aivot", "sisäi", "tarjous", "sopimus", "raport", "internal", "quote", "contract", "report"],
       a: { sv: "Company Brain läser dina mejl, affärer, kalendrar och fakturor och visar varje person vad som behöver göras i dag. Du kan ställa frågor om verksamheten och sköta offerter, avtal och rapporter på samma ställe. Vi sätter upp den för ditt företag med verktyg från vårt bibliotek av tillägg, till exempel uppgifter, arbetstid och offerter, och den körs i EU. Den finns som demo på startsidan.",
@@ -29,12 +37,28 @@
       link: [{ sv: "Läs om Prospekteringen", fi: "Lue prospektoinnista", en: "Read about Outreach" }, "reach"], next: ["social", "resultat"] },
     { id: "social", label: { sv: "Kan ni sköta våra sociala medier?", fi: "Voitteko hoitaa somemme?", en: "Can you run our social media?" },
       keys: ["social", "sociala", "some", "linkedin", "instagram", "facebook", "inlägg", "julkaisu", "postaus", "posting", "posts", "youtube"],
-      a: null,
-      link: [{ sv: "Läs om Prospekteringen", fi: "Lue prospektoinnista", en: "Read about Outreach" }, "reach"], next: ["prospektering", "pris"] },
-    { id: "tillvaxt", label: { sv: "Vad ingår i Tillväxtmotorn?", fi: "Mitä Kasvumoottoriin kuuluu?", en: "What's in the Growth Engine?" },
-      keys: ["tillväxt", "motor", "webbplats", "hemsida", "seo", "geo", "synlighet", "google", "chatt", "koncern", "kasvu", "moottori", "verkkosivu", "kotisivu", "näkyvyys", "konserni", "growth", "engine", "website", "visibility", "group"],
-      a: null,
-      link: [{ sv: "Läs om Tillväxtmotorn", fi: "Lue Kasvumoottorista", en: "Read about the Growth Engine" }, "growth"], next: ["demo"] },
+      a: { sv: "Ja, med Social Media OS. Inläggen skrivs utifrån dina nyheter och kundcase, du godkänner dem på ett ställe och de publiceras i alla konton: företagets sidor och medarbetarnas profiler. Det ingår i Synlighetspaketet och i Wicflow OS Complete.",
+           fi: "Kyllä, Social Media OS:llä. Julkaisut kirjoitetaan uutistesi ja asiakastarinoidesi pohjalta, hyväksyt ne yhdessä paikassa, ja ne julkaistaan kaikilla tileillä: yrityksen sivuilla ja työntekijöiden profiileissa. Se sisältyy Näkyvyyspakettiin ja Wicflow OS Complete -pakettiin.",
+           en: "Yes, with Social Media OS. Posts are written from your news and customer stories, you approve them in one place, and they're published to every account: company pages and employees' profiles. It's part of the Visibility bundle and Wicflow OS Complete." },
+      link: [{ sv: "Läs mer", fi: "Lue lisää", en: "Read more" }, "website#social"], next: ["website", "pris"] },
+    { id: "website", label: { sv: "Kan ni bygga vår webbplats?", fi: "Voitteko tehdä verkkosivumme?", en: "Can you build our website?" },
+      keys: ["webbplats", "hemsida", "sajt", "verkkosivu", "kotisivu", "website", "web site", "homepage", "cms", "seo", "geo", "google", "synlighet", "näkyvyys", "visibility", "ai-sök", "tekoälyhau", "ai search"],
+      a: { sv: "Ja. Vi bygger en snabb webbplats som säljer, driftar den i EU och du redigerar den själv i vårt CMS. Varje förfrågan går direkt till dina säljare. Med SEO/GEO hittar köparna dig i Google och i AI-sökningar som ChatGPT. Det finns en demo av CMS:et på webbplatssidan.",
+           fi: "Kyllä. Rakennamme nopeat, myyvät verkkosivut, ylläpidämme niitä EU:ssa, ja muokkaat niitä itse CMS:ssämme. Jokainen yhteydenotto menee suoraan myyjillesi. SEO/GEO:n avulla ostajat löytävät sinut Googlesta ja tekoälyhauista, kuten ChatGPT:stä. CMS:n demo löytyy verkkosivusivulta.",
+           en: "Yes. We build a fast website that sells, host it in the EU, and you edit it yourself in our CMS. Every enquiry goes straight to your sales team. With SEO/GEO, buyers find you in Google and in AI search such as ChatGPT. There's a demo of the CMS on the website page." },
+      link: [{ sv: "Se webbtjänsten", fi: "Katso verkkosivupalvelu", en: "See the website service" }, "website"], next: ["social", "pris"] },
+    { id: "pengar", label: { sv: "Hur ger det oss mer pengar?", fi: "Miten se tuo meille lisää rahaa?", en: "How does it make us more money?" },
+      keys: ["pengar", "tjäna", "intäkt", "omsättning", "lönsam", "raha", "tienata", "tuotto", "liikevaihto", "kannatta", "money", "revenue", "earn", "profit", "roi", "pay off", "worth it"],
+      a: { sv: "På fyra sätt. Säljradarn hittar köparna före dina konkurrenter, Prospekteringen bokar fler säljmöten, Company Brain ser till att inget lead och ingen offert glöms bort, och webbplatsen och SEO/GEO ger fler förfrågningar. I kalkylen kan du räkna på vad det betyder för dig.",
+           fi: "Neljällä tavalla. Myyntitutka löytää ostajat ennen kilpailijoitasi, Prospektointi varaa enemmän myyntitapaamisia, Company Brain huolehtii, ettei yksikään liidi tai tarjous unohdu, ja verkkosivut sekä SEO/GEO tuovat lisää yhteydenottoja. Laskurilla voit laskea, mitä se tarkoittaa teille.",
+           en: "In four ways. Sales Radar finds buyers before your competitors do, Outreach books more sales meetings, Company Brain makes sure no lead or quote is forgotten, and your website and SEO/GEO bring in more enquiries. The calculator shows what it could mean for you." },
+      link: [{ sv: "Räkna på det", fi: "Laske se", en: "Work it out" }, "home#kalkyl"], next: ["pris", "demo"] },
+    { id: "tillvaxt", label: { sv: "Vad ingår i Wicflow OS Complete?", fi: "Mitä Wicflow OS Completeen kuuluu?", en: "What's in Wicflow OS Complete?" },
+      keys: ["tillväxt", "motor", "complete", "allt", "koncern", "kasvu", "moottori", "kaikki tuotteet", "konserni", "growth", "engine", "everything", "group", "wicflow os"],
+      a: { sv: "Wicflow OS Complete är hela ekosystemet: Säljradarn, Prospekteringen i full skala, Company Brain för hela företaget, webbplatsen med AI-chatt, SEO/GEO och Social Media OS, plus de mest avancerade tilläggen, systemet i ditt eget varumärke och en egen kontaktperson hos oss med kvartalsgenomgång.",
+           fi: "Wicflow OS Complete on koko ekosysteemi: Myyntitutka, Prospektointi täydessä laajuudessa, Company Brain koko yritykselle, verkkosivut tekoälychatilla, SEO/GEO ja Social Media OS sekä edistyneimmät lisäosat, järjestelmä yrityksesi omalla ilmeellä ja oma vastuuhenkilö meiltä neljännesvuosikatsauksineen.",
+           en: "Wicflow OS Complete is the whole ecosystem: Sales Radar, Outreach at full scale, Company Brain for the whole company, the website with an AI chat, SEO/GEO and Social Media OS, plus the most advanced plugins, the system in your own brand and a named contact at Wicflow with a quarterly review." },
+      link: [{ sv: "Läs om Wicflow OS Complete", fi: "Lue Wicflow OS Completesta", en: "Read about Wicflow OS Complete" }, "growth"], next: ["pris", "demo"] },
     { id: "custom", label: { sv: "Bygger ni egna system?", fi: "Rakennatteko omia järjestelmiä?", en: "Do you build custom systems?" },
       keys: ["egen", "eget", "egna", "skräddarsy", "custom", "automation", "automatiser", "special", "bygga", "oma järjestelmä", "omia", "räätälöi", "automaatio", "rakenna", "bespoke", "build"],
       a: { sv: "Ja. Vi bygger också helt egna system och större automationer, till exempel kopplingar mellan affärssystem eller egna verktyg för säljare. De flesta större behov går att lösa. Eftersom varje sådant projekt är olika går vi igenom behovet tillsammans och ger ett fast pris i offerten.",
@@ -111,18 +135,8 @@
   if (window.WF_HOLD) {
     const CALL = [{ sv: "Boka ett samtal", fi: "Varaa aika", en: "Book a call" }, "contact"];
     const HELD = {
-      pris: { link: CALL, next: ["paket", "custom", "demo"],
-        a: { sv: "Varje system och paket har ett fast månadspris och ett fast pris för uppstarten, och du får båda skriftligt i offerten innan du bestämmer dig. Priset beror på omfattningen, så Felix går igenom det med dig i ett samtal på 30 minuter. Alla priser är exklusive moms.",
-             fi: "Jokaisella järjestelmällä ja paketilla on kiinteä kuukausihinta ja kiinteä käyttöönottohinta, ja saat molemmat kirjallisena tarjouksessa ennen päätöstä. Hinta riippuu laajuudesta, joten Felix käy sen läpi kanssasi 30 minuutin puhelussa. Hinnat ovat alv 0 %.",
-             en: "Every system and package has a fixed monthly price and a fixed setup price, and you get both in writing in the quote before you decide. The price depends on the scope, so Felix goes through it with you in a 30-minute call. All prices exclude VAT." } },
-      paket: { link: CALL,
-        a: { sv: "De flesta börjar med Säljsystemet: Säljradar, Prospektering och Company Brain. Större företag och koncerner, ungefär från 10 miljoner euro i omsättning, brukar välja Tillväxtmotorn. Du kan också börja med ett enda system.",
-             fi: "Useimmat aloittavat Myyntijärjestelmästä: Myyntitutka, Prospektointi ja Company Brain. Suuremmat yritykset ja konsernit, noin 10 miljoonan euron liikevaihdosta alkaen, valitsevat yleensä Kasvumoottorin. Voit myös aloittaa yhdellä järjestelmällä.",
-             en: "Most start with the Sales System: Sales Radar, Outreach and Company Brain. Larger companies and groups, from roughly €10 million in revenue, usually choose the Growth Engine. You can also start with a single system." } },
-      tillvaxt: {
-        a: { sv: "Tillväxtmotorn är vårt största paket: prospektering i full skala, Company Brain för hela organisationen, en ny webbplats som syns i Google och AI-sökningar, en AI-chatt som den här, och en ansvarig hos oss med kvartalsgenomgång.",
-             fi: "Kasvumoottori on suurin pakettimme: prospektointi täydessä laajuudessa, Company Brain koko organisaatiolle, uudet verkkosivut, jotka näkyvät Googlessa ja tekoälyhauissa, tämän kaltainen tekoälychat sekä oma vastuuhenkilö meiltä ja neljännesvuosikatsaus.",
-             en: "The Growth Engine is our largest package: Outreach at full scale, Company Brain for the whole organisation, a new website that shows up in Google and AI search, an AI chat like this one, and a named contact at Wicflow with a quarterly review." } },
+      pris: window.WF_PRICES ? {} : { link: CALL },
+      paket: window.WF_PRICES ? {} : { link: CALL },
       resultat: {
         a: { sv: "Vi har jobbat med över 30 företag, bland andra Maatori, TSR-Elsite, Kampek och Nordic Breakfast.",
              fi: "Olemme työskennelleet yli 30 yrityksen kanssa, muun muassa Maatorin, TSR-Elsiten, Kampekin ja Nordic Breakfastin.",
@@ -135,10 +149,6 @@
         a: { sv: "Prospekteringen skickar personliga första mejl utifrån verkliga signaler, från egna uppvärmda inkorgar. Svaren sorteras och du får svarsutkast som någon i ditt team godkänner innan de skickas. Möten och affärer hamnar direkt i ditt CRM.",
              fi: "Prospektointi lähettää henkilökohtaisia ensimmäisiä viestejä todellisten signaalien pohjalta omista, lämmitetyistä postilaatikoista. Vastaukset lajitellaan, ja saat vastausluonnokset, jotka joku teiltä hyväksyy ennen lähettämistä. Tapaamiset ja kaupat menevät suoraan CRM:ään.",
              en: "Outreach sends personal first emails based on real signals, from your own warmed-up inboxes. Replies are sorted and you get reply drafts that someone on your team approves before they go out. Meetings and deals go straight into your CRM." } },
-      social: {
-        a: { sv: "Ja, som tillval till Prospekteringen, och det ingår i Tillväxtmotorn. Inläggen skrivs utifrån dina nyheter och kundcase, du godkänner dem på ett ställe och de publiceras i alla konton: företagets sidor och medarbetarnas profiler. Kommentarer och meddelanden svarar du på själv.",
-             fi: "Kyllä, Prospektoinnin lisäosana, ja se sisältyy Kasvumoottoriin. Julkaisut kirjoitetaan uutistesi ja asiakastarinoidesi pohjalta, hyväksyt ne yhdessä paikassa, ja ne julkaistaan kaikilla tileillä: yrityksen sivuilla ja työntekijöiden profiileissa. Kommentteihin ja viesteihin vastaat itse.",
-             en: "Yes, as an Outreach add-on, and it's included in the Growth Engine. Posts are written from your news and customer stories, you approve them in one place, and they're published to every account: company pages and employees' profiles. You reply to comments and messages yourselves." } },
       tid: { link: CALL },
     };
     for (let i = KB.length - 1; i >= 0; i--) {
@@ -147,21 +157,15 @@
     }
     for (const k of KB) if (k.next) k.next = k.next.filter((id) => KB.some((x) => x.id === id));
   }
-  // A site variant can replace answers and labels (the Wicflow OS build loads chat-os.js first).
-  if (window.WF_CHAT_OVERRIDES) for (const k of KB) {
-    const { addKeys, ...o } = window.WF_CHAT_OVERRIDES[k.id] || {};
-    Object.assign(k, o);
-    if (addKeys) k.keys = [...k.keys, ...addKeys];
-  }
   const byId = Object.fromEntries(KB.map((k) => [k.id, k]));
-  const START = ["pris", "brain", "radar", "custom", "utbildning", "demo"];
+  const START = ["pengar", "pris", "brain", "website", "radar", "demo"];
   const UI = {
     title: L({ sv: "Fråga oss", fi: "Kysy meiltä", en: "Ask us" }),
     sub: L({ sv: "Svarar utifrån det som står på vår sida", fi: "Vastaa sivustomme sisällön pohjalta", en: "Answers from what's on our site" }),
     close: L({ sv: "Stäng chatten", fi: "Sulje chat", en: "Close chat" }),
     ph: L({ sv: "Skriv en fråga …", fi: "Kirjoita kysymys …", en: "Type a question …" }),
     send: L({ sv: "Skicka", fi: "Lähetä", en: "Send" }),
-    note: L({ sv: "Förinställda svar. Den riktiga chatten svarar med AI och ingår i Tillväxtmotorn.", fi: "Valmiit vastaukset. Oikea chat vastaa tekoälyllä ja kuuluu Kasvumoottoriin.", en: "Preset answers. The real chat answers with AI and is part of the Growth Engine." }),
+    note: L({ sv: "Förinställda svar. Den riktiga chatten svarar med AI och kan ingå i din webbplats.", fi: "Valmiit vastaukset. Oikea chat vastaa tekoälyllä, ja sen voi saada omille verkkosivuillesi.", en: "Preset answers. The real chat answers with AI, and you can have it on your own website." }),
     hello: L({ sv: "Hej! Jag svarar på frågor om Wicflow, våra system och priser. Vad undrar du?", fi: "Hei! Vastaan kysymyksiin Wicflowsta, järjestelmistämme ja hinnoista. Mitä haluaisit tietää?", en: "Hi! I answer questions about Wicflow, our systems and prices. What would you like to know?" }),
     unsure: L({ sv: "Det vet jag inte säkert. Felix eller Robin svarar gärna, oftast inom en arbetsdag.", fi: "En ole varma. Felix tai Robin vastaa mielellään, yleensä yhden työpäivän sisällä.", en: "I'm not sure about that. Felix or Robin will happily answer, usually within one working day." }),
     book: L({ sv: "Boka demo", fi: "Varaa demo", en: "Book a demo" }),

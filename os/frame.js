@@ -18,6 +18,7 @@
   const productMark = (product) =>
     product === "brain" ? tile("#E7E2FF", "#3438EE", BRAIN_GLYPH)
       : product === "radar" ? tile("#DDF3E4", "#1E7B43", ICONS().radar || "")
+        : product === "cms" ? tile("#E5F0FF", "#0055C4", ICONS().globe || "")
         : tile("#FFE9D9", "#C2570C", ICONS().send || "");
 
   const NOT_IN_DEMO = L({ sv: "Inte med i demon", fi: "Ei mukana demossa", en: "Not in the demo" });

@@ -910,7 +910,80 @@ mark { background: var(--accent-soft); color: var(--ink); padding: 0 2px; border
   .hero-live { max-width: 600px; width: 100%; margin-inline: auto; }
 }
 
-/* Wicflow OS pricing: the revenue switch above the tiers and the table of platform fees. */
+/* Products and bundles (6 Oct 2026): the six products, three bundles, the products on the pricing page, and the
+   "more revenue" line on product pages. */
+.eco { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.eco-card { display: flex; flex-direction: column; gap: 10px; padding: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+.eco-card h3 { font-size: 1.15rem; }
+.eco-card .muted { font-size: 15px; }
+.eco-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 14px; margin-top: auto; padding-top: 4px; }
+.eco-foot .price { font: 600 14.5px var(--f-mono); }
+.eco-foot a.more, .pkg a.more { font-weight: 700; font-size: 15px; text-decoration: none; }
+.eco-foot a.more:hover, .pkg a.more:hover { text-decoration: underline; }
+.packages.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.packages.one { grid-template-columns: minmax(0, 1fr); }
+.pkg ul { align-content: start; }
+.amount .quote-price { display: block; font: 600 1.2rem/1.3 var(--f-body); letter-spacing: -0.01em; }
+.pkg .terms { margin-top: -10px; font: 400 13px/1.5 var(--f-mono); color: var(--ink-3); }
+.pkg.dark .terms { color: color-mix(in srgb, var(--paper) 62%, var(--ink)); }
+.pkg-save { font-size: 14px; font-weight: 600; color: var(--good); }
+.pkg.dark .pkg-save { color: #8be0a8; }
+.prods { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.pkg.prod { gap: 14px; }
+.packages.three .pkg, .prods .pkg { grid-template-rows: auto auto auto 1fr; }
+.pkg.prod .amount { font-size: clamp(1.6rem, 3vw, 2.1rem); }
+.raise { display: grid; gap: 6px; }
+.raise b { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-3); }
+.pkg .raise ul { gap: 4px; }
+.pkg .raise li { font-size: 14px; color: var(--ink-2); }
+.pkg .raise li::before { content: "+"; font-weight: 600; color: var(--ink-3); }
+.money { display: block; justify-self: start; max-width: 64ch; padding: 10px 14px; border-radius: 12px; background: var(--good-soft); color: var(--ink); font-size: 16px; line-height: 1.5; }
+.money b { margin-right: 4px; color: var(--good); }
+.from-price.small { margin-top: -6px; }
+.calc-money b { color: var(--good); }
+.calc-pay.calc-pay3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 960px) {
+  .eco, .packages.three, .prods { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .eco, .packages.three, .prods, .calc-pay.calc-pay3 { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Website CMS demo (demo-cms.js): the editor with a live preview, the search preview and the AI-search checklist. */
+.ax .cms-edit { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 14px; align-items: start; }
+.ax .cms-fields { display: grid; gap: 12px; padding: 4px 18px 18px; }
+.ax .cms-fields label, .ax .cms-serp-edit { display: grid; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--ax-text-2); }
+.ax .cms-fields input, .ax .cms-fields textarea, .ax .cms-serp-edit input { width: 100%; padding: 9px 11px; border: 1px solid var(--ax-line); border-radius: 10px; background: var(--ax-inset); font: 400 14px/1.45 var(--ax-font); color: var(--ax-text); resize: vertical; }
+.ax .cms-fields input:focus, .ax .cms-fields textarea:focus, .ax .cms-serp-edit input:focus { outline: 2px solid rgba(0, 102, 214, 0.3); border-color: #0066D6; }
+.ax .cms-ai { justify-self: start; }
+.ax .cms-prev { margin: 0 14px 14px; overflow: hidden; border: 1px solid var(--ax-line); border-radius: 12px; background: #fff; }
+.ax .cms-site-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--ax-line-soft); font-size: 12px; }
+.ax .cms-site-top b { font-size: 13px; letter-spacing: -0.01em; }
+.ax .cms-site-top span { display: flex; flex-wrap: wrap; gap: 10px; color: var(--ax-text-3); }
+.ax .cms-site-top i { font-style: normal; }
+.ax .cms-site-hero { display: grid; gap: 8px; padding: 22px 16px 18px; background: linear-gradient(135deg, #EEF4FF, #F6F1FF); }
+.ax .cms-site-hero h3 { margin: 0; font-size: 19px; line-height: 1.2; letter-spacing: -0.02em; }
+.ax .cms-site-hero p { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--ax-text-2); }
+.ax .cms-site-btn { justify-self: start; padding: 7px 12px; border-radius: 999px; background: #0B0B0C; color: #fff; font-size: 12px; font-weight: 600; }
+.ax .cms-site-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 12px 14px 14px; }
+.ax .cms-site-tiles div { display: grid; gap: 6px; font-size: 11.5px; }
+.ax .cms-site-tiles i { height: 42px; border-radius: 8px; background: linear-gradient(135deg, #DCE9FF, #C8D9FF); }
+.ax .cms-site-tiles i.t1 { background: linear-gradient(135deg, #E3F6E8, #C7EBD2); }
+.ax .cms-site-tiles i.t2 { background: linear-gradient(135deg, #FFF0DA, #FFE0B8); }
+.ax .cms-serp { display: grid; gap: 3px; margin: 2px 18px 12px; padding: 12px 14px; border: 1px solid var(--ax-line-soft); border-radius: 12px; background: #fff; font-family: Arial, Helvetica, sans-serif; }
+.ax .cms-serp span { font-size: 12px; color: #4d5156; }
+.ax .cms-serp b { font-size: 17px; font-weight: 400; color: #1a0dab; }
+.ax .cms-serp p { margin: 0; font-size: 13px; line-height: 1.45; color: #4d5156; }
+.ax .cms-serp-edit { margin: 0 18px 16px; }
+.ax .cms-score { height: 8px; margin: 2px 18px 6px; overflow: hidden; border-radius: 999px; background: var(--ax-neutral-bg); }
+.ax .cms-score i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #34C759, #30B0C7); transition: width .6s var(--ease-out); }
+.ax .cms-says { margin: 4px 18px 16px; padding: 12px 14px; border-left: 3px solid #7b5cff; border-radius: 4px 12px 12px 4px; background: #F6F3FF; font-size: 14px; line-height: 1.5; }
+.ax .cms-says small { display: block; margin-top: 6px; font-size: 12px; color: var(--ax-text-3); }
+@media (max-width: 720px) {
+  .ax .cms-edit { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Pricing switches (yearly or monthly) and the old table of platform fees. */
 .band-pick { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-bottom: 16px; font-size: 14px; color: var(--ink-2); }
 .band-pick .seg button { padding: 7px 12px; font-size: 13.5px; }
 .tier .amount > small:first-child { margin-right: 2px; }
