@@ -274,9 +274,87 @@
     }
   }
 
+  // The AI rollout workspace: the team lights up as people start using it, then each question is typed, checked
+  // against the company's rules and answered word by word, and the time saved and the month's cost add up.
+  // It plays only while it is on screen.
+  const ra = document.querySelector("[data-ra]");
+  if (ra) {
+    const people = [...ra.querySelectorAll(".ra-p")];
+    const ON = [0, 2, 3, 5, 7, 9];  // six of the ten: 60 %
+    const adopt = ra.querySelector("[data-adopt]");
+    const q = ra.querySelector(".ra-q"), qText = ra.querySelector("[data-q]"), who = ra.querySelector(".ra-who");
+    const file = ra.querySelector("[data-file]"), fileName = file.querySelector("span");
+    const okLine = ra.querySelector("[data-okline]"), okText = ra.querySelector("[data-ok]");
+    const ans = ra.querySelector(".ra-a"), ansText = ra.querySelector("[data-a]");
+    const typed = ra.querySelector("[data-typed]"), send = ra.querySelector(".ra-send");
+    const script = [...ra.querySelectorAll(".ra-script li")].map((li) => ({ ...li.dataset, a: li.textContent }));
+    const savedEl = ra.querySelector("[data-saved]"), savedBox = ra.querySelector(".ra-saved");
+    const costEl = ra.querySelector("[data-cost]"), meter = ra.querySelector("[data-meter]");
+    let mins = 130, cost = 612, k = 1, timers = [], running = false, primed = false, inView = false;
+    const later = (fn, ms) => { timers.push(setTimeout(fn, ms)); };
+    const showSaved = () => { savedEl.textContent = `${Math.floor(mins / 60)} ${savedBox.dataset.savedH} ${mins % 60} ${savedBox.dataset.savedM}`; };
+    const pct = (n) => (root.lang === "en" ? `${n} %` : `${n} %`);
+    const prime = () => {
+      primed = true;
+      ON.forEach((idx, n) => later(() => { people[idx].classList.add("on"); adopt.textContent = pct(Math.round((n + 1) / ON.length * 60)); }, 300 + n * 280));
+    };
+    const play = () => {
+      const c = script[k % script.length]; k += 1;
+      let i = 0;
+      const type = () => { typed.textContent = c.ask.slice(0, ++i); if (i < c.ask.length) later(type, 26); else later(sendIt, 420); };
+      const sendIt = () => {
+        send.classList.add("push"); later(() => send.classList.remove("push"), 180);
+        typed.textContent = "";
+        [q, okLine, ans].forEach((el) => el.classList.add("fade"));
+        later(() => {
+          who.textContent = `${c.who} · ${c.team}`; qText.textContent = c.ask;
+          file.hidden = !c.file; fileName.textContent = c.file;
+          q.classList.remove("fade");
+        }, 320);
+        later(() => { okText.textContent = c.ok; okLine.classList.remove("fade"); }, 700);
+        later(stream, 1400);
+      };
+      const stream = () => {
+        const words = c.a.split(" ");
+        ansText.textContent = ""; ans.classList.remove("fade");
+        let w = 0;
+        const next = () => {
+          const span = document.createElement("i"); span.textContent = (w ? " " : "") + words[w]; ansText.appendChild(span);
+          w += 1;
+          if (w < words.length) later(next, 42); else later(done, 500);
+        };
+        later(next, 120);
+      };
+      const done = () => {
+        mins += Number(c.saved); showSaved();
+        savedEl.classList.remove("bump"); void savedEl.offsetWidth; savedEl.classList.add("bump");
+        cost += 2 + (k % 3); costEl.textContent = euro.format(cost); meter.style.width = Math.min(100, cost / 10) + "%";
+        later(play, 3400);
+      };
+      later(type, 700);
+    };
+    const start = () => { if (running) return; running = true; if (!primed) { prime(); later(play, 2600); } else later(play, 500); };
+    const stop = () => { running = false; timers.forEach(clearTimeout); timers = []; [q, okLine, ans].forEach((el) => el.classList.remove("fade")); };
+    if (still) {
+      ON.forEach((idx) => people[idx].classList.add("on"));
+    } else {
+      adopt.textContent = pct(0);
+      const sync = () => (inView && !document.hidden ? start() : stop());
+      new IntersectionObserver(([en]) => { inView = en.isIntersecting; sync(); }, { threshold: .25 }).observe(ra);
+      document.addEventListener("visibilitychange", sync);
+    }
+  }
+
+  // Between no limits and a blanket cap: the marker swings to both ends and settles in the middle, once.
+  const xt = document.querySelector("[data-xt]");
+  if (xt && !still) {
+    const io = new IntersectionObserver(([en]) => { if (en.isIntersecting) { xt.classList.add("go"); io.disconnect(); } }, { threshold: .5 });
+    io.observe(xt);
+  }
+
   // Sections rise in as they enter the screen. Blocks already on screen at load are left alone.
   if (!still && "IntersectionObserver" in window) {
-    const sel = ".sec-head, .cr-stage, .eg, .bl-card, .step, .idea, .pilot-terms, .case, .result, .num-list li, .price-card, .person, .faq-list, .final-in, .band-note";
+    const sel = ".sec-head, .cr-stage, .eg, .xt, .ro-stats li, .ro-gets li, .pa, .rt, .bl-card, .step, .idea, .pilot-terms, .case, .result, .num-list li, .price-card, .person, .faq-list, .final-in, .band-note";
     const rio = new IntersectionObserver((entries) => entries.forEach((en) => {
       if (en.isIntersecting) { en.target.classList.add("in"); rio.unobserve(en.target); }
     }), { rootMargin: "0px 0px -8% 0px" });
