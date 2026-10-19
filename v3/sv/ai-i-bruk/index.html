@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="sv">
+<html lang="sv" class="dk">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,7 +13,7 @@
 <link rel="alternate" hreflang="en" href="../../ai-rollout/"><link rel="alternate" hreflang="fi" href="../../fi/tekoaly-kayttoon/"><link rel="alternate" hreflang="sv" href="../../sv/ai-i-bruk/">
 <link rel="icon" type="image/png" sizes="32x32" href="../../favicon-32x32.png">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
-<link rel="preload" href="../../img/hero-2400.webp" as="image" media="(min-width: 761px)">
+<link rel="preload" href="../../video/ro-poster.webp" as="image">
 <link rel="preload" href="../../assets/fonts/manrope-latin-7.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../../assets/fonts/fonts.css">
 <link rel="stylesheet" href="../../v3.css">
@@ -35,18 +35,21 @@
 </header>
 
 <main id="main">
-  <div class="sky sky-ro" data-sky>
-    <div class="sky-bg" aria-hidden="true"></div>
-    <section class="hero ro-hero" id="top">
-      <div class="wrap hero-in">
+  <section class="vh vh-ro" id="top">
+    <div class="vh-panel">
+      <video class="vh-video" muted loop playsinline preload="none" poster="../../video/ro-poster.webp" data-sm="../../video/ro-960.mp4" data-lg="../../video/ro-1600.mp4" aria-hidden="true"></video>
+      <div class="vh-shade" aria-hidden="true"></div>
+      <div class="wrap vh-in">
         <p class="ro-eyebrow"><span class="ro-dot" aria-hidden="true"></span>AI i bruk · för företag med 10–200 personer</p>
-        <h1 class="ro-h1">AI som hela teamet faktiskt använder, till en kostnad ni styr.</h1>
+        <h1 class="vh-h1 ro-h1">AI som hela teamet faktiskt använder, <span class="h1-mute">till en kostnad ni styr.</span></h1>
         <p class="lede">Verktygen är billiga. Det svåra är att få människor att använda dem väl, och det är det vi gör. Vi väljer verktygen, sätter upp dem, kommer överens om reglerna, tar in dem i teamets riktiga arbete och håller månadskostnaden förutsägbar.</p>
         <div class="cta-row"><a class="btn btn-white" href="https://wicflow.com/sv/boka/">Boka ett samtal på 20 min <svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a class="btn btn-glass" href="#packages">Se paketen</a></div>
         <ul class="hero-note"><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Claude, eller Copilot och ChatGPT om ni redan har dem</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Regler för vad som får klistras in</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>En månadskostnad ni har kontroll över</span></li></ul>
       </div>
-    </section>
-    <section class="ro-show"><div class="wrap">
+    </div>
+  </section>
+
+  <section class="ro-show"><div class="wrap">
       <div class="ra" data-ra aria-hidden="true">
         <div class="ra-bar"><span class="ra-dots"><i></i><i></i><i></i></span><span class="ra-ws"><b>Kvarnvik Värme</b> · AI-arbetsyta · vecka 4</span><span class="ra-tool">Claude · företagslicens</span></div>
         <div class="ra-body">
@@ -70,18 +73,15 @@
         </div>
       </div>
       <p class="ra-note">Ett exempel på ett införande under vecka fyra. Företaget, personerna och siffrorna är påhittade.</p></div></section>
-  </div>
 
-  <section class="sec ro-why">
-    <div class="wrap">
-      <header class="sec-head"><p class="eyebrow">Varför nu</p><h2>De flesta team använder redan AI. Mycket få har en plan för det.</h2><p class="lede">Företag svänger från okontrollerade AI-kostnader till hårda tak, och inget av det fungerar. Det som avgör resultatet är hur väl människor använder verktygen.</p></header>
-      <ul class="ro-stats"><li><b>51 %</b><p>av finländska företag med minst 10 anställda använder AI. Bara 17 % av dem har en plan för det.</p><small>Arbetshälsoinstitutet, januari 2026</small></li><li><b>½</b><p>Nybörjare lyckas ungefär hälften så ofta som erfarna användare. Kunnande betyder mer än licenser.</p><small>Anthropics forskning, juni 2026</small></li><li><b>29 $</b><p>i månaden: Accentures nya tak för personalens Claude-budgetar, efter att en del hade använt cirka 1 000 $.</p><small>404 Media, 15.10.2026</small></li><li><b>1 500 $</b><p>per person och kodningsverktyg: taket Uber satte för AI-kostnader.</p><small>Bloomberg, juni 2026</small></li></ul>
-    </div>
-  </section>
+  <div class="wrap frame">
+    <section class="pch ro-why"><div class="chh chh-c1"><span class="chh-n">01</span><span class="chh-k"><i></i>Varför nu</span><span class="chh-m">Källor, 2026</span></div>
+      <header class="pch-head"><h2>De flesta team använder redan AI. Mycket få har en plan för det.</h2><div class="pch-side"><p class="lede">Företag svänger från okontrollerade AI-kostnader till hårda tak, och inget av det fungerar. Det som avgör resultatet är hur väl människor använder verktygen.</p></div></header>
+      <ul class="ro-stats"><li class="st st-0"><div class="sv sv-ring"><svg viewBox="0 0 80 80" aria-hidden="true"><circle class="sv-bg" cx="40" cy="40" r="32"/><circle class="sv-o" cx="40" cy="40" r="32" pathLength="100"/><circle class="sv-bg" cx="40" cy="40" r="21"/><circle class="sv-i" cx="40" cy="40" r="21" pathLength="100"/></svg><ul class="sv-key"><li><i class="k-o"></i>51 % använder AI</li><li><i class="k-i"></i>17 % av dem har en plan</li></ul></div><b>51 %</b><p>av finländska företag med minst 10 anställda använder AI. Bara 17 % av dem har en plan för det.</p><small>Arbetshälsoinstitutet, januari 2026</small></li><li class="st st-1"><ul class="sv sv-bars"><li><span class="sv-l">Erfarna</span><span class="sv-track"><i class="sv-fill" style="--w:100%"></i></span></li><li><span class="sv-l">Nybörjare</span><span class="sv-track"><i class="sv-fill sv-hi" style="--w:50%"></i></span></li></ul><b>½</b><p>Nybörjare lyckas ungefär hälften så ofta som erfarna användare. Kunnande betyder mer än licenser.</p><small>Anthropics forskning, juni 2026</small></li><li class="st st-2"><ul class="sv sv-bars"><li><span class="sv-l">~1 000 $ · vissa använde</span><span class="sv-track"><i class="sv-fill" style="--w:100%"></i></span></li><li><span class="sv-l">29 $ · nytt tak</span><span class="sv-track"><i class="sv-fill sv-hi" style="--w:2.9%"></i></span></li></ul><b>29 $</b><p>i månaden: Accentures nya tak för personalens Claude-budgetar, efter att en del hade använt cirka 1 000 $.</p><small>404 Media, 15.10.2026</small></li><li class="st st-3"><div class="sv sv-cap"><div class="sv-track"><i class="sv-fill" style="--w:100%"></i><span class="sv-line"></span></div><p class="sv-l">1 500 $ · tak per person och verktyg</p></div><b>1 500 $</b><p>per person och kodningsverktyg: taket Uber satte för AI-kostnader.</p><small>Bloomberg, juni 2026</small></li></ul>
+    </section>
 
-  <section class="sec tint ro-xt">
-    <div class="wrap">
-      <header class="sec-head center"><p class="eyebrow">Kostnadskontroll</p><h2>Mellan inga gränser och ett tak för alla.</h2></header>
+    <section class="pch ro-xt"><div class="chh chh-c2"><span class="chh-n">02</span><span class="chh-k"><i></i>Kostnadskontroll</span><span class="chh-m">Budget per team</span></div>
+      <header class="pch-head"><h2>Mellan inga gränser och ett tak för alla.</h2></header>
       <div class="xt" data-xt>
         <div class="xt-end xt-l"><p class="xt-k">Inga gränser</p><p class="xt-v">~1 000 $</p><p class="xt-t">i månaden för en del. Ingen kan förutse notan.</p></div>
         <div class="xt-track" aria-hidden="true"><i class="xt-rail"></i><span class="xt-zone"></span><span class="xt-mark"><span>Wicflow</span></span></div>
@@ -89,41 +89,32 @@
         <div class="xt-mid"><p class="xt-mk">Wicflow</p><h3>Budget per team, inte ett tak för alla</h3><ul class="ticks"><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>En budget för varje team, med en varning innan den tar slut</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Rätt mix av licenser, så att ni inte betalar för oanvända platser</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Utrymme för dem som får ut mest av det</span></li></ul></div>
       </div>
       <p class="sys-note">Källa: 404 Media, 15.10.2026 (Accenture).</p>
-    </div>
-  </section>
+    </section>
 
-  <section class="sec ro-get">
-    <div class="wrap">
-      <header class="sec-head"><p class="eyebrow">Vad ni får</p><h2>Resultat ni kan mäta, inte en kurs.</h2></header>
-      <ul class="ro-gets"><li><b>60 %</b><span>av personalen använder det varje vecka efter 30 dagar</span></li><li><b>Tydliga regler</b><span>för vad som får och inte får klistras in i AI</span></li><li><b>En förutsägbar kostnad</b><span>varje månad: inga överraskningsfakturor och inget tak för alla som stoppar era bästa</span></li><li><b>2 h+</b><span>sparat per person och vecka på de uppgifter vi mäter</span></li></ul>
+    <section class="pch ro-get"><div class="chh chh-c3"><span class="chh-n">03</span><span class="chh-k"><i></i>Vad ni får</span><span class="chh-m">Det vi mäter</span></div>
+      <header class="pch-head"><h2>Resultat ni kan mäta, inte en kurs.</h2></header>
+      <ul class="ro-gets"><li class="gt gt-0"><span class="gt-ic"><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M7.5 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM2.5 16c.4-2.6 2.4-4.5 5-4.5s4.6 1.9 5 4.5M13 4.2a2.5 2.5 0 0 1 0 4.6M14.5 11.8c1.6.5 2.7 2 3 4.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>60 %</b><span>av personalen använder det varje vecka efter 30 dagar</span></li><li class="gt gt-1"><span class="gt-ic"><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M6 9V7a4 4 0 0 1 8 0v2M5 9h10v7H5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>Tydliga regler</b><span>för vad som får och inte får klistras in i AI</span></li><li class="gt gt-2"><span class="gt-ic"><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 2.5h10v15l-2.5-1.5-2.5 1.5-2.5-1.5L5 17.5zM8 7h4M8 10h4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>En förutsägbar kostnad</b><span>varje månad: inga överraskningsfakturor och inget tak för alla som stoppar era bästa</span></li><li class="gt gt-3"><span class="gt-ic"><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 17a7 7 0 1 0 0-14 7 7 0 0 0 0 14ZM10 6v4l3 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>2 h+</b><span>sparat per person och vecka på de uppgifter vi mäter</span></li></ul>
       <h3 class="ro-how-h">Så går det till</h3>
-      <ol class="steps ro-steps"><li class="step step-0"><span class="step-when">01</span><h3>Välj</h3><p>Vi väljer verktyg och licenser som passar ert företag och mäter utgångsläget.</p></li><li class="step step-1"><span class="step-when">02</span><h3>Sätt upp</h3><p>Konton, en riktlinje för AI-användning, kontroller av dataskydd och information till personalen, och kostnadsgränser.</p></li><li class="step step-2"><span class="step-when">03</span><h3>Lär i riktigt arbete</h3><p>En ansvarig i varje team och riktiga användningsfall för varje avdelning.</p></li><li class="step step-3"><span class="step-when">04</span><h3>Mät</h3><p>Användning varje vecka, sparad tid på mätta uppgifter och kostnaden, i en införanderapport.</p></li></ol>
-    </div>
-  </section>
+      <ol class="steps ro-steps"><li class="step step-0"><figure class="ro-art"><img src="../../img/st-ro-1.webp" alt="" loading="lazy" decoding="async"><span class="step-when">01</span></figure><h3>Välj</h3><p>Vi väljer verktyg och licenser som passar ert företag och mäter utgångsläget.</p></li><li class="step step-1"><figure class="ro-art"><img src="../../img/st-ro-2.webp" alt="" loading="lazy" decoding="async"><span class="step-when">02</span></figure><h3>Sätt upp</h3><p>Konton, en riktlinje för AI-användning, kontroller av dataskydd och information till personalen, och kostnadsgränser.</p></li><li class="step step-2"><figure class="ro-art"><img src="../../img/st-ro-3.webp" alt="" loading="lazy" decoding="async"><span class="step-when">03</span></figure><h3>Lär i riktigt arbete</h3><p>En ansvarig i varje team och riktiga användningsfall för varje avdelning.</p></li><li class="step step-3"><figure class="ro-art"><img src="../../img/st-ro-4.webp" alt="" loading="lazy" decoding="async"><span class="step-when">04</span></figure><h3>Mät</h3><p>Användning varje vecka, sparad tid på mätta uppgifter och kostnaden, i en införanderapport.</p></li></ol>
+    </section>
 
-  <section class="sec tint pricing" id="packages">
-    <div class="wrap">
-      <header class="sec-head center"><p class="eyebrow">Paket</p><h2>Tre sätt att börja.</h2><p class="lede">Priserna är från-priser, exklusive moms (25,5 %).</p></header>
+    <section class="pch pch-price ro-pk" id="packages"><div class="chh chh-c0"><span class="chh-n">04</span><span class="chh-k"><i></i>Paket</span><span class="chh-m">Priser exkl. moms</span></div>
+      <header class="pch-head"><h2>Tre sätt att börja.</h2><div class="pch-side"><p class="lede">Priserna är från-priser, exklusive moms (25,5 %).</p></div></header>
       <div class="price-grid ro-packs"><article class="price-card"><p class="eyebrow">Startdag</p><h3>En dag för att komma i gång</h3><p class="amount"><small class="from">från</small>2 500 €</p><ul class="ticks"><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Val av verktyg och licenser</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>En riktlinje för AI-användning</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>5 färdiga arbetsflöden för teamet</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Mätning av utgångsläget</span></li></ul></article><article class="price-card featured"><p class="eyebrow">Införande</p><h3>4–6 veckor i hela företaget</h3><p class="amount"><small class="from">från</small>8 000 €</p><ul class="ticks"><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Riktlinjen, plus kontroller av dataskydd och information till personalen</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>En ansvarig i varje team</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Riktiga användningsfall för varje avdelning</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Kostnadsgränser</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>En införanderapport</span></li></ul></article><article class="price-card"><p class="eyebrow">Effektivitetsplan</p><h3>Håller det i gång varje månad</h3><p class="amount"><small class="from">från</small>1 000 € <small class="unit">/ mån</small></p><ul class="ticks"><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>En månadsgenomgång av användning och kostnad</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Rätt licensmix</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Nya arbetsflöden</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Mottagningstider för teamet</span></li></ul></article></div>
-    </div>
-  </section>
+    </section>
 
-  <section class="sec ro-path">
-    <div class="wrap">
-      <header class="sec-head sec-head-row"><div><p class="eyebrow">Var det passar in</p><h2>Det första av tre steg.</h2></div><a class="more" href="../#blocks">Så bygger vi <svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a></header>
+    <section class="pch ro-path"><div class="chh chh-c1"><span class="chh-n">05</span><span class="chh-k"><i></i>Var det passar in</span><span class="chh-m">Börja · Bygg · Driv</span></div>
+      <header class="pch-head pch-head-row"><h2>Det första av tre steg.</h2><a class="more" href="../#blocks">Så bygger vi <svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a></header>
       <ol class="pas"><li class="pa pa-0"><span class="pa-n">01</span><p class="pa-k">Börja<em>Du är här</em></p><h3>AI i bruk</h3><p>Ert team använder AI väl, säkert och till en kostnad ni styr.</p></li><li class="pa pa-1"><span class="pa-n">02</span><p class="pa-k">Bygg</p><h3>En sprint på två veckor</h3><p>Ett fungerande arbetsflöde, byggt på er egen data.</p></li><li class="pa pa-2"><span class="pa-n">03</span><p class="pa-k">Driv</p><h3>Er AI-avdelning</h3><p>Vi driver och utvecklar era AI-system varje månad, med en värderapport.</p></li></ol>
-    </div>
-  </section>
+    </section>
 
-  <section class="sec tint faq" id="faq">
-    <div class="wrap faq-in">
-      <header class="sec-head"><p class="eyebrow">Vanliga frågor</p><h2>Frågor innan ni börjar.</h2></header>
-      <div class="faq-list"><details><summary><span>Claude eller Copilot?</span><i aria-hidden="true"></i></summary><p>Det som passar. Om ni redan betalar för Copilot eller ChatGPT börjar vi från det ni har. Om inte jämför vi alternativen för ert arbete och era kostnader, och olika team kan använda olika verktyg.</p></details><details><summary><span>Är vår data säker?</span><i aria-hidden="true"></i></summary><p>Vi kommer överens om regler för vad som får klistras in i AI, använder företagslicenser där er data inte används för träning och väljer behandling inom EU när verktyget erbjuder det. Kontrollerna av dataskydd och information till personalen ingår i införandet.</p></details><details><summary><span>Måste personalen vara tekniskt kunnig?</span><i aria-hidden="true"></i></summary><p>Nej. Vi börjar från varje persons riktiga uppgifter, som mejl, offerter, rapporter och mötesanteckningar, och den ansvariga i varje team hjälper de andra.</p></details><details><summary><span>Vad kostar det per månad?</span><i aria-hidden="true"></i></summary><p>Två delar: licenserna, som ni betalar till verktygets leverantör, och vår effektivitetsplan från 1 000 € i månaden. Vi håller licensmixen rätt så att ni inte betalar för platser som ingen använder.</p></details></div>
-    </div>
-  </section>
+    <section class="pch pch-faq faq" id="faq"><div class="chh chh-c2"><span class="chh-n">06</span><span class="chh-k"><i></i>Frågor</span><span class="chh-m">Innan du frågar</span></div>
+      <div class="faq-in"><header class="pch-head"><h2>Frågor innan ni börjar.</h2></header><div class="faq-list"><details><summary><span>Claude eller Copilot?</span><i aria-hidden="true"></i></summary><p>Det som passar. Om ni redan betalar för Copilot eller ChatGPT börjar vi från det ni har. Om inte jämför vi alternativen för ert arbete och era kostnader, och olika team kan använda olika verktyg.</p></details><details><summary><span>Är vår data säker?</span><i aria-hidden="true"></i></summary><p>Vi kommer överens om regler för vad som får klistras in i AI, använder företagslicenser där er data inte används för träning och väljer behandling inom EU när verktyget erbjuder det. Kontrollerna av dataskydd och information till personalen ingår i införandet.</p></details><details><summary><span>Måste personalen vara tekniskt kunnig?</span><i aria-hidden="true"></i></summary><p>Nej. Vi börjar från varje persons riktiga uppgifter, som mejl, offerter, rapporter och mötesanteckningar, och den ansvariga i varje team hjälper de andra.</p></details><details><summary><span>Vad kostar det per månad?</span><i aria-hidden="true"></i></summary><p>Två delar: licenserna, som ni betalar till verktygets leverantör, och vår effektivitetsplan från 1 000 € i månaden. Vi håller licensmixen rätt så att ni inte betalar för platser som ingen använder.</p></details></div></div>
+    </section>
+  </div>
 
-  <section class="final">
-    <div class="final-bg" aria-hidden="true"></div>
+  <section class="final final-v">
+    <video class="fv-video" muted loop playsinline preload="none" poster="../../video/ro-poster.webp" data-sm="../../video/ro-960.mp4" data-lg="../../video/ro-1600.mp4" data-t0="15" aria-hidden="true"></video><div class="fv-shade" aria-hidden="true"></div>
     <div class="wrap final-in">
       <h2>Ta reda på var AI skulle hjälpa ert team först.</h2><p>Ett samtal på 20 minuter. Vi tittar på hur ert team arbetar och använder AI i dag och föreslår var ni ska börja.</p>
       <div class="cta-row"><a class="btn btn-white" href="https://wicflow.com/sv/boka/">Boka ett samtal på 20 min <svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>

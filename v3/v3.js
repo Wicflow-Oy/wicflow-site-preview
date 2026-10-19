@@ -490,7 +490,7 @@ gl_FragColor=vec4(c,1.);}`;
   // Sections rise in as they enter the screen. Blocks already on screen at load are left alone, and so is the logo
   // wall: its logos are blended into their cards, which a fade would undo until it ends.
   if (!still && "IntersectionObserver" in window) {
-    const sel = ".sec-head, .pch-head, .tr-head, .pr, .sp-p, .cs-xl, .cs-card, .cs-stats, .cr-stage, .eg, .xt, .ro-stats li, .ro-gets li, .pa, .rt, .bl-card, .step, .idea, .pilot-terms, .case, .result, .num-list li, .price-card, .person, .faq-list, .final-in, .band-note";
+    const sel = ".sec-head, .pch-head, .tr-head, .pr, .sp-p, .cs-xl, .cs-card, .cs-stats, .cr-stage, .eg, .xt, .ro-stats > li, .ro-gets > li, .pa, .rt, .bl-card, .step, .idea, .pilot-terms, .case, .result, .num-list li, .price-card, .person, .faq-list, .final-in, .band-note";
     const rio = new IntersectionObserver((entries) => entries.forEach((en) => {
       if (en.isIntersecting) { en.target.classList.add("in"); rio.unobserve(en.target); }
     }), { rootMargin: "0px 0px -8% 0px" });

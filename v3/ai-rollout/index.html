@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dk">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,7 +13,7 @@
 <link rel="alternate" hreflang="en" href="../ai-rollout/"><link rel="alternate" hreflang="fi" href="../fi/tekoaly-kayttoon/"><link rel="alternate" hreflang="sv" href="../sv/ai-i-bruk/">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-<link rel="preload" href="../img/hero-2400.webp" as="image" media="(min-width: 761px)">
+<link rel="preload" href="../video/ro-poster.webp" as="image">
 <link rel="preload" href="../assets/fonts/manrope-latin-7.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../assets/fonts/fonts.css">
 <link rel="stylesheet" href="../v3.css">
@@ -35,18 +35,21 @@
 </header>
 
 <main id="main">
-  <div class="sky sky-ro" data-sky>
-    <div class="sky-bg" aria-hidden="true"></div>
-    <section class="hero ro-hero" id="top">
-      <div class="wrap hero-in">
+  <section class="vh vh-ro" id="top">
+    <div class="vh-panel">
+      <video class="vh-video" muted loop playsinline preload="none" poster="../video/ro-poster.webp" data-sm="../video/ro-960.mp4" data-lg="../video/ro-1600.mp4" aria-hidden="true"></video>
+      <div class="vh-shade" aria-hidden="true"></div>
+      <div class="wrap vh-in">
         <p class="ro-eyebrow"><span class="ro-dot" aria-hidden="true"></span>AI rollout · for companies of 10–200 people</p>
-        <h1 class="ro-h1">AI your whole team actually uses, at a cost you control.</h1>
+        <h1 class="vh-h1 ro-h1">AI your whole team actually uses, <span class="h1-mute">at a cost you control.</span></h1>
         <p class="lede">The tools are cheap. Getting people to use them well is the hard part, and that&#x27;s what we do. We choose the tools, set them up, agree the rules, get your people using them on real work and keep the monthly cost predictable.</p>
         <div class="cta-row"><a class="btn btn-white" href="https://wicflow.com/book/felix/discovery-call/">Book a 20-minute call <svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a class="btn btn-glass" href="#packages">See the packages</a></div>
         <ul class="hero-note"><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Claude, or Copilot and ChatGPT if you already have them</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Rules for what can and can&#x27;t be pasted</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>A monthly cost you control</span></li></ul>
       </div>
-    </section>
-    <section class="ro-show"><div class="wrap">
+    </div>
+  </section>
+
+  <section class="ro-show"><div class="wrap">
       <div class="ra" data-ra aria-hidden="true">
         <div class="ra-bar"><span class="ra-dots"><i></i><i></i><i></i></span><span class="ra-ws"><b>Kallio Lämpö</b> · AI workspace · week 4</span><span class="ra-tool">Claude · business plan</span></div>
         <div class="ra-body">
@@ -70,18 +73,15 @@
         </div>
       </div>
       <p class="ra-note">An example of a rollout in week four. The company, people and figures are made up.</p></div></section>
-  </div>
 
-  <section class="sec ro-why">
-    <div class="wrap">
-      <header class="sec-head"><p class="eyebrow">Why now</p><h2>Most teams already use AI. Very few have a plan for it.</h2><p class="lede">Companies are swinging from uncontrolled AI spend to blanket caps, and neither works. What decides the result is how well people use the tools.</p></header>
-      <ul class="ro-stats"><li><b>51 %</b><p>of Finnish companies with 10 or more staff use AI. Only 17 % of them have a plan for it.</p><small>Työterveyslaitos, January 2026</small></li><li><b>½</b><p>Beginners succeed about half as often as experienced users. Skill matters more than licences.</p><small>Anthropic research, June 2026</small></li><li><b>$29</b><p>a month: Accenture&#x27;s new cap on staff Claude budgets, after some people spent around $1,000.</p><small>404 Media, 15 October 2026</small></li><li><b>$1,500</b><p>per person per coding tool: the cap Uber set on AI spending.</p><small>Bloomberg, June 2026</small></li></ul>
-    </div>
-  </section>
+  <div class="wrap frame">
+    <section class="pch ro-why"><div class="chh chh-c1"><span class="chh-n">01</span><span class="chh-k"><i></i>Why now</span><span class="chh-m">Sourced, 2026</span></div>
+      <header class="pch-head"><h2>Most teams already use AI. Very few have a plan for it.</h2><div class="pch-side"><p class="lede">Companies are swinging from uncontrolled AI spend to blanket caps, and neither works. What decides the result is how well people use the tools.</p></div></header>
+      <ul class="ro-stats"><li class="st st-0"><div class="sv sv-ring"><svg viewBox="0 0 80 80" aria-hidden="true"><circle class="sv-bg" cx="40" cy="40" r="32"/><circle class="sv-o" cx="40" cy="40" r="32" pathLength="100"/><circle class="sv-bg" cx="40" cy="40" r="21"/><circle class="sv-i" cx="40" cy="40" r="21" pathLength="100"/></svg><ul class="sv-key"><li><i class="k-o"></i>51 % use AI</li><li><i class="k-i"></i>17 % of them have a plan</li></ul></div><b>51 %</b><p>of Finnish companies with 10 or more staff use AI. Only 17 % of them have a plan for it.</p><small>Työterveyslaitos, January 2026</small></li><li class="st st-1"><ul class="sv sv-bars"><li><span class="sv-l">Experienced</span><span class="sv-track"><i class="sv-fill" style="--w:100%"></i></span></li><li><span class="sv-l">Beginners</span><span class="sv-track"><i class="sv-fill sv-hi" style="--w:50%"></i></span></li></ul><b>½</b><p>Beginners succeed about half as often as experienced users. Skill matters more than licences.</p><small>Anthropic research, June 2026</small></li><li class="st st-2"><ul class="sv sv-bars"><li><span class="sv-l">~$1,000 · spent by some</span><span class="sv-track"><i class="sv-fill" style="--w:100%"></i></span></li><li><span class="sv-l">$29 · the new cap</span><span class="sv-track"><i class="sv-fill sv-hi" style="--w:2.9%"></i></span></li></ul><b>$29</b><p>a month: Accenture&#x27;s new cap on staff Claude budgets, after some people spent around $1,000.</p><small>404 Media, 15 October 2026</small></li><li class="st st-3"><div class="sv sv-cap"><div class="sv-track"><i class="sv-fill" style="--w:100%"></i><span class="sv-line"></span></div><p class="sv-l">$1,500 · cap per person, per tool</p></div><b>$1,500</b><p>per person per coding tool: the cap Uber set on AI spending.</p><small>Bloomberg, June 2026</small></li></ul>
+    </section>
 
-  <section class="sec tint ro-xt">
-    <div class="wrap">
-      <header class="sec-head center"><p class="eyebrow">Cost control</p><h2>Between no limits and a blanket cap.</h2></header>
+    <section class="pch ro-xt"><div class="chh chh-c2"><span class="chh-n">02</span><span class="chh-k"><i></i>Cost control</span><span class="chh-m">Budgets per team</span></div>
+      <header class="pch-head"><h2>Between no limits and a blanket cap.</h2></header>
       <div class="xt" data-xt>
         <div class="xt-end xt-l"><p class="xt-k">No limits</p><p class="xt-v">~$1,000</p><p class="xt-t">a month for some people. Nobody can predict the bill.</p></div>
         <div class="xt-track" aria-hidden="true"><i class="xt-rail"></i><span class="xt-zone"></span><span class="xt-mark"><span>Wicflow</span></span></div>
@@ -89,41 +89,32 @@
         <div class="xt-mid"><p class="xt-mk">Wicflow</p><h3>Budget per team, not one cap for all</h3><ul class="ticks"><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>A budget for each team, with alerts before it runs out</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>The right mix of licences, so you don&#x27;t pay for unused seats</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Room for the people who get the most out of it</span></li></ul></div>
       </div>
       <p class="sys-note">Sources: 404 Media, 15 October 2026 (Accenture).</p>
-    </div>
-  </section>
+    </section>
 
-  <section class="sec ro-get">
-    <div class="wrap">
-      <header class="sec-head"><p class="eyebrow">What you get</p><h2>Results you can measure, not a course.</h2></header>
-      <ul class="ro-gets"><li><b>60 %</b><span>of your staff using it every week by day 30</span></li><li><b>Clear rules</b><span>on what can and can&#x27;t be pasted into AI</span></li><li><b>A predictable cost</b><span>every month: no surprise bills, and no blanket caps that block your best people</span></li><li><b>2 h+</b><span>a week saved per person on the tasks we measure</span></li></ul>
+    <section class="pch ro-get"><div class="chh chh-c3"><span class="chh-n">03</span><span class="chh-k"><i></i>What you get</span><span class="chh-m">What we measure</span></div>
+      <header class="pch-head"><h2>Results you can measure, not a course.</h2></header>
+      <ul class="ro-gets"><li class="gt gt-0"><span class="gt-ic"><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M7.5 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM2.5 16c.4-2.6 2.4-4.5 5-4.5s4.6 1.9 5 4.5M13 4.2a2.5 2.5 0 0 1 0 4.6M14.5 11.8c1.6.5 2.7 2 3 4.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>60 %</b><span>of your staff using it every week by day 30</span></li><li class="gt gt-1"><span class="gt-ic"><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M6 9V7a4 4 0 0 1 8 0v2M5 9h10v7H5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>Clear rules</b><span>on what can and can&#x27;t be pasted into AI</span></li><li class="gt gt-2"><span class="gt-ic"><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 2.5h10v15l-2.5-1.5-2.5 1.5-2.5-1.5L5 17.5zM8 7h4M8 10h4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>A predictable cost</b><span>every month: no surprise bills, and no blanket caps that block your best people</span></li><li class="gt gt-3"><span class="gt-ic"><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 17a7 7 0 1 0 0-14 7 7 0 0 0 0 14ZM10 6v4l3 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>2 h+</b><span>a week saved per person on the tasks we measure</span></li></ul>
       <h3 class="ro-how-h">How it works</h3>
-      <ol class="steps ro-steps"><li class="step step-0"><span class="step-when">01</span><h3>Choose</h3><p>We pick the tools and plans that fit your company and set a starting baseline.</p></li><li class="step step-1"><span class="step-when">02</span><h3>Set up</h3><p>Accounts, an AI usage policy, the Finnish data protection and staff-notice checks, and cost guardrails.</p></li><li class="step step-2"><span class="step-when">03</span><h3>Learn on real work</h3><p>A champion in each team, and real use cases for each department.</p></li><li class="step step-3"><span class="step-when">04</span><h3>Measure</h3><p>Weekly use, time saved on measured tasks and the cost, in an adoption report.</p></li></ol>
-    </div>
-  </section>
+      <ol class="steps ro-steps"><li class="step step-0"><figure class="ro-art"><img src="../img/st-ro-1.webp" alt="" loading="lazy" decoding="async"><span class="step-when">01</span></figure><h3>Choose</h3><p>We pick the tools and plans that fit your company and set a starting baseline.</p></li><li class="step step-1"><figure class="ro-art"><img src="../img/st-ro-2.webp" alt="" loading="lazy" decoding="async"><span class="step-when">02</span></figure><h3>Set up</h3><p>Accounts, an AI usage policy, the Finnish data protection and staff-notice checks, and cost guardrails.</p></li><li class="step step-2"><figure class="ro-art"><img src="../img/st-ro-3.webp" alt="" loading="lazy" decoding="async"><span class="step-when">03</span></figure><h3>Learn on real work</h3><p>A champion in each team, and real use cases for each department.</p></li><li class="step step-3"><figure class="ro-art"><img src="../img/st-ro-4.webp" alt="" loading="lazy" decoding="async"><span class="step-when">04</span></figure><h3>Measure</h3><p>Weekly use, time saved on measured tasks and the cost, in an adoption report.</p></li></ol>
+    </section>
 
-  <section class="sec tint pricing" id="packages">
-    <div class="wrap">
-      <header class="sec-head center"><p class="eyebrow">Packages</p><h2>Three ways to start.</h2><p class="lede">Prices are from, and exclude VAT (25.5 %).</p></header>
+    <section class="pch pch-price ro-pk" id="packages"><div class="chh chh-c0"><span class="chh-n">04</span><span class="chh-k"><i></i>Packages</span><span class="chh-m">Prices exclude VAT</span></div>
+      <header class="pch-head"><h2>Three ways to start.</h2><div class="pch-side"><p class="lede">Prices are from, and exclude VAT (25.5 %).</p></div></header>
       <div class="price-grid ro-packs"><article class="price-card"><p class="eyebrow">Kickstart day</p><h3>One day to get going</h3><p class="amount"><small class="from">from</small>€2,500</p><ul class="ticks"><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Tool and plan choice</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>An AI usage policy</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>5 ready workflows for your team</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>A starting baseline</span></li></ul></article><article class="price-card featured"><p class="eyebrow">Rollout</p><h3>4–6 weeks, across the company</h3><p class="amount"><small class="from">from</small>€8,000</p><ul class="ticks"><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>The policy, plus Finnish data protection and staff-notice checks</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>A champion in each team</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Real use cases for each department</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Cost guardrails</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>An adoption report</span></li></ul></article><article class="price-card"><p class="eyebrow">Efficiency plan</p><h3>Keeps it working, every month</h3><p class="amount"><small class="from">from</small>€1,000 <small class="unit">/ month</small></p><ul class="ticks"><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>A monthly review of use and cost</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>The right licence mix</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>New workflows</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Office hours for your team</span></li></ul></article></div>
-    </div>
-  </section>
+    </section>
 
-  <section class="sec ro-path">
-    <div class="wrap">
-      <header class="sec-head sec-head-row"><div><p class="eyebrow">Where it fits</p><h2>The first of three steps.</h2></div><a class="more" href="../#blocks">How we build <svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a></header>
+    <section class="pch ro-path"><div class="chh chh-c1"><span class="chh-n">05</span><span class="chh-k"><i></i>Where it fits</span><span class="chh-m">Start · Build · Run</span></div>
+      <header class="pch-head pch-head-row"><h2>The first of three steps.</h2><a class="more" href="../#blocks">How we build <svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a></header>
       <ol class="pas"><li class="pa pa-0"><span class="pa-n">01</span><p class="pa-k">Start<em>You are here</em></p><h3>AI rollout</h3><p>Your team uses AI well, safely and at a cost you control.</p></li><li class="pa pa-1"><span class="pa-n">02</span><p class="pa-k">Build</p><h3>A two-week sprint</h3><p>One working workflow, built on your own data.</p></li><li class="pa pa-2"><span class="pa-n">03</span><p class="pa-k">Run</p><h3>Your AI department</h3><p>We run and improve your AI systems every month, with a value report.</p></li></ol>
-    </div>
-  </section>
+    </section>
 
-  <section class="sec tint faq" id="faq">
-    <div class="wrap faq-in">
-      <header class="sec-head"><p class="eyebrow">Common questions</p><h2>Questions before you start.</h2></header>
-      <div class="faq-list"><details><summary><span>Claude or Copilot?</span><i aria-hidden="true"></i></summary><p>Whichever fits. If you already pay for Copilot or ChatGPT, we start from what you have. If you don&#x27;t, we compare the options for your work and your costs, and different teams can use different tools.</p></details><details><summary><span>Is our data safe?</span><i aria-hidden="true"></i></summary><p>We agree rules on what can be pasted into AI, use business plans where your data isn&#x27;t used for training, and choose EU data processing where the tool offers it. The Finnish data protection and staff-notice checks are part of the rollout.</p></details><details><summary><span>Do our staff need to be technical?</span><i aria-hidden="true"></i></summary><p>No. We start from each person&#x27;s real tasks, such as emails, quotes, reports and meeting notes, and the champion in each team helps the others.</p></details><details><summary><span>What does it cost per month?</span><i aria-hidden="true"></i></summary><p>Two parts: the licences, which you pay to the tool provider, and our efficiency plan from €1,000 a month. We keep the licence mix right so you don&#x27;t pay for seats nobody uses.</p></details></div>
-    </div>
-  </section>
+    <section class="pch pch-faq faq" id="faq"><div class="chh chh-c2"><span class="chh-n">06</span><span class="chh-k"><i></i>Questions</span><span class="chh-m">Before you ask</span></div>
+      <div class="faq-in"><header class="pch-head"><h2>Questions before you start.</h2></header><div class="faq-list"><details><summary><span>Claude or Copilot?</span><i aria-hidden="true"></i></summary><p>Whichever fits. If you already pay for Copilot or ChatGPT, we start from what you have. If you don&#x27;t, we compare the options for your work and your costs, and different teams can use different tools.</p></details><details><summary><span>Is our data safe?</span><i aria-hidden="true"></i></summary><p>We agree rules on what can be pasted into AI, use business plans where your data isn&#x27;t used for training, and choose EU data processing where the tool offers it. The Finnish data protection and staff-notice checks are part of the rollout.</p></details><details><summary><span>Do our staff need to be technical?</span><i aria-hidden="true"></i></summary><p>No. We start from each person&#x27;s real tasks, such as emails, quotes, reports and meeting notes, and the champion in each team helps the others.</p></details><details><summary><span>What does it cost per month?</span><i aria-hidden="true"></i></summary><p>Two parts: the licences, which you pay to the tool provider, and our efficiency plan from €1,000 a month. We keep the licence mix right so you don&#x27;t pay for seats nobody uses.</p></details></div></div>
+    </section>
+  </div>
 
-  <section class="final">
-    <div class="final-bg" aria-hidden="true"></div>
+  <section class="final final-v">
+    <video class="fv-video" muted loop playsinline preload="none" poster="../video/ro-poster.webp" data-sm="../video/ro-960.mp4" data-lg="../video/ro-1600.mp4" data-t0="15" aria-hidden="true"></video><div class="fv-shade" aria-hidden="true"></div>
     <div class="wrap final-in">
       <h2>Find out where AI would help your team first.</h2><p>A 20-minute call. We look at how your team works and uses AI today, and suggest where to start.</p>
       <div class="cta-row"><a class="btn btn-white" href="https://wicflow.com/book/felix/discovery-call/">Book a 20-minute call <svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
