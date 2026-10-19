@@ -190,6 +190,44 @@ button { font: inherit; color: inherit; }
 .hero { position: relative; padding: calc(var(--nav-h) + clamp(44px, 10vh, 112px)) 0 0; color: #fff; text-align: center; }
 .hero-in { display: grid; justify-items: center; gap: 24px; }
 .trust { display: inline-flex; align-items: center; gap: 14px; font-size: 15px; color: rgba(255, 255, 255, .9); text-shadow: 0 1px 12px rgba(8, 36, 90, .3); }
+/* The home hero (after scale.com): a dark rounded panel with a loop of real work, from a launch pad to a team at a
+   table, one line over it, and the field on screen named along the bottom. The menu above it is dark on the light page. */
+.home .nav:not(.scrolled) { color: var(--ink); }
+.home .nav:not(.scrolled) .nav-links a:hover { background: rgba(16, 24, 40, .05); }
+.home .nav:not(.scrolled) .lang { background: rgba(16, 24, 40, .05); }
+.home .nav:not(.scrolled) .lang a[aria-current="true"] { background: #fff; box-shadow: 0 1px 3px rgba(16, 24, 40, .12); }
+.home .nav:not(.scrolled) .nav-cta { background: var(--ink); color: #fff; box-shadow: none; }
+.home .nav:not(.scrolled) .nav-menu { border-color: rgba(16, 24, 40, .14); }
+.vh { padding: var(--nav-h) clamp(8px, 1.2vw, 18px) 0; }
+.vh-panel { position: relative; isolation: isolate; display: grid; place-items: center; height: calc(100svh - var(--nav-h) - 14px - var(--pv, 34px)); min-height: 620px; max-height: 1040px;
+  border-radius: clamp(22px, 2.6vw, 34px); overflow: hidden; color: #fff; background: #070b16 url(video/hero-poster.webp) center / cover; box-shadow: 0 40px 90px -50px rgba(4, 16, 48, .7); }
+.vh-video { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
+.vh-shade { position: absolute; inset: 0; z-index: -1;
+  background: radial-gradient(ellipse 62% 55% at 50% 50%, rgba(4, 9, 22, .66), rgba(4, 9, 22, .34) 75%), linear-gradient(180deg, rgba(4, 9, 22, .5) 0%, rgba(4, 9, 22, .14) 38%, rgba(4, 9, 22, .26) 70%, rgba(4, 9, 22, .82) 100%); }
+.vh .btn-glass { background: rgba(255, 255, 255, .12); border-color: rgba(255, 255, 255, .3); }
+.vh .btn-glass:hover { background: rgba(255, 255, 255, .2); }
+.vh .hero-note { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .16); }
+.vh-in { display: grid; justify-items: center; gap: 24px; padding: 48px 0 104px; text-align: center; }
+.vh-h1 { max-width: 1080px; font: 600 clamp(2.5rem, 5.6vw, 5.2rem)/1.03 var(--f-display); letter-spacing: -.04em; text-wrap: balance; text-shadow: 0 2px 30px rgba(0, 0, 0, .35); }
+html[lang="fi"] .vh-h1 { font-size: clamp(2.3rem, 5vw, 4.6rem); }
+.vh-in .lede { max-width: 640px; color: rgba(255, 255, 255, .86); text-shadow: 0 1px 14px rgba(0, 0, 0, .4); }
+.vh-in .trust { color: rgba(255, 255, 255, .88); }
+.vh-foot { position: absolute; left: clamp(18px, 2.4vw, 32px); right: clamp(18px, 2.4vw, 32px); bottom: clamp(16px, 2vw, 26px); display: flex; align-items: center; gap: 12px 22px;
+  font: 500 11.5px/1 var(--f-mono); letter-spacing: .09em; text-transform: uppercase; color: rgba(255, 255, 255, .5); }
+.vh-k { color: rgba(255, 255, 255, .75); }
+.vh-k::before { content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 9px; border-radius: 50%; background: #ff5a5f; vertical-align: 0; box-shadow: 0 0 0 0 rgba(255, 90, 95, .5); animation: live 2s ease-out infinite; }
+.vh-fields { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.vh-fields li { position: relative; transition: color .4s ease; }
+.vh-fields li.on { color: #fff; }
+.vh-fields li.on::after { content: ""; position: absolute; left: 0; right: 0; bottom: -8px; height: 1px; background: #fff; transform-origin: left; animation: vh-prog var(--clip, 2.2s) linear forwards; }
+@keyframes vh-prog { from { transform: scaleX(0); } }
+.vh-scroll { display: inline-flex; align-items: center; gap: 9px; margin-left: auto; color: rgba(255, 255, 255, .75); text-decoration: none; }
+.vh-scroll i { position: relative; width: 22px; height: 34px; border: 1.5px solid rgba(255, 255, 255, .55); border-radius: 12px; }
+.vh-scroll i::after { content: ""; position: absolute; left: 50%; top: 7px; width: 3px; height: 7px; margin-left: -1.5px; border-radius: 2px; background: #fff; animation: vh-wheel 1.8s ease-in-out infinite; }
+@keyframes vh-wheel { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(9px); opacity: 0; } 100% { opacity: 0; } }
+.night .engine .eg { box-shadow: 0 50px 120px -60px rgba(0, 0, 0, .8); }
+.night .engine .eg-note { text-shadow: none; color: rgba(255, 255, 255, .5); }
+
 /* The client avatars: a pack of overlapping circles. Hovering one lifts it out of the pack, a little bigger, with the
    client's name below; leaving lets it settle back into place. */
 .avs { display: flex; }
@@ -1136,6 +1174,16 @@ html[lang="sv"] .h1 { --h1: clamp(2.4rem, 6vw, 5.4rem); }
   .pch-team .person:nth-child(n+3) { border-top: 1px solid var(--rule); }
   .pch-team .person:nth-child(4) { border-left: 1px solid var(--rule); }
   .pch-faq details p { padding-right: 0; }
+}
+
+@media (max-width: 900px) {
+  .vh-fields li:not(.on) { display: none; }
+  .vh-scroll { display: none; }
+}
+@media (max-width: 640px) {
+  .vh-panel { height: auto; min-height: calc(100svh - var(--nav-h) - 14px - var(--pv, 52px)); }
+  .vh-in { padding: 36px 0 84px; gap: 20px; }
+  .vh-in .hero-note { padding: 10px 16px; }
 }
 
 /* Calm motion when the visitor asks for it */

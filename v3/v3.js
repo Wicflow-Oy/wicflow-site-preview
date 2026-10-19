@@ -73,6 +73,31 @@ gl_FragColor=vec4(c,1.);}`;
     }
   }
 
+  // The hero's loop of real work: the smaller file on phones and slow connections, playing only while the panel is on
+  // screen, with the field on screen named along the bottom. Under reduced motion only the still frame shows.
+  const vhv = document.querySelector(".vh-video");
+  if (vhv && !still) {
+    const fields = [...document.querySelectorAll(".vh-fields li")];
+    const clip = Number(vhv.dataset.clip) || 2.2;
+    const conn = navigator.connection || {};
+    const big = innerWidth >= 1000 && !conn.saveData && !/(^|-)2g$/.test(conn.effectiveType || "");
+    vhv.src = big ? vhv.dataset.lg : vhv.dataset.sm;
+    vhv.muted = true;
+    let cur = -1, raf = 0, inView = true;
+    const tick = () => {
+      raf = requestAnimationFrame(tick);
+      const i = Math.floor(vhv.currentTime / clip) % fields.length;
+      if (i !== cur && fields.length) { cur = i; fields.forEach((li, n) => li.classList.toggle("on", n === i)); }
+    };
+    const sync = () => {
+      if (inView && !document.hidden) { vhv.play().catch(() => {}); if (!raf) raf = requestAnimationFrame(tick); }
+      else { vhv.pause(); cancelAnimationFrame(raf); raf = 0; }
+    };
+    new IntersectionObserver(([en]) => { inView = en.isIntersecting; sync(); }, { threshold: .05 }).observe(vhv);
+    document.addEventListener("visibilitychange", sync);
+    sync();
+  }
+
   // Navigation: frosted white once the page scrolls, and the menu on small screens.
   const nav = document.querySelector("[data-nav]");
   const onNav = () => nav && nav.classList.toggle("scrolled", window.scrollY > 24);
