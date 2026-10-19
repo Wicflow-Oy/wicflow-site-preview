@@ -352,9 +352,35 @@
     io.observe(xt);
   }
 
+  // The statement: its words come in one after another the first time it is read.
+  const mf = document.querySelector("[data-mf]");
+  if (mf) {
+    [...mf.querySelectorAll(".mf-w")].forEach((w, i) => w.style.setProperty("--i", i));
+    if (still) mf.classList.add("in");
+    else {
+      const io = new IntersectionObserver(([en]) => { if (en.isIntersecting) { mf.classList.add("in"); io.disconnect(); } }, { threshold: .4 });
+      io.observe(mf);
+    }
+  }
+
+  // How we start: the index beside the steps marks the one being read, and its line fills to match.
+  const sp = document.querySelector("[data-start]");
+  if (sp) {
+    const items = [...sp.querySelectorAll(".sx li")];
+    const line = sp.querySelector(".sx-line");
+    const panels = [...sp.querySelectorAll(".sp-p")];
+    const mark = (i) => {
+      items.forEach((li, n) => li.classList.toggle("on", n === i));
+      if (line) line.style.setProperty("--p", ((i + 1) / items.length * 100).toFixed(1) + "%");
+    };
+    const io = new IntersectionObserver((entries) => entries.forEach((en) => { if (en.isIntersecting) mark(Number(en.target.dataset.i)); }),
+      { rootMargin: "-45% 0px -45% 0px" });
+    panels.forEach((pn) => io.observe(pn));
+  }
+
   // Sections rise in as they enter the screen. Blocks already on screen at load are left alone.
   if (!still && "IntersectionObserver" in window) {
-    const sel = ".sec-head, .cr-stage, .eg, .xt, .ro-stats li, .ro-gets li, .pa, .rt, .bl-card, .step, .idea, .pilot-terms, .case, .result, .num-list li, .price-card, .person, .faq-list, .final-in, .band-note";
+    const sel = ".sec-head, .pch-head, .lg-grid, .pr, .sp-p, .cs-xl, .cs-card, .cs-stats, .cr-stage, .eg, .xt, .ro-stats li, .ro-gets li, .pa, .rt, .bl-card, .step, .idea, .pilot-terms, .case, .result, .num-list li, .price-card, .person, .faq-list, .final-in, .band-note";
     const rio = new IntersectionObserver((entries) => entries.forEach((en) => {
       if (en.isIntersecting) { en.target.classList.add("in"); rio.unobserve(en.target); }
     }), { rootMargin: "0px 0px -8% 0px" });
