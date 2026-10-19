@@ -77,14 +77,14 @@
 
 
 /* Wicflow v3 concept. A painted Finnish lakeland behind the hero (img/), a big uppercase headline with one
-   hand-lettered word (Permanent Marker, Apache 2.0, our own copy), the client logos in a pack of circles, and the product
+   word set in a serif italic with a soft gradient (Newsreader, OFL, our own copy), the client logos in a pack of circles, and the product
    window rising and zooming in as the visitor scrolls. The sections below are light and airy: white and a pale blue
    tint, rounded cards, the tags' three colours as small accents. Manrope for headings, Geist for text.
    Motion stops under prefers-reduced-motion. (v2's product view styles are prepended to this file at build time.) */
 
 @font-face { font-family: 'Newsreader'; font-style: normal; font-weight: 400; font-display: swap; src: url(assets/fonts/newsreader-400.woff2) format('woff2'); }
 @font-face { font-family: 'Newsreader'; font-style: normal; font-weight: 500; font-display: swap; src: url(assets/fonts/newsreader-500.woff2) format('woff2'); }
-@font-face { font-family: 'Permanent Marker'; font-style: normal; font-weight: 400; font-display: swap; src: url(assets/fonts/permanent-marker.woff2) format('woff2'); }
+@font-face { font-family: 'Newsreader'; font-style: italic; font-weight: 500; font-display: swap; src: url(assets/fonts/newsreader-500-italic.woff2) format('woff2'); }
 
 :root {
   --sky-top: #1857b5; --sky: #228dcd;
@@ -95,7 +95,6 @@
   --f-body: 'Geist', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --f-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
   --f-mark: 'Manrope', 'Geist', system-ui, sans-serif;
-  --f-brush: 'Permanent Marker', 'Segoe Print', cursive;
   --ease: cubic-bezier(.2, .7, .1, 1);
   --nav-h: 68px;
   --cl-bg: #f4efe6; --cl-paper: #fbf8f2; --cl-ink: #1f1e1c; --cl-ink-2: #5d5951; --cl-line: #e4dccd; --cl-coral: #d97757; --cl-coral-2: #bd5d3a;
@@ -211,7 +210,11 @@ button { font: inherit; color: inherit; }
 html[lang="fi"] .h1 { --h1: clamp(2.1rem, 5.3vw, 4.6rem); }
 html[lang="sv"] .h1 { --h1: clamp(2.4rem, 6vw, 5.4rem); }
 .h1-l { display: block; }
-.brush { display: inline-block; font-family: var(--f-brush); font-weight: 400; letter-spacing: .01em; font-size: 1.03em; line-height: .9; transform: rotate(-3deg) translateY(.02em); }
+/* The one word in each headline that carries the promise: a serif italic in a soft gradient that drifts slowly. */
+.acc { display: inline-block; padding: 0 .08em .04em .02em; margin-right: -.04em; font: italic 500 1.1em/.92 var(--f-serif); letter-spacing: -.01em; text-transform: none;
+  background: linear-gradient(100deg, #ffffff 0%, #ffe6d6 30%, #ffc3a3 55%, #ffd9ea 80%, #ffffff 100%) 0 0 / 220% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+  text-shadow: none; filter: drop-shadow(0 2px 16px rgba(8, 36, 90, .32)); animation: acc-drift 14s ease-in-out infinite alternate; }
+@keyframes acc-drift { to { background-position: 100% 0; } }
 .hero .lede { max-width: 620px; font-size: clamp(17px, 1.45vw, 20px); line-height: 1.55; color: rgba(255, 255, 255, .94); text-shadow: 0 1px 14px rgba(8, 36, 90, .35); text-wrap: pretty; }
 .cta-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
 .hero-note { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 22px; padding: 9px 20px; border-radius: 999px; background: rgba(10, 44, 110, .22); border: 1px solid rgba(255, 255, 255, .18); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); font-size: 14.5px; font-weight: 500; color: #fff; }
@@ -310,7 +313,8 @@ html[lang="sv"] .h1 { --h1: clamp(2.4rem, 6vw, 5.4rem); }
 .ticks { display: grid; gap: 10px; }
 .ticks li { display: flex; gap: 10px; align-items: flex-start; }
 .ticks .ic { margin-top: 3px; color: var(--blue); }
-.brush-ink { display: inline-block; font-family: var(--f-brush); font-weight: 400; letter-spacing: 0; color: var(--blue); font-size: .95em; line-height: 1; transform: rotate(-2deg); }
+.acc-ink { font-size: 1.06em; line-height: 1;
+  background-image: linear-gradient(100deg, #1f6feb 0%, #5a5cf0 40%, #9b55e0 70%, #e2677d 100%); filter: none; }
 
 /* Example: one company's control room as a dark bento dashboard on the painting. v3.js starts it once it is seen:
    the chart draws in, the agents' tasks change, the ring fills, the queue gets approved and the week fills up. */
