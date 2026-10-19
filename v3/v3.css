@@ -76,11 +76,11 @@
 .chip { padding: 5px 10px; border-radius: 6px; background: #fff; border: 1px solid #e4e4e7; font-size: 12px; font-weight: 500; color: #3f3f46; }
 
 
-/* Wicflow v3 concept. A painted Finnish lakeland behind the hero (img/), a big uppercase headline with one
-   word set in a serif italic with a soft gradient (Newsreader, OFL, our own copy), the client logos in a pack of circles, and the product
-   window rising and zooming in as the visitor scrolls. The sections below are light and airy: white and a pale blue
-   tint, rounded cards, the tags' three colours as small accents. Manrope for headings, Geist for text.
-   Motion stops under prefers-reduced-motion. (v2's product view styles are prepended to this file at build time.) */
+/* Wicflow v3 concept. The home page is dark and cinematic: a loop of everyday work in a rounded panel at the top,
+   one headline over it with its last word in a serif italic with a soft gradient (Newsreader, OFL), and the chapters
+   below as glass cards on a slowly moving night-blue haze ("The home page in the dark" below). The AI rollout page
+   keeps the light look: a painted Finnish lakeland behind its hero and a pale haze. Manrope for headings, Geist for
+   text. Motion stops under prefers-reduced-motion. (v2's product view styles are prepended at build time.) */
 
 @font-face { font-family: 'Newsreader'; font-style: normal; font-weight: 400; font-display: swap; src: url(assets/fonts/newsreader-400.woff2) format('woff2'); }
 @font-face { font-family: 'Newsreader'; font-style: normal; font-weight: 500; font-display: swap; src: url(assets/fonts/newsreader-500.woff2) format('woff2'); }
@@ -190,14 +190,8 @@ button { font: inherit; color: inherit; }
 .hero { position: relative; padding: calc(var(--nav-h) + clamp(44px, 10vh, 112px)) 0 0; color: #fff; text-align: center; }
 .hero-in { display: grid; justify-items: center; gap: 24px; }
 .trust { display: inline-flex; align-items: center; gap: 14px; font-size: 15px; color: rgba(255, 255, 255, .9); text-shadow: 0 1px 12px rgba(8, 36, 90, .3); }
-/* The home hero (after scale.com): a dark rounded panel with a loop of real work, from a launch pad to a team at a
-   table, one line over it, and the field on screen named along the bottom. The menu above it is dark on the light page. */
-.home .nav:not(.scrolled) { color: var(--ink); }
-.home .nav:not(.scrolled) .nav-links a:hover { background: rgba(16, 24, 40, .05); }
-.home .nav:not(.scrolled) .lang { background: rgba(16, 24, 40, .05); }
-.home .nav:not(.scrolled) .lang a[aria-current="true"] { background: #fff; box-shadow: 0 1px 3px rgba(16, 24, 40, .12); }
-.home .nav:not(.scrolled) .nav-cta { background: var(--ink); color: #fff; box-shadow: none; }
-.home .nav:not(.scrolled) .nav-menu { border-color: rgba(16, 24, 40, .14); }
+/* The home hero (after scale.com): a dark rounded panel with a loop of everyday work, from a field being sown to a
+   team at a table, and one line over it. */
 .vh { padding: var(--nav-h) clamp(8px, 1.2vw, 18px) 0; }
 .vh-panel { position: relative; isolation: isolate; display: grid; place-items: center; height: calc(100svh - var(--nav-h) - 14px - var(--pv, 34px)); min-height: 620px; max-height: 1040px;
   border-radius: clamp(22px, 2.6vw, 34px); overflow: hidden; color: #fff; background: #070b16 url(video/hero-poster.webp) center / cover; box-shadow: 0 40px 90px -50px rgba(4, 16, 48, .7); }
@@ -207,24 +201,10 @@ button { font: inherit; color: inherit; }
 .vh .btn-glass { background: rgba(255, 255, 255, .12); border-color: rgba(255, 255, 255, .3); }
 .vh .btn-glass:hover { background: rgba(255, 255, 255, .2); }
 .vh .hero-note { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .16); }
-.vh-in { display: grid; justify-items: center; gap: 24px; padding: 48px 0 104px; text-align: center; }
+.vh-in { display: grid; justify-items: center; gap: 24px; padding: 48px 0 64px; text-align: center; }
 .vh-h1 { max-width: 1080px; font: 600 clamp(2.5rem, 5.6vw, 5.2rem)/1.03 var(--f-display); letter-spacing: -.04em; text-wrap: balance; text-shadow: 0 2px 30px rgba(0, 0, 0, .35); }
 html[lang="fi"] .vh-h1 { font-size: clamp(2.3rem, 5vw, 4.6rem); }
 .vh-in .lede { max-width: 640px; color: rgba(255, 255, 255, .86); text-shadow: 0 1px 14px rgba(0, 0, 0, .4); }
-.vh-in .trust { color: rgba(255, 255, 255, .88); }
-.vh-foot { position: absolute; left: clamp(18px, 2.4vw, 32px); right: clamp(18px, 2.4vw, 32px); bottom: clamp(16px, 2vw, 26px); display: flex; align-items: center; gap: 12px 22px;
-  font: 500 11.5px/1 var(--f-mono); letter-spacing: .09em; text-transform: uppercase; color: rgba(255, 255, 255, .5); }
-.vh-k { color: rgba(255, 255, 255, .75); }
-.vh-k::before { content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 9px; border-radius: 50%; background: #ff5a5f; vertical-align: 0; box-shadow: 0 0 0 0 rgba(255, 90, 95, .5); animation: live 2s ease-out infinite; }
-.vh-fields { display: flex; flex-wrap: wrap; gap: 8px 18px; }
-.vh-fields li { position: relative; transition: color .4s ease; }
-.vh-fields li.on { color: #fff; }
-.vh-fields li.on::after { content: ""; position: absolute; left: 0; right: 0; bottom: -8px; height: 1px; background: #fff; transform-origin: left; animation: vh-prog var(--clip, 2.2s) linear forwards; }
-@keyframes vh-prog { from { transform: scaleX(0); } }
-.vh-scroll { display: inline-flex; align-items: center; gap: 9px; margin-left: auto; color: rgba(255, 255, 255, .75); text-decoration: none; }
-.vh-scroll i { position: relative; width: 22px; height: 34px; border: 1.5px solid rgba(255, 255, 255, .55); border-radius: 12px; }
-.vh-scroll i::after { content: ""; position: absolute; left: 50%; top: 7px; width: 3px; height: 7px; margin-left: -1.5px; border-radius: 2px; background: #fff; animation: vh-wheel 1.8s ease-in-out infinite; }
-@keyframes vh-wheel { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(9px); opacity: 0; } 100% { opacity: 0; } }
 .night .engine .eg { box-shadow: 0 50px 120px -60px rgba(0, 0, 0, .8); }
 .night .engine .eg-note { text-shadow: none; color: rgba(255, 255, 255, .5); }
 
@@ -733,36 +713,27 @@ html[lang="sv"] .h1 { --h1: clamp(2.4rem, 6vw, 5.4rem); }
 .lg-stat b { font: 800 30px/1 var(--f-display); letter-spacing: -.03em; }
 .lg-stat span { font-size: 12px; line-height: 1.35; color: rgba(255, 255, 255, .85); }
 
-/* the statement: a large serif line with small things set into it, then three principles */
-.mf { max-width: 1060px; font: 500 clamp(1.85rem, 4vw, 3.5rem)/1.2 var(--f-serif); letter-spacing: -.02em; color: var(--ink); text-wrap: pretty; }
-.mf-w { transition: opacity .6s ease, filter .6s ease; }
-.js .mf:not(.in) .mf-w { opacity: .14; }
-.mf-w:nth-child(n) { transition-delay: calc(var(--i, 0) * 28ms); }
-.mf-img { display: inline-block; width: 2.3em; height: .95em; margin: 0 .08em; vertical-align: -.1em; border-radius: 999px; overflow: hidden; box-shadow: 0 6px 16px -8px rgba(8, 36, 90, .5); transform: rotate(-3deg); }
-.mf-img img { width: 100%; height: 100%; object-fit: cover; }
-.mf-b { display: inline-block; vertical-align: -.16em; margin: 0 .06em; }
-.mf-brick { width: .95em; height: 1.05em; overflow: visible; filter: drop-shadow(0 4px 10px rgba(91, 140, 255, .55)); }
-.mf-brick path, .mf-brick ellipse { stroke: #4f7cf0; stroke-width: 1.4; vector-effect: non-scaling-stroke; }
-.mf-brick .f-t, .mf-brick .s-top { fill: #eef3ff; } .mf-brick .f-l { fill: #c9d8fb; } .mf-brick .f-r { fill: #a9c0f3; } .mf-brick .s-side { fill: #c3d4fa; }
-.mf-chip { display: inline-flex; align-items: center; gap: .35em; margin: 0 .1em; padding: .26em .6em .26em .32em; border-radius: 999px; background: #fff; border: 1px solid var(--rule); box-shadow: 0 8px 18px -12px rgba(16, 40, 90, .45);
-  font: 600 .36em/1 var(--f-body); letter-spacing: 0; color: #067647; vertical-align: .35em; transform: rotate(2deg); white-space: nowrap; }
-.mf-chip .ic { width: 1.5em; height: 1.5em; padding: .25em; border-radius: 50%; background: var(--ok); color: #fff; }
-.prs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: clamp(48px, 6vw, 80px); border-top: 1px solid var(--rule); }
-.pr { display: grid; gap: 10px; align-content: start; padding: 26px 28px 6px 0; }
-.pr + .pr { padding-left: 28px; border-left: 1px solid var(--rule); }
-.pr-n { font: 500 12px/1 var(--f-mono); color: var(--ink-3); }
-.pr-n::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 9px; border-radius: 2px; background: var(--c1); vertical-align: 0; }
-.pr-1 .pr-n::before { background: var(--c2); } .pr-2 .pr-n::before { background: var(--c3); }
+/* the statement: one large line whose words light up from grey to white as it is read (after Rulebase), then the
+   three principles as glass cards */
+.mf { max-width: 1120px; font: 600 clamp(1.9rem, 4.3vw, 3.7rem)/1.14 var(--f-display); letter-spacing: -.035em; color: var(--ink); text-wrap: pretty; }
+.js .mf-w { color: rgba(243, 245, 250, .2); transition: color .45s ease; }
+.js .mf-w.on { color: var(--ink); }
+.prs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: clamp(48px, 6vw, 80px); }
+.pr { display: grid; gap: 10px; align-content: start; padding: 26px 26px 28px; border-radius: 22px; background: var(--glass); border: 1px solid var(--edge); }
+.pr-ic { width: 42px; height: 42px; display: grid; place-items: center; margin-bottom: 8px; border-radius: 12px; color: #ffb08f; background: rgba(255, 90, 31, .14); box-shadow: inset 0 0 0 1px rgba(255, 140, 90, .22); }
+.pr-1 .pr-ic { color: #a8c4ff; background: rgba(31, 111, 235, .2); box-shadow: inset 0 0 0 1px rgba(110, 160, 255, .26); }
+.pr-2 .pr-ic { color: #86e6ae; background: rgba(22, 184, 87, .15); box-shadow: inset 0 0 0 1px rgba(80, 220, 140, .22); }
+.pr-ic .ic { width: 20px; height: 20px; }
 .pr h3 { font: 800 clamp(1.25rem, 1.9vw, 1.5rem)/1.2 var(--f-display); letter-spacing: -.025em; }
 .pr p { color: var(--ink-2); }
 
-/* the night: the blocks and the running example on one dark field with a dot grid (after Griffin) */
+/* the night: Company Brain, the blocks and the running example (on the light pages, a dark field of their own) */
 .night { position: relative; margin: 0 clamp(8px, 1.2vw, 18px); border-radius: clamp(24px, 3vw, 40px); overflow: hidden; color: #fff; background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(52, 104, 220, .28), transparent 70%), linear-gradient(180deg, #0a1736 0%, #08112a 100%); }
 .night .wrap { position: relative; }
 .night .bl-card { background: radial-gradient(ellipse 70% 60% at 30% 22%, rgba(74, 132, 232, .3), transparent 70%), rgba(255, 255, 255, .02); border-color: rgba(255, 255, 255, .1); box-shadow: none; }
 .night .cr-stage { box-shadow: 0 50px 120px -60px rgba(0, 0, 0, .8); }
 
-/* how we start: an index that lights up as you read, and each step on a painted vignette */
+/* how we start: an index that lights up as you read, and each step on a still from the hero's footage */
 .sp { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: clamp(28px, 4vw, 64px); align-items: start; }
 .sx { position: sticky; top: calc(var(--nav-h) + 40px); }
 .sx ol { display: grid; gap: 4px; }
@@ -821,7 +792,7 @@ html[lang="sv"] .h1 { --h1: clamp(2.4rem, 6vw, 5.4rem); }
 .cs-art { position: relative; display: grid; place-items: center; min-height: 240px; overflow: hidden; }
 .cs-art img { position: relative; z-index: 1; height: 54px; width: auto; max-width: 64%; padding: 16px 22px; box-sizing: content-box; background: #fff; border-radius: 14px; box-shadow: 0 18px 40px -20px rgba(6, 26, 70, .55); transition: transform .6s var(--ease); }
 .cs-art img.tall { height: 104px; padding: 0; background: none; border-radius: 10px; }
-.cs-art-m { background: linear-gradient(180deg, rgba(14, 52, 130, .55), rgba(14, 52, 130, .15)), url(img/ch-then.webp) center / cover; }
+.cs-art-m { background: linear-gradient(180deg, rgba(5, 12, 30, .45), rgba(5, 12, 30, .08)), url(img/st-maatori.webp) center / cover; }
 .cs-art-m img { height: 66px; }
 .cs-art-t { background: radial-gradient(ellipse 80% 100% at 80% 0%, rgba(255, 160, 80, .35), transparent 60%), #1c1917; }
 .cs-art-s { background: radial-gradient(ellipse 80% 90% at 15% 15%, #ffd2df 0%, transparent 60%), radial-gradient(ellipse 70% 80% at 90% 100%, #dbe7ff 0%, transparent 60%), #f6e3ea; }
@@ -1008,6 +979,93 @@ html[lang="sv"] .h1 { --h1: clamp(2.4rem, 6vw, 5.4rem); }
 .foot-dl a { text-decoration: none; }
 .foot-dl a:hover { color: var(--ink); }
 
+/* The home page in the dark (after Rulebase, Paradigm and Arrakis on godly.design): under its video hero the haze
+   turns to a deep night blue, the chapters sit on it as glass cards, and the close plays the loop again in a panel
+   like the hero's. The colour words are redefined here, so everything that reads them follows; the white cards
+   (the pilot's previews and step cards, Company Brain's results, the white buttons) keep the light ones. */
+.dk { --ink: #f3f5fa; --ink-2: rgba(223, 230, 243, .72); --ink-3: rgba(196, 206, 226, .52); --line: rgba(255, 255, 255, .1); --rule: rgba(255, 255, 255, .09);
+  --tint: rgba(255, 255, 255, .06); --blue: #6b9dff; --glass: rgba(255, 255, 255, .035); --glass-2: rgba(255, 255, 255, .065); --edge: rgba(255, 255, 255, .08);
+  background: #05070e; color-scheme: dark; }
+.dk .im, .dk .su, .dk .eg-card, .dk .eg-ic, .dk .sp-tag, .dk .btn-white, .dk .skip, .dk .lang a[aria-current="true"] {
+  --ink: #0b1220; --ink-2: #475467; --ink-3: #667085; --line: #e4e7ec; --rule: #e2ddd2; --blue: #1f6feb; }
+.dk .nav.scrolled { background: rgba(6, 9, 18, .72); border-bottom-color: rgba(255, 255, 255, .06); }
+.dk .nav.scrolled .nav-links a:hover { background: rgba(255, 255, 255, .08); }
+.dk .nav.scrolled .lang { background: rgba(255, 255, 255, .08); }
+.dk .nav.scrolled .lang a[aria-current="true"] { background: #fff; box-shadow: none; }
+.dk .nav .nav-cta { background: #fff; color: #0b1220; box-shadow: none; }
+.dk .nav.scrolled .nav-menu { border-color: rgba(255, 255, 255, .2); }
+.dk .vh-panel { box-shadow: 0 0 0 1px rgba(255, 255, 255, .07), 0 40px 90px -50px rgba(0, 0, 0, .8); }
+.dk .night { margin: 0; border-radius: 0; overflow: visible; background: none; }
+.dk .chh-n { color: var(--ink); background: var(--glass-2); border-color: rgba(255, 255, 255, .14); }
+.dk .eyebrow, .dk .sec .sec-head .eyebrow { background: var(--glass); border-color: var(--edge); }
+.dk .acc-ink { background-image: linear-gradient(100deg, #9cc0ff 0%, #b3a4ff 42%, #f0a8d8 72%, #ffb79c 100%); }
+.dk .btn-ink { background: #fff; color: #0b1220; }
+.dk .btn-ink:hover { background: #e8edf6; }
+
+/* who we work with: the client circles and "30+" over a wall of logos in white */
+.tr-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px 32px; margin-bottom: 22px; }
+.tr-head .trust { color: var(--ink-2); text-shadow: none; }
+.tr-head .trust-t b { color: var(--ink); }
+.tr-head .trust-t::before { background: var(--rule); }
+.tr-val { font-size: 14.5px; color: var(--ink-3); }
+.tr-val b { color: var(--ink); font-weight: 600; }
+@media (max-width: 640px) { .tr-head .trust { align-items: flex-start; } }
+.dk .cav-c { box-shadow: 0 0 0 2px #05070e, 0 6px 16px rgba(0, 0, 0, .45); }
+.dk .cav:hover .cav-c { box-shadow: 0 0 0 2px #05070e, 0 16px 30px -8px rgba(0, 0, 0, .75); }
+.dk .cav-n { background: #fff; color: #0b1220; }
+.dk .lg-grid { gap: 10px; background: none; border: 0; border-radius: 0; box-shadow: none; overflow: visible; }
+.dk .lg-grid li { border-radius: 16px; background: var(--glass); border: 1px solid var(--edge); transition: background-color .3s ease, border-color .3s ease; }
+.dk .lg-grid li:hover { background: var(--glass-2); border-color: rgba(255, 255, 255, .16); }
+.dk .lg-grid img, .dk .lg-grid li:hover img { filter: grayscale(1) invert(1) brightness(1.2); mix-blend-mode: screen; }
+.dk .lg-grid img { opacity: .6; }
+.dk .lg-grid li:hover img { opacity: 1; }
+/* Tekno-Rengas's badge is light on black: kept as it is, its black dropped into the card */
+.dk .lg-grid img[src$="tekno-rengas.svg"], .dk .lg-grid li:hover img[src$="tekno-rengas.svg"] { filter: grayscale(1) brightness(1.15); mix-blend-mode: lighten; }
+.dk .lg-grid img.sq { height: 54px; }
+.dk .lg-grid .lg-stat, .dk .lg-grid .lg-stat:hover { border: 0; background: radial-gradient(ellipse 90% 80% at 0% 0%, rgba(140, 185, 255, .4), transparent 70%), linear-gradient(160deg, #1a4fc2, #2381cf); }
+
+/* the pilot: the stills, the gallery of what a pilot can be, and the terms */
+.dk .sp-art { box-shadow: 0 40px 80px -50px rgba(0, 0, 0, .9); }
+.dk .pch-start .ideas { border-top: 0; }
+.dk .idea, .dk .pch-start .idea { background: var(--glass); border-color: var(--edge); }
+.dk .idea:hover { background: var(--glass-2); box-shadow: 0 30px 60px -40px rgba(0, 0, 0, .8); }
+.dk .idea-0 .idea-media { background: radial-gradient(ellipse 90% 80% at 50% 0%, rgba(60, 120, 255, .42), transparent 70%), #0c1426; }
+.dk .idea-1 .idea-media { background: radial-gradient(ellipse 90% 80% at 50% 0%, rgba(255, 110, 60, .34), transparent 70%), #1a110e; }
+.dk .idea-2 .idea-media { background: radial-gradient(ellipse 90% 80% at 50% 0%, rgba(40, 200, 120, .3), transparent 70%), #0b1814; }
+.dk .idea-3 .idea-media { background: radial-gradient(ellipse 90% 80% at 50% 0%, rgba(130, 110, 255, .4), transparent 70%), #120f24; }
+.dk .idea-pill { background: rgba(255, 255, 255, .12); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14); }
+.dk .idea-n { color: rgba(255, 255, 255, .4); }
+.dk .idea-ic, .dk .pilot-terms, .dk .pt-ic { background: var(--glass); border-color: var(--edge); }
+.dk .idea-3 .idea-ic { color: #aaa4ff; }
+.dk .rt { background: radial-gradient(ellipse 60% 140% at 0% 0%, rgba(217, 119, 87, .2), transparent 70%), var(--glass); border-color: rgba(217, 119, 87, .3); color: #f7efe9; }
+.dk .rt:hover { box-shadow: 0 30px 60px -40px rgba(0, 0, 0, .8); }
+.dk .rt-k { color: #f0a283; }
+.dk .rt-p { color: rgba(247, 239, 233, .66); }
+.dk .rt-go { background: var(--cl-coral); }
+
+/* work, pricing, team and questions as glass */
+.dk .cs-xl, .dk .cs-card, .dk .cs-stats, .dk .pch-price .price-grid, .dk .pch-team .team-grid { background: var(--glass); border-color: var(--edge); }
+.dk .cs-r { background: rgba(255, 255, 255, .02); }
+.dk .cs-art-s { background: radial-gradient(ellipse 80% 90% at 15% 15%, rgba(255, 150, 180, .4) 0%, transparent 60%), radial-gradient(ellipse 70% 80% at 90% 100%, rgba(120, 160, 255, .38) 0%, transparent 60%), #1b1526; }
+.dk .price-card { background: transparent; }
+.dk .price-card.featured { background: radial-gradient(ellipse 90% 70% at 0% 0%, rgba(140, 185, 255, .35), transparent 70%), linear-gradient(165deg, #1a4fc2, #2381cf); }
+.dk .ph { background: rgba(255, 255, 255, .05); }
+.dk .pch-faq summary i { background: var(--glass-2); border-color: var(--edge); }
+
+/* the close: the loop again, from the wind farm, in a panel like the hero's */
+.final-v { min-height: min(80vh, 760px); margin: 0 clamp(8px, 1.2vw, 18px); border-radius: clamp(22px, 2.6vw, 34px); background: #070b16 url(video/hero-poster.webp) center / cover; box-shadow: 0 0 0 1px rgba(255, 255, 255, .07); }
+.fv-video { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
+.fv-shade { position: absolute; inset: 0; z-index: -1; background: radial-gradient(ellipse 60% 55% at 50% 50%, rgba(4, 9, 22, .68), rgba(4, 9, 22, .32) 75%), linear-gradient(180deg, rgba(4, 9, 22, .3), rgba(4, 9, 22, .62)); }
+.final-v h2, .final-v p { text-shadow: 0 2px 30px rgba(0, 0, 0, .45); }
+.final-v .btn-glass { background: rgba(255, 255, 255, .12); border-color: rgba(255, 255, 255, .3); }
+.final-v .btn-glass:hover { background: rgba(255, 255, 255, .2); }
+.dk .foot { margin-top: clamp(24px, 3vw, 40px); background: transparent; border-top: 0; }
+
+@media (max-width: 1080px) {
+  .dk .nav-links.open { background: #0a0e1a; color: #fff; border-bottom-color: rgba(255, 255, 255, .08); }
+  .dk .nav-links.open .nav-links-cta { background: #fff; color: #0b1220; }
+}
+
 /* Reveal on scroll (only once the script runs, so nothing hides without it) */
 .js .rv { opacity: 0; transform: translateY(22px); transition: opacity .9s var(--ease), transform .9s var(--ease); transition-delay: var(--d, 0s); }
 .js .rv.in { opacity: 1; transform: none; }
@@ -1140,8 +1198,6 @@ html[lang="sv"] .h1 { --h1: clamp(2.4rem, 6vw, 5.4rem); }
 @media (max-width: 900px) {
   .pch-head, .pch .sec-head, .pch-head-row { grid-template-columns: minmax(0, 1fr); align-items: start; }
   .prs { grid-template-columns: minmax(0, 1fr); }
-  .pr + .pr { padding-left: 0; border-left: 0; border-top: 1px solid var(--rule); }
-  .pr { padding: 22px 0 18px; }
   .sp-p { grid-template-columns: minmax(0, 1fr); }
   .cs-xl, .cs-two { grid-template-columns: minmax(0, 1fr); }
   .cs-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1176,13 +1232,9 @@ html[lang="sv"] .h1 { --h1: clamp(2.4rem, 6vw, 5.4rem); }
   .pch-faq details p { padding-right: 0; }
 }
 
-@media (max-width: 900px) {
-  .vh-fields li:not(.on) { display: none; }
-  .vh-scroll { display: none; }
-}
 @media (max-width: 640px) {
   .vh-panel { height: auto; min-height: calc(100svh - var(--nav-h) - 14px - var(--pv, 52px)); }
-  .vh-in { padding: 36px 0 84px; gap: 20px; }
+  .vh-in { padding: 36px 0 44px; gap: 20px; }
   .vh-in .hero-note { padding: 10px 16px; }
 }
 
@@ -1197,7 +1249,7 @@ html[lang="sv"] .h1 { --h1: clamp(2.4rem, 6vw, 5.4rem); }
   .js .rv, .js .m { opacity: 1; transform: none; }
   .js .bx-line { stroke-dashoffset: 0; } .js .bx-area, .js .bx-dot, .js .bx-call, .js .wk-m { opacity: 1; transform: none; }
   .tk-track { animation: none !important; }
-  .js .mf:not(.in) .mf-w { opacity: 1; }
+  .js .mf-w { color: inherit; }
   .js .xt-mark { left: 50%; } .js .ra .fade { opacity: 1; } .js .ra-p:not(.on) span { opacity: 1; }
   .idea .im-row, .idea .im-chip, .idea .im-draft, .im-typing i { animation: none !important; opacity: 1; transform: none; }
   .im-typing { display: none; }

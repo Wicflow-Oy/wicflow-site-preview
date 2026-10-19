@@ -8,14 +8,15 @@
   const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // The page's background: a faint, slowly flowing haze in the site's colours (domain-warped noise in a small WebGL
-  // shader, drawn at low resolution so it stays soft and light), with a gentle swirl and glow that follows the pointer.
+  // shader, drawn at low resolution so it stays soft), pale on the light pages and night blue on the dark home page,
+  // with a gentle swirl and glow that follows the pointer.
   // It pauses in a hidden tab; under reduced motion it draws one still frame. Without WebGL the plain colour shows.
   const haze = document.querySelector(".haze");
   const gl = haze && haze.getContext("webgl", { antialias: false, alpha: false, depth: false, powerPreference: "low-power" });
   if (gl) {
     const VS = "attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}";
     const FS = `precision mediump float;
-uniform vec2 r;uniform float t;uniform vec2 m;uniform float mi;
+uniform vec2 r;uniform float t;uniform vec2 m;uniform float mi;uniform float dk;
 vec3 p3(vec3 x){return x-floor(x*(1./289.))*289.;}vec2 p2(vec2 x){return x-floor(x*(1./289.))*289.;}vec3 pm(vec3 x){return p3(((x*34.)+1.)*x);}
 float sn(vec2 v){const vec4 C=vec4(.211324865405187,.366025403784439,-.577350269189626,.024390243902439);
 vec2 i=floor(v+dot(v,C.yy));vec2 x0=v-i+dot(i,C.xx);vec2 i1=(x0.x>x0.y)?vec2(1.,0.):vec2(0.,1.);vec4 x12=x0.xyxy+C.xxzz;x12.xy-=i1;
@@ -27,13 +28,21 @@ void main(){vec2 uv=gl_FragCoord.xy/r;float ar=r.x/r.y;vec2 p=uv*vec2(ar,1.)*.62
 vec2 dd=p-mp;float d=length(dd);float sw=exp(-d*d*14.)*mi;p+=vec2(-dd.y,dd.x)*sw*.32+dd*sw*.06;
 float tt=t*.028;vec2 q=vec2(fb(p+tt),fb(p+vec2(5.2,1.3)-tt*.8));
 vec2 w=vec2(fb(p+1.05*q+vec2(1.7,9.2)+tt*1.2),fb(p+1.05*q+vec2(8.3,2.8)-tt));float f=fb(p+1.2*w);
-vec3 c=vec3(.952,.964,.985);
+vec3 c;
+if(dk>.5){vec3 b=vec3(.02,.028,.055);c=b;
+c=mix(c,vec3(.05,.1,.25),smoothstep(-.45,.75,w.x)*.62);
+c=mix(c,vec3(.1,.06,.2),smoothstep(-.3,.8,w.y)*.5);
+c=mix(c,vec3(.2,.08,.07),smoothstep(-.05,.85,f)*.28);
+c=mix(c,vec3(.03,.12,.13),smoothstep(0.,.9,q.y)*.3);
+c=mix(c,vec3(.14,.24,.52),exp(-d*d*16.)*.32*mi);
+c=mix(c,b,.18);}
+else{c=vec3(.952,.964,.985);
 c=mix(c,vec3(.78,.87,.99),smoothstep(-.45,.75,w.x)*.66);
 c=mix(c,vec3(.88,.85,.99),smoothstep(-.3,.8,w.y)*.52);
 c=mix(c,vec3(.995,.9,.85),smoothstep(-.05,.85,f)*.45);
 c=mix(c,vec3(.85,.95,.91),smoothstep(0.,.9,q.y)*.34);
 c=mix(c,vec3(.76,.85,1.),exp(-d*d*16.)*.42*mi);
-c=mix(c,vec3(.952,.964,.985),.22);
+c=mix(c,vec3(.952,.964,.985),.22);}
 gl_FragColor=vec4(c,1.);}`;
     const sh = (type, src) => { const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); return o; };
     const prog = gl.createProgram();
@@ -46,6 +55,7 @@ gl_FragColor=vec4(c,1.);}`;
       gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
       const U = (n) => gl.getUniformLocation(prog, n);
       const uR = U("r"), uT = U("t"), uM = U("m"), uMi = U("mi");
+      gl.uniform1f(U("dk"), root.classList.contains("dk") ? 1 : 0);
       const SCALE = .32;
       const size = () => {
         const w = Math.max(1, Math.round(innerWidth * SCALE)), h = Math.max(1, Math.round(innerHeight * SCALE));
@@ -73,30 +83,25 @@ gl_FragColor=vec4(c,1.);}`;
     }
   }
 
-  // The hero's loop of real work: the smaller file on phones and slow connections, playing only while the panel is on
-  // screen, with the field on screen named along the bottom. Under reduced motion only the still frame shows.
-  const vhv = document.querySelector(".vh-video");
-  if (vhv && !still) {
-    const fields = [...document.querySelectorAll(".vh-fields li")];
-    const clip = Number(vhv.dataset.clip) || 2.2;
-    const conn = navigator.connection || {};
-    const big = innerWidth >= 1000 && !conn.saveData && !/(^|-)2g$/.test(conn.effectiveType || "");
-    vhv.src = big ? vhv.dataset.lg : vhv.dataset.sm;
-    vhv.muted = true;
-    let cur = -1, raf = 0, inView = true;
-    const tick = () => {
-      raf = requestAnimationFrame(tick);
-      const i = Math.floor(vhv.currentTime / clip) % fields.length;
-      if (i !== cur && fields.length) { cur = i; fields.forEach((li, n) => li.classList.toggle("on", n === i)); }
-    };
+  // The loop of everyday work, in the hero and again behind the close: the smaller file on phones and slow
+  // connections, loaded as it nears the screen and playing only while it is on it (the close starts at its own
+  // point in the loop). Under reduced motion only the still frame shows.
+  const conn = navigator.connection || {};
+  const big = innerWidth >= 1000 && !conn.saveData && !/(^|-)2g$/.test(conn.effectiveType || "");
+  if (!still) document.querySelectorAll("video[data-lg]").forEach((v) => {
+    let near = false;
     const sync = () => {
-      if (inView && !document.hidden) { vhv.play().catch(() => {}); if (!raf) raf = requestAnimationFrame(tick); }
-      else { vhv.pause(); cancelAnimationFrame(raf); raf = 0; }
+      if (!near || document.hidden) { v.pause(); return; }
+      if (!v.getAttribute("src")) {
+        v.muted = true;
+        if (v.dataset.t0) v.addEventListener("loadedmetadata", () => { v.currentTime = Number(v.dataset.t0); }, { once: true });
+        v.src = big ? v.dataset.lg : v.dataset.sm;
+      }
+      v.play().catch(() => {});
     };
-    new IntersectionObserver(([en]) => { inView = en.isIntersecting; sync(); }, { threshold: .05 }).observe(vhv);
+    new IntersectionObserver(([en]) => { near = en.isIntersecting; sync(); }, { rootMargin: "200px 0px" }).observe(v);
     document.addEventListener("visibilitychange", sync);
-    sync();
-  }
+  });
 
   // Navigation: frosted white once the page scrolls, and the menu on small screens.
   const nav = document.querySelector("[data-nav]");
@@ -443,14 +448,27 @@ gl_FragColor=vec4(c,1.);}`;
     io.observe(xt);
   }
 
-  // The statement: its words come in one after another the first time it is read.
+  // The statement: its words light up from grey to white as it is read, following the scroll (never steering it).
+  // It is fully lit once its last line reaches the middle of the screen.
   const mf = document.querySelector("[data-mf]");
   if (mf) {
-    [...mf.querySelectorAll(".mf-w")].forEach((w, i) => w.style.setProperty("--i", i));
-    if (still) mf.classList.add("in");
+    const words = [...mf.querySelectorAll(".mf-w")];
+    if (still) words.forEach((w) => w.classList.add("on"));
     else {
-      const io = new IntersectionObserver(([en]) => { if (en.isIntersecting) { mf.classList.add("in"); io.disconnect(); } }, { threshold: .4 });
-      io.observe(mf);
+      let lit = -1, raf = 0;
+      const paint = () => {
+        raf = 0;
+        const r = mf.getBoundingClientRect(), vh = innerHeight;
+        const n = Math.round(Math.min(1, Math.max(0, (vh * .82 - r.top) / (r.height + vh * .3))) * words.length);
+        if (n !== lit) { lit = n; words.forEach((w, i) => w.classList.toggle("on", i < n)); }
+      };
+      const ask = () => { if (!raf) raf = requestAnimationFrame(paint); };
+      new IntersectionObserver(([en]) => {
+        if (en.isIntersecting) addEventListener("scroll", ask, { passive: true });
+        else removeEventListener("scroll", ask);
+        ask();
+      }).observe(mf);
+      addEventListener("resize", ask);
     }
   }
 
@@ -469,9 +487,10 @@ gl_FragColor=vec4(c,1.);}`;
     panels.forEach((pn) => io.observe(pn));
   }
 
-  // Sections rise in as they enter the screen. Blocks already on screen at load are left alone.
+  // Sections rise in as they enter the screen. Blocks already on screen at load are left alone, and so is the logo
+  // wall: its logos are blended into their cards, which a fade would undo until it ends.
   if (!still && "IntersectionObserver" in window) {
-    const sel = ".sec-head, .pch-head, .lg-grid, .pr, .sp-p, .cs-xl, .cs-card, .cs-stats, .cr-stage, .eg, .xt, .ro-stats li, .ro-gets li, .pa, .rt, .bl-card, .step, .idea, .pilot-terms, .case, .result, .num-list li, .price-card, .person, .faq-list, .final-in, .band-note";
+    const sel = ".sec-head, .pch-head, .tr-head, .pr, .sp-p, .cs-xl, .cs-card, .cs-stats, .cr-stage, .eg, .xt, .ro-stats li, .ro-gets li, .pa, .rt, .bl-card, .step, .idea, .pilot-terms, .case, .result, .num-list li, .price-card, .person, .faq-list, .final-in, .band-note";
     const rio = new IntersectionObserver((entries) => entries.forEach((en) => {
       if (en.isIntersecting) { en.target.classList.add("in"); rio.unobserve(en.target); }
     }), { rootMargin: "0px 0px -8% 0px" });
