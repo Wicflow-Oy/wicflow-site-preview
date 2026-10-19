@@ -1,14 +1,11 @@
-/* Wicflow v3 concept: navigation, the hero's product window, the systems tabs and reveals.
-   Everything works without this script (all content is in the HTML and every message is shown); it only adds motion.
-   On wide screens the window is pinned while the visitor scrolls: it grows into place, zooms in on the conversation
-   while the messages arrive one by one, and zooms back out. On smaller screens the messages play once the window is
-   in view. Under prefers-reduced-motion nothing moves and every message is shown. */
+/* Wicflow v3 concept: navigation, Company Brain at work under the hero, the blocks, the example control room and
+   reveals. Everything works without this script (all content is in the HTML); it only adds motion. Nothing here pins
+   or steers the scroll: each piece plays on its own while it is on screen and pauses when it is not. Under
+   prefers-reduced-motion nothing moves and each piece is shown as it finishes. */
 (() => {
   const root = document.documentElement;
   root.classList.add("js");
   const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
-  const ease = (k) => (k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
 
   // Navigation: frosted white once the page scrolls, and the menu on small screens.
   const nav = document.querySelector("[data-nav]");
@@ -32,57 +29,138 @@
     window.addEventListener("resize", () => { if (window.innerWidth > 1080) setMenu(false); });
   }
 
-  // Hero: the Company Brain window and the conversation inside it.
-  const show = document.querySelector("[data-show]");
-  const frame = document.querySelector("[data-frame]");
-  const msgs = [...document.querySelectorAll(".a-msgs .m")];
-  const setStep = (n) => msgs.forEach((m, i) => m.classList.toggle("on", i < n));
-  if (still || !show || !frame) {
-    setStep(msgs.length);
-  } else {
-    const wide = window.matchMedia("(min-width: 1024px) and (min-height: 620px)");
-    const at = [.1, .22, .34, .5, .62, .72];  // how far through the pinned stretch each message arrives
-    let mode = "", ticking = false, timer = 0, played = false, io = null;
-    const update = () => {
-      ticking = false;
-      const r = show.getBoundingClientRect(), vh = window.innerHeight;
-      const enter = ease(clamp(1 - r.top / vh));
-      const p = clamp(-r.top / Math.max(1, r.height - vh));
-      const zoom = 1 + .28 * (ease(clamp((p - .03) / .17)) - ease(clamp((p - .82) / .15)));
-      frame.style.transform = `scale(${((.86 + .14 * enter) * zoom).toFixed(4)})`;
-      setStep(at.filter((x) => p >= x).length);
+  // Counting a number up once, in the page's language (euros or plain numbers with a suffix).
+  const locale = { en: "en-GB", fi: "fi-FI", sv: "sv-FI" }[root.lang] || "en-GB";
+  const euro = new Intl.NumberFormat(locale, { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
+  const fmt = (el, v) => (el.dataset.kind === "eur" ? euro.format(v) : v + (el.dataset.suf || ""));
+  const countUp = (els, ms = 1500) => {
+    const t0 = performance.now();
+    const step = (now) => {
+      const k = Math.min(1, (now - t0) / ms), q = 1 - Math.pow(1 - k, 3);
+      els.forEach((el) => { el.textContent = fmt(el, Math.round(Number(el.dataset.to) * q)); });
+      if (k < 1) requestAnimationFrame(step);
     };
-    const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
-    const play = () => {
-      played = true;
-      let n = 0;
-      const next = () => { setStep(++n); if (n < msgs.length) timer = setTimeout(next, 1200); };
-      timer = setTimeout(next, 400);
+    requestAnimationFrame(step);
+  };
+
+  // Company Brain at work: work streams from the tools into the core as particles along curves, finished work leaves
+  // the core as a burst and lands as a card, and the counters tick. It runs only while it is on screen.
+  const eg = document.querySelector("[data-engine]");
+  if (eg) {
+    const canvas = eg.querySelector(".eg-canvas"), ctx = canvas.getContext("2d");
+    const ins = [...eg.querySelectorAll(".eg-in")];
+    const orb = eg.querySelector(".eg-orb");
+    const list = eg.querySelector(".eg-cards");
+    const cards = [...list.children];
+    const statusBox = eg.querySelector(".eg-status"), statusEl = statusBox.querySelector("span");
+    const statuses = statusBox.dataset.status.split("|");
+    const nums = [...eg.querySelectorAll(".eg-count b")];
+    const RGB = { sales: "122,162,255", service: "255,170,120", office: "111,227,166" };
+    const kinds = ins.map((el) => Object.keys(RGB).find((k) => el.classList.contains("eg-" + k)) || "sales");
+    const sprite = (rgb) => {
+      const c = document.createElement("canvas"); c.width = c.height = 32;
+      const g = c.getContext("2d"), gr = g.createRadialGradient(16, 16, 0, 16, 16, 16);
+      gr.addColorStop(0, "rgba(255,255,255,1)"); gr.addColorStop(.28, `rgba(${rgb},.9)`); gr.addColorStop(1, `rgba(${rgb},0)`);
+      g.fillStyle = gr; g.fillRect(0, 0, 32, 32);
+      return c;
     };
-    const apply = () => {
-      const next = wide.matches ? "scroll" : "timed";
-      if (next === mode) return;
-      mode = next;
-      clearTimeout(timer);
-      if (io) { io.disconnect(); io = null; }
-      if (mode === "scroll") {
-        root.classList.add("scrolly");
-        window.addEventListener("scroll", onScroll, { passive: true });
-        window.addEventListener("resize", onScroll);
-        update();
-      } else {
-        root.classList.remove("scrolly");
-        window.removeEventListener("scroll", onScroll);
-        window.removeEventListener("resize", onScroll);
-        frame.style.transform = "";
-        if (played) { setStep(msgs.length); return; }
-        setStep(0);
-        io = new IntersectionObserver(([en]) => { if (en.isIntersecting) { io.disconnect(); io = null; play(); } }, { threshold: .3 });
-        io.observe(frame);
+    const sprites = Object.fromEntries(Object.entries(RGB).map(([k, v]) => [k, sprite(v)]));
+    const glow = sprite("200,220,255");
+    let W = 0, H = 0, paths = [], outPath = null;
+    const curve = (a, b) => {
+      const dx = b.x - a.x, dy = b.y - a.y;
+      return Math.abs(dx) > Math.abs(dy)
+        ? [a, { x: a.x + dx * .55, y: a.y }, { x: b.x - dx * .45, y: b.y }, b]
+        : [a, { x: a.x, y: a.y + dy * .55 }, { x: b.x, y: b.y - dy * .45 }, b];
+    };
+    const at = (c, t) => {
+      const u = 1 - t, a = u * u * u, b = 3 * u * u * t, d = 3 * u * t * t, f = t * t * t;
+      return { x: a * c[0].x + b * c[1].x + d * c[2].x + f * c[3].x, y: a * c[0].y + b * c[1].y + d * c[2].y + f * c[3].y };
+    };
+    const layout = () => {
+      const r = eg.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
+      W = r.width; H = r.height;
+      canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const rel = (el, fx, fy) => { const b = el.getBoundingClientRect(); return { x: b.left - r.left + b.width * fx, y: b.top - r.top + b.height * fy }; };
+      const core = rel(orb, .5, .5);
+      const stacked = getComputedStyle(eg).gridTemplateColumns.trim().split(/\s+/).length < 3;
+      paths = ins.map((el) => curve(stacked ? rel(el, .5, 1) : rel(el, 1, .5), core));
+      outPath = curve(core, stacked ? rel(list, .5, 0) : rel(list, 0, .14));
+    };
+    const lines = () => {
+      ctx.lineWidth = 1; ctx.strokeStyle = "rgba(160,190,255,.16)";
+      [...paths, outPath].forEach((c) => { ctx.beginPath(); ctx.moveTo(c[0].x, c[0].y); ctx.bezierCurveTo(c[1].x, c[1].y, c[2].x, c[2].y, c[3].x, c[3].y); ctx.stroke(); });
+    };
+    const parts = [];
+    let raf = 0, last = 0, acc = 0, running = false, ctimer = 0, stimer = 0, ci = 0, si = 0, counted = false, inView = false;
+    const spawn = (i) => {
+      parts.push({ c: paths[i], t: 0, v: .3 + Math.random() * .22, k: kinds[i], out: false, s: 9 + Math.random() * 9 });
+      const el = ins[i]; el.classList.add("hit"); clearTimeout(el._hit); el._hit = setTimeout(() => el.classList.remove("hit"), 380);
+    };
+    const burst = () => { for (let n = 0; n < 10; n++) parts.push({ c: outPath, t: -n * .05, v: .95, k: null, out: true, s: 12 }); };
+    const frame = (now) => {
+      raf = requestAnimationFrame(frame);
+      const dt = Math.min(.05, (now - (last || now)) / 1000); last = now;
+      acc += dt * 8.5;
+      while (acc > 1) { acc -= 1; spawn(Math.floor(Math.random() * paths.length)); }
+      ctx.clearRect(0, 0, W, H);
+      lines();
+      ctx.globalCompositeOperation = "lighter";
+      for (let i = parts.length - 1; i >= 0; i--) {
+        const q = parts[i];
+        q.t += q.v * dt;
+        if (q.t >= 1) { parts.splice(i, 1); continue; }
+        if (q.t < 0) continue;
+        const pt = at(q.c, q.t), sz = q.out ? q.s : q.s * (.65 + .35 * Math.sin(q.t * Math.PI));
+        ctx.globalAlpha = q.out ? 1 - q.t * .4 : Math.min(1, q.t * 6, (1 - q.t) * 5);
+        ctx.drawImage(q.out ? glow : sprites[q.k], pt.x - sz / 2, pt.y - sz / 2, sz, sz);
+      }
+      ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over";
+    };
+    const showCard = () => {
+      const card = cards[ci % cards.length]; ci += 1;
+      list.prepend(card);
+      card.classList.remove("enter"); void card.offsetWidth; card.classList.add("vis", "enter");
+      [...list.querySelectorAll(".eg-card.vis")].slice(4).forEach((c) => c.classList.remove("vis"));
+      const done = nums[0];
+      if (done && counted) {
+        done.dataset.to = String(Number(done.dataset.to) + 1); done.textContent = fmt(done, Number(done.dataset.to));
+        done.classList.remove("bump"); void done.offsetWidth; done.classList.add("bump");
       }
     };
-    apply();
-    wide.addEventListener("change", apply);
+    const cycle = () => {
+      burst();
+      orb.classList.remove("gulp"); void orb.offsetWidth; orb.classList.add("gulp");
+      setTimeout(showCard, 650);
+      ctimer = setTimeout(cycle, 2700);
+    };
+    const status = () => {
+      statusEl.classList.add("swap");
+      setTimeout(() => { si = (si + 1) % statuses.length; statusEl.textContent = statuses[si]; statusEl.classList.remove("swap"); }, 300);
+      stimer = setTimeout(status, 2700);
+    };
+    // the first cards are already done when the stage appears
+    cards.slice(0, 3).reverse().forEach((c) => { list.prepend(c); c.classList.add("vis"); });
+    ci = 3;
+    if (still) {
+      layout(); lines();
+      new ResizeObserver(() => { layout(); lines(); }).observe(eg);
+    } else {
+      nums.forEach((el) => { el.textContent = fmt(el, 0); });
+      const start = () => {
+        if (running) return;
+        running = true; layout(); last = 0;
+        if (!counted) { counted = true; countUp(nums, 1400); }
+        raf = requestAnimationFrame(frame);
+        ctimer = setTimeout(cycle, 1000); stimer = setTimeout(status, 1900);
+      };
+      const stop = () => { running = false; cancelAnimationFrame(raf); clearTimeout(ctimer); clearTimeout(stimer); };
+      const sync = () => (inView && !document.hidden ? start() : stop());
+      new IntersectionObserver(([en]) => { inView = en.isIntersecting; sync(); }, { threshold: .15 }).observe(eg);
+      document.addEventListener("visibilitychange", sync);
+      new ResizeObserver(() => { if (running) layout(); }).observe(eg);
+    }
   }
 
   // Made for your company: the chosen company's six blocks drop into the stack one by one, the list and the caption
@@ -145,51 +223,60 @@
     }
   }
 
-  // Example control room: the counters count up the first time it is seen, and the live feed fills in line by line,
-  // pauses, and plays again. The flow's dots are SVG animations, paused under reduced motion.
-  const cr = document.querySelector("[data-ctrl]");
-  if (cr) {
-    const locale = { en: "en-GB", fi: "fi-FI", sv: "sv-FI" }[root.lang] || "en-GB";
-    const euro = new Intl.NumberFormat(locale, { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
-    const fmt = (el, v) => el.dataset.kind === "eur" ? euro.format(v) : v + el.dataset.suf;
-    const nums = [...cr.querySelectorAll("[data-to]")];
-    const feed = [...cr.querySelectorAll(".fe")];
-    const flow = cr.querySelector(".cr-flow");
+  // Example control room: once it is seen the chart draws in, the numbers count up, the ring fills and the week
+  // fills with meetings; then, while it stays on screen, the agents change tasks and the queue gets approved.
+  // A soft light follows the pointer over each panel.
+  const bento = document.querySelector("[data-ctrl]");
+  if (bento) {
+    const nums = [...bento.querySelectorAll("b[data-to]")];
+    const ring = bento.querySelector(".ring-fg");
+    const meets = [...bento.querySelectorAll(".wk-m")];
+    const aps = [...bento.querySelectorAll(".ap")];
+    const tasks = [...bento.querySelectorAll("[data-tasks]")].map((el) => ({ el, list: el.dataset.tasks.split("|"), i: 0 }));
+    bento.querySelectorAll(".bx").forEach((bx) => {
+      bx.addEventListener("pointermove", (ev) => { const r = bx.getBoundingClientRect(); bx.style.setProperty("--mx", ev.clientX - r.left + "px"); bx.style.setProperty("--my", ev.clientY - r.top + "px"); });
+      bx.addEventListener("pointerleave", () => { bx.style.setProperty("--mx", "-500px"); bx.style.setProperty("--my", "-500px"); });
+    });
     if (still) {
-      if (flow && flow.pauseAnimations) flow.pauseAnimations();
+      bento.classList.add("go");
+      meets.forEach((m) => m.classList.add("on"));
+      if (aps[0]) aps[0].classList.add("ok");
     } else {
-      let counted = false, ftimer = 0, fn = 0, inView = false;
-      const count = () => {
-        counted = true;
-        const t0 = performance.now();
-        const step = (now) => {
-          const k = Math.min(1, (now - t0) / 1600), q = 1 - Math.pow(1 - k, 3);
-          nums.forEach((el) => { el.textContent = fmt(el, Math.round(Number(el.dataset.to) * q)); });
-          if (k < 1) requestAnimationFrame(step);
-        };
-        requestAnimationFrame(step);
-      };
-      const play = () => {
-        if (fn < feed.length) { feed[fn].classList.add("on"); fn += 1; ftimer = setTimeout(play, fn === feed.length ? 4200 : 1100); return; }
-        feed.forEach((f) => f.classList.remove("on"));
-        fn = 0;
-        ftimer = setTimeout(play, 700);
-      };
+      ring.style.strokeDashoffset = ring.dataset.len;
       nums.forEach((el) => { el.textContent = fmt(el, 0); });
-      const sync = () => {
-        const go = inView && !document.hidden;
-        if (go && !counted) count();
-        clearTimeout(ftimer);
-        if (go) ftimer = setTimeout(play, 400);
+      let begun = false, inView = false, atimer = 0, ttimer = 0, ai = 0;
+      const approve = () => {
+        if (ai < aps.length) { aps[ai].classList.add("ok"); ai += 1; atimer = setTimeout(approve, 2300); return; }
+        atimer = setTimeout(() => { aps.forEach((a) => a.classList.remove("ok")); ai = 0; atimer = setTimeout(approve, 1400); }, 2600);
       };
-      new IntersectionObserver(([en]) => { inView = en.isIntersecting; sync(); }, { threshold: .3 }).observe(cr);
+      const work = () => {
+        tasks.forEach((t, n) => setTimeout(() => {
+          t.el.classList.add("swap");
+          setTimeout(() => { t.i = (t.i + 1) % t.list.length; t.el.textContent = t.list[t.i]; t.el.classList.remove("swap"); }, 300);
+        }, n * 380));
+        ttimer = setTimeout(work, 3200);
+      };
+      const begin = () => {
+        begun = true;
+        bento.classList.add("go");
+        countUp(nums, 1800);
+        ring.style.strokeDashoffset = ring.dataset.to;
+        meets.forEach((m, i) => setTimeout(() => m.classList.add("on"), 700 + i * 170));
+      };
+      const sync = () => {
+        clearTimeout(atimer); clearTimeout(ttimer);
+        if (!inView || document.hidden) return;
+        if (!begun) begin();
+        atimer = setTimeout(approve, 1600); ttimer = setTimeout(work, 2000);
+      };
+      new IntersectionObserver(([en]) => { inView = en.isIntersecting; sync(); }, { threshold: .25 }).observe(bento);
       document.addEventListener("visibilitychange", sync);
     }
   }
 
   // Sections rise in as they enter the screen. Blocks already on screen at load are left alone.
   if (!still && "IntersectionObserver" in window) {
-    const sel = ".sec-head, .cr-stage, .bl-card, .step, .idea, .pilot-terms, .case, .result, .num-list li, .price-card, .person, .faq-list, .final-in, .band-note";
+    const sel = ".sec-head, .cr-stage, .eg, .bl-card, .step, .idea, .pilot-terms, .case, .result, .num-list li, .price-card, .person, .faq-list, .final-in, .band-note";
     const rio = new IntersectionObserver((entries) => entries.forEach((en) => {
       if (en.isIntersecting) { en.target.classList.add("in"); rio.unobserve(en.target); }
     }), { rootMargin: "0px 0px -8% 0px" });
