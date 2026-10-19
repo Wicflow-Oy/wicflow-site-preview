@@ -77,7 +77,7 @@
 
 
 /* Wicflow v3 concept. A painted Finnish lakeland behind the hero (img/), a big uppercase headline with one
-   hand-lettered word (Permanent Marker, Apache 2.0, our own copy), name tags floating over it, and the product
+   hand-lettered word (Permanent Marker, Apache 2.0, our own copy), the client logos in a pack of circles, and the product
    window rising and zooming in as the visitor scrolls. The sections below are light and airy: white and a pale blue
    tint, rounded cards, the tags' three colours as small accents. Manrope for headings, Geist for text.
    Motion stops under prefers-reduced-motion. (v2's product view styles are prepended to this file at build time.) */
@@ -180,11 +180,19 @@ button { font: inherit; color: inherit; }
 .hero { position: relative; padding: calc(var(--nav-h) + clamp(44px, 10vh, 112px)) 0 0; color: #fff; text-align: center; }
 .hero-in { display: grid; justify-items: center; gap: 24px; }
 .trust { display: inline-flex; align-items: center; gap: 14px; font-size: 15px; color: rgba(255, 255, 255, .9); text-shadow: 0 1px 12px rgba(8, 36, 90, .3); }
+/* The client avatars: a pack of overlapping circles. Hovering one lifts it out of the pack, a little bigger, with the
+   client's name below; leaving lets it settle back into place. */
 .avs { display: flex; }
-.avs i { width: 38px; height: 38px; margin-left: -9px; border-radius: 50%; background: #fff; display: grid; place-items: center; box-shadow: 0 0 0 2px rgba(255, 255, 255, .95), 0 4px 12px rgba(8, 36, 90, .25); overflow: hidden; }
-.avs i:first-child { margin-left: 0; }
-.avs img { width: 100%; height: 100%; object-fit: cover; }
-.avs img.fit { width: 74%; height: 74%; object-fit: contain; }
+.cav { position: relative; flex: none; margin-left: -6px; }
+.cav:first-child { margin-left: 0; }
+.cav-c { position: relative; z-index: 0; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; overflow: hidden; box-shadow: 0 0 0 2px rgba(255, 255, 255, .95), 0 4px 12px rgba(8, 36, 90, .25); transition: transform .45s cubic-bezier(.34, 1.56, .64, 1), box-shadow .3s ease; }
+.cav-c img { width: 100%; height: 100%; object-fit: cover; }
+.cav-mark img { width: 72%; height: 72%; object-fit: contain; }
+.cav-fit img { width: 84%; height: 84%; object-fit: contain; }
+.cav-n { position: absolute; left: 50%; top: calc(100% + 12px); z-index: 3; padding: 5px 9px; border-radius: 7px; background: rgba(10, 24, 52, .9); color: #fff; font: 600 12px/1 var(--f-body); font-style: normal; white-space: nowrap; text-shadow: none; pointer-events: none; opacity: 0; transform: translate(-50%, -4px); transition: opacity .2s ease, transform .3s var(--ease); }
+.cav:hover { z-index: 2; }
+.cav:hover .cav-c { transform: scale(1.32) translateY(-3px); box-shadow: 0 0 0 2px #fff, 0 14px 28px -8px rgba(8, 36, 90, .55); }
+.cav:hover .cav-n { opacity: 1; transform: translate(-50%, 0); }
 .trust-t { display: inline-flex; align-items: center; gap: 6px; }
 .trust-t::before { content: ""; width: 1px; height: 18px; margin-right: 8px; background: rgba(255, 255, 255, .45); }
 .trust-t b { color: #fff; font-weight: 700; }
@@ -193,15 +201,6 @@ html[lang="fi"] .h1 { --h1: clamp(2.1rem, 5.3vw, 4.6rem); }
 html[lang="sv"] .h1 { --h1: clamp(2.4rem, 6vw, 5.4rem); }
 .h1-l { display: block; }
 .brush { display: inline-block; font-family: var(--f-brush); font-weight: 400; letter-spacing: .01em; font-size: 1.03em; line-height: .9; transform: rotate(-3deg) translateY(.02em); }
-.htag { position: absolute; display: inline-flex; align-items: center; padding: 7px 12px; border-radius: 8px; font: 600 clamp(12px, 1.1vw, 15px)/1 var(--f-body); letter-spacing: 0; text-transform: none; text-shadow: none; color: #fff; white-space: nowrap; box-shadow: 0 10px 24px -10px rgba(8, 20, 50, .5); }
-.htag-cur { position: absolute; left: -11px; top: -11px; width: 15px; height: 15px; transform: rotate(-8deg); filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .25)); }
-.htag-0 { background: var(--orange); color: #fff; right: -4%; top: -9%; } .htag-0 .htag-cur { color: var(--orange); }
-.htag-1 { background: var(--blue); left: 47%; top: 44%; } .htag-1 .htag-cur { color: var(--blue); }
-.htag-2 { background: var(--green); right: 4%; top: 40%; } .htag-2 .htag-cur { color: var(--green); }
-.js .htag { animation: tag-pop .6s var(--ease) both, tag-float 7s ease-in-out infinite; }
-.js .htag-0 { animation-delay: .5s, 1.1s; } .js .htag-1 { animation-delay: .8s, 1.4s; animation-duration: .6s, 8s; } .js .htag-2 { animation-delay: 1.1s, 1.7s; animation-duration: .6s, 6s; }
-@keyframes tag-pop { from { opacity: 0; scale: .6; } to { opacity: 1; scale: 1; } }
-@keyframes tag-float { 0%, 100% { translate: 0 0; } 33% { translate: 6px -5px; } 66% { translate: -4px 4px; } }
 .hero .lede { max-width: 620px; font-size: clamp(17px, 1.45vw, 20px); line-height: 1.55; color: rgba(255, 255, 255, .94); text-shadow: 0 1px 14px rgba(8, 36, 90, .35); text-wrap: pretty; }
 .cta-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
 .hero-note { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 22px; padding: 9px 20px; border-radius: 999px; background: rgba(10, 44, 110, .22); border: 1px solid rgba(255, 255, 255, .18); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); font-size: 14.5px; font-weight: 500; color: #fff; }
@@ -584,7 +583,6 @@ html[lang="sv"] .h1 { --h1: clamp(2.4rem, 6vw, 5.4rem); }
   .faq .sec-head { position: static; }
   .foot-in { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .foot-brand { grid-column: 1 / -1; }
-  .htag { display: none; }
   .cr-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cr-mid { grid-template-columns: minmax(0, 1fr); }
   .bl-card { grid-template-columns: minmax(0, 1fr); border-radius: 26px; }
