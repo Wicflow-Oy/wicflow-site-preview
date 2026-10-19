@@ -349,6 +349,46 @@ html[lang="sv"] .h1 { --h1: clamp(2.4rem, 6vw, 5.4rem); }
 .sys-view .win { box-shadow: 0 30px 60px -28px rgba(6, 26, 70, .55), 0 0 0 1px rgba(255, 255, 255, .6); }
 .sys-note { margin-top: 22px; font: 400 12.5px/1.4 var(--f-mono); color: var(--ink-3); text-align: center; }
 
+/* Built in blocks: a stack of wireframe bricks on a night-blue card. The six slots light up in turn as glowing bricks
+   drop in (v3.js), and the list beside the stack follows. Without the script every block is shown. */
+.bl-card { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); border-radius: 32px; overflow: hidden; color: #fff;
+  background: radial-gradient(ellipse 70% 60% at 30% 22%, rgba(74, 132, 232, .34), transparent 70%), linear-gradient(160deg, #0c2554 0%, #0a1834 100%);
+  border: 1px solid rgba(255, 255, 255, .06); box-shadow: 0 60px 120px -60px rgba(10, 30, 80, .7); }
+.bl-scene { position: relative; display: grid; place-items: center; min-height: 520px; padding: 48px 28px 150px; overflow: hidden; }
+.bl-svg { width: min(100%, 440px); overflow: visible; }
+.bl-svg path, .bl-svg ellipse { stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.dim path, .dim ellipse { stroke: rgba(255, 255, 255, .17); stroke-width: 1; }
+.dim .f-t { fill: rgba(255, 255, 255, .055); } .dim .f-l { fill: rgba(255, 255, 255, .03); } .dim .f-r { fill: rgba(255, 255, 255, .015); }
+.dim .s-side, .dim .s-top { fill: rgba(255, 255, 255, .045); }
+.ghost path, .ghost ellipse { fill: none; stroke: rgba(255, 255, 255, .34); stroke-width: 1; stroke-dasharray: 4 4; }
+.lit path, .lit ellipse { stroke: #fff; stroke-width: 1.3; }
+.lit .f-t, .lit .s-top { fill: #ffffff; } .lit .f-l { fill: #e4ebf8; } .lit .f-r { fill: #c6d3ea; } .lit .s-side { fill: #dce5f5; }
+.lit { filter: drop-shadow(0 0 6px rgba(255, 255, 255, .7)) drop-shadow(0 0 24px rgba(140, 185, 255, .55)); }
+.js .lit { opacity: 0; transform: translateY(-160px); transition: transform .9s cubic-bezier(.22, 1.28, .5, 1), opacity .3s ease; }
+.js .lit.on { opacity: 1; transform: none; }
+.js .bl-card.fading .lit { opacity: 0; transform: none; transition: opacity .55s ease; }
+.bl-cap { position: absolute; left: 36px; right: 36px; bottom: 34px; transition: opacity .4s ease; }
+.bl-cap.idle { opacity: .45; }
+.bl-count { font: 400 13px/1 var(--f-mono); letter-spacing: .04em; color: rgba(255, 255, 255, .6); }
+.bl-count b { font-weight: 500; color: #fff; }
+.bl-name { margin-top: 12px; font: 800 clamp(1.5rem, 2.4vw, 2rem)/1.1 var(--f-display); letter-spacing: -.03em; }
+.bl-text { margin-top: 8px; max-width: 360px; font-size: 15.5px; color: rgba(255, 255, 255, .72); }
+.bl-side { display: flex; flex-direction: column; justify-content: center; padding: 40px 36px 40px 12px; }
+.bl-list { display: grid; gap: 4px; }
+.bl-btn { width: 100%; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 16px; align-items: center; padding: 14px 16px; border: 1px solid transparent; border-radius: 16px; background: transparent; color: #fff; text-align: left; cursor: pointer; transition: background-color .35s ease, border-color .35s ease, color .35s ease; }
+.bl-btn:hover { background: rgba(255, 255, 255, .05); }
+.bl-n { font: 400 12px/1 var(--f-mono); letter-spacing: .04em; opacity: .7; }
+.bl-main b { display: block; font: 700 17px/1.25 var(--f-display); letter-spacing: -.01em; }
+.bl-main span { display: block; margin-top: 2px; font-size: 14px; line-height: 1.45; color: rgba(255, 255, 255, .72); transition: color .35s ease; }
+.bl-meta { font: 600 12px/1 var(--f-body); font-style: normal; white-space: nowrap; padding: 6px 10px; border-radius: 999px; background: rgba(255, 255, 255, .1); color: rgba(255, 255, 255, .88); transition: background-color .35s ease, color .35s ease; }
+.bl-item:first-child .bl-meta { background: var(--green); color: #fff; }
+.js .bl-item:not(.on) .bl-btn { color: rgba(255, 255, 255, .42); }
+.js .bl-item:not(.on) .bl-main span { color: rgba(255, 255, 255, .32); }
+.js .bl-item:not(.on) .bl-meta { background: rgba(255, 255, 255, .05); color: rgba(255, 255, 255, .4); }
+.bl-item.now .bl-btn { background: rgba(255, 255, 255, .09); border-color: rgba(255, 255, 255, .16); }
+.bl-btn:focus-visible { outline-color: #fff; }
+.bl-note { margin-top: 18px; padding: 0 16px; font-size: 12.5px; color: rgba(255, 255, 255, .55); }
+
 /* Pilot */
 .pilot-head { display: flex; align-items: end; justify-content: space-between; gap: 24px 48px; max-width: none; flex-wrap: wrap; }
 .pilot-head > div { display: grid; gap: 18px; max-width: 780px; }
@@ -501,6 +541,10 @@ html[lang="sv"] .h1 { --h1: clamp(2.4rem, 6vw, 5.4rem); }
   .foot-in { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .foot-brand { grid-column: 1 / -1; }
   .htag { display: none; }
+  .bl-card { grid-template-columns: minmax(0, 1fr); border-radius: 26px; }
+  .bl-scene { min-height: 0; padding: 36px 20px 150px; }
+  .bl-svg { width: min(100%, 360px); }
+  .bl-side { padding: 0 14px 26px; }
 }
 @media (max-width: 760px) {
   :root { --imgw: max(100vw, 150vh); --imgy: calc(64vh - var(--imgh) * .33); }
@@ -545,6 +589,10 @@ html[lang="sv"] .h1 { --h1: clamp(2.4rem, 6vw, 5.4rem); }
   .sys-view { padding: 14px; }
   .sys-tab { flex: none; }
   .band { border-radius: 22px 22px 0 0; margin-top: -22px; }
+  .bl-btn { grid-template-columns: auto minmax(0, 1fr); gap: 8px 14px; padding: 13px 14px; }
+  .bl-n { align-self: start; margin-top: 4px; }
+  .bl-meta { grid-column: 2; justify-self: start; }
+  .bl-cap { left: 24px; right: 24px; bottom: 26px; }
 }
 
 /* Calm motion when the visitor asks for it */

@@ -114,9 +114,50 @@
     });
   }
 
+  // Built in blocks: the six blocks drop into the stack one by one, the list and the caption follow, then the stack
+  // clears and builds again. Picking a block in the list stops the loop and shows the stack up to that block.
+  const bc = document.querySelector("[data-blocks]");
+  if (bc) {
+    const lits = [...bc.querySelectorAll(".lit")].sort((a, b) => a.dataset.i - b.dataset.i);
+    const items = [...bc.querySelectorAll(".bl-item")];
+    const cap = bc.querySelector(".bl-cap"), count = bc.querySelector("[data-count]");
+    const nameEl = bc.querySelector("[data-name]"), textEl = bc.querySelector("[data-text]");
+    const total = items.length;
+    let n = 0, timer = 0, running = false, manual = false, inView = false;
+    const show = (k) => {
+      n = k;
+      lits.forEach((l, i) => l.classList.toggle("on", i < k));
+      items.forEach((it, i) => { it.classList.toggle("on", i < k); it.classList.toggle("now", i === k - 1); });
+      const cur = items[Math.max(0, k - 1)];
+      count.textContent = String(k).padStart(2, "0");
+      nameEl.textContent = cur.querySelector("b").textContent;
+      textEl.textContent = cur.querySelector(".bl-main span").textContent;
+      cap.classList.toggle("idle", k === 0);
+    };
+    const tick = () => {
+      if (n < total) { show(n + 1); timer = setTimeout(tick, n === total ? 3400 : 1300); return; }
+      bc.classList.add("fading");
+      timer = setTimeout(() => { show(0); bc.classList.remove("fading"); timer = setTimeout(tick, 700); }, 600);
+    };
+    const sync = () => {
+      const go = inView && !document.hidden && !manual && !still;
+      if (go && !running) { running = true; timer = setTimeout(tick, n === 0 ? 300 : 900); }
+      else if (!go && running) { running = false; clearTimeout(timer); }
+    };
+    items.forEach((it, i) => it.querySelector("button").addEventListener("click", () => {
+      manual = true; sync(); clearTimeout(timer); bc.classList.remove("fading"); show(i + 1);
+    }));
+    if (still) show(total);
+    else {
+      show(0);
+      new IntersectionObserver(([en]) => { inView = en.isIntersecting; sync(); }, { threshold: .35 }).observe(bc);
+      document.addEventListener("visibilitychange", sync);
+    }
+  }
+
   // Sections rise in as they enter the screen. Blocks already on screen at load are left alone.
   if (!still && "IntersectionObserver" in window) {
-    const sel = ".sec-head, .sys-box, .step, .ideas, .case, .result, .num-list li, .price-card, .person, .faq-list, .final-in, .band-note";
+    const sel = ".sec-head, .sys-box, .bl-card, .step, .ideas, .case, .result, .num-list li, .price-card, .person, .faq-list, .final-in, .band-note";
     const rio = new IntersectionObserver((entries) => entries.forEach((en) => {
       if (en.isIntersecting) { en.target.classList.add("in"); rio.unobserve(en.target); }
     }), { rootMargin: "0px 0px -8% 0px" });
