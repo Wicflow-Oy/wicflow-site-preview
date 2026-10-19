@@ -189,7 +189,7 @@
 
   // Sections rise in as they enter the screen. Blocks already on screen at load are left alone.
   if (!still && "IntersectionObserver" in window) {
-    const sel = ".sec-head, .cr-stage, .bl-card, .step, .ideas, .case, .result, .num-list li, .price-card, .person, .faq-list, .final-in, .band-note";
+    const sel = ".sec-head, .cr-stage, .bl-card, .step, .idea, .pilot-terms, .case, .result, .num-list li, .price-card, .person, .faq-list, .final-in, .band-note";
     const rio = new IntersectionObserver((entries) => entries.forEach((en) => {
       if (en.isIntersecting) { en.target.classList.add("in"); rio.unobserve(en.target); }
     }), { rootMargin: "0px 0px -8% 0px" });
