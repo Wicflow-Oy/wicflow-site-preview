@@ -7,6 +7,72 @@
   root.classList.add("js");
   const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  // The page's background: a faint, slowly flowing haze in the site's colours (domain-warped noise in a small WebGL
+  // shader, drawn at low resolution so it stays soft and light), with a gentle swirl and glow that follows the pointer.
+  // It pauses in a hidden tab; under reduced motion it draws one still frame. Without WebGL the plain colour shows.
+  const haze = document.querySelector(".haze");
+  const gl = haze && haze.getContext("webgl", { antialias: false, alpha: false, depth: false, powerPreference: "low-power" });
+  if (gl) {
+    const VS = "attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}";
+    const FS = `precision mediump float;
+uniform vec2 r;uniform float t;uniform vec2 m;uniform float mi;
+vec3 p3(vec3 x){return x-floor(x*(1./289.))*289.;}vec2 p2(vec2 x){return x-floor(x*(1./289.))*289.;}vec3 pm(vec3 x){return p3(((x*34.)+1.)*x);}
+float sn(vec2 v){const vec4 C=vec4(.211324865405187,.366025403784439,-.577350269189626,.024390243902439);
+vec2 i=floor(v+dot(v,C.yy));vec2 x0=v-i+dot(i,C.xx);vec2 i1=(x0.x>x0.y)?vec2(1.,0.):vec2(0.,1.);vec4 x12=x0.xyxy+C.xxzz;x12.xy-=i1;
+i=p2(i);vec3 p=pm(pm(i.y+vec3(0.,i1.y,1.))+i.x+vec3(0.,i1.x,1.));vec3 mm=max(.5-vec3(dot(x0,x0),dot(x12.xy,x12.xy),dot(x12.zw,x12.zw)),0.);
+mm=mm*mm;mm=mm*mm;vec3 x=2.*fract(p*C.www)-1.;vec3 h=abs(x)-.5;vec3 ox=floor(x+.5);vec3 a0=x-ox;mm*=1.79284291400159-.85373472095314*(a0*a0+h*h);
+vec3 g;g.x=a0.x*x0.x+h.x*x0.y;g.yz=a0.yz*x12.xz+h.yz*x12.yw;return 130.*dot(mm,g);}
+float fb(vec2 q){float v=0.,a=.55;for(int k=0;k<3;k++){v+=a*sn(q);q=q*1.85+vec2(1.7,9.2);a*=.45;}return v;}
+void main(){vec2 uv=gl_FragCoord.xy/r;float ar=r.x/r.y;vec2 p=uv*vec2(ar,1.)*.62;vec2 mp=m*vec2(ar,1.)*.62;
+vec2 dd=p-mp;float d=length(dd);float sw=exp(-d*d*14.)*mi;p+=vec2(-dd.y,dd.x)*sw*.32+dd*sw*.06;
+float tt=t*.028;vec2 q=vec2(fb(p+tt),fb(p+vec2(5.2,1.3)-tt*.8));
+vec2 w=vec2(fb(p+1.05*q+vec2(1.7,9.2)+tt*1.2),fb(p+1.05*q+vec2(8.3,2.8)-tt));float f=fb(p+1.2*w);
+vec3 c=vec3(.952,.964,.985);
+c=mix(c,vec3(.78,.87,.99),smoothstep(-.45,.75,w.x)*.66);
+c=mix(c,vec3(.88,.85,.99),smoothstep(-.3,.8,w.y)*.52);
+c=mix(c,vec3(.995,.9,.85),smoothstep(-.05,.85,f)*.45);
+c=mix(c,vec3(.85,.95,.91),smoothstep(0.,.9,q.y)*.34);
+c=mix(c,vec3(.76,.85,1.),exp(-d*d*16.)*.42*mi);
+c=mix(c,vec3(.952,.964,.985),.22);
+gl_FragColor=vec4(c,1.);}`;
+    const sh = (type, src) => { const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); return o; };
+    const prog = gl.createProgram();
+    gl.attachShader(prog, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(prog);
+    if (gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+      gl.useProgram(prog);
+      gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+      const loc = gl.getAttribLocation(prog, "a");
+      gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+      const U = (n) => gl.getUniformLocation(prog, n);
+      const uR = U("r"), uT = U("t"), uM = U("m"), uMi = U("mi");
+      const SCALE = .32;
+      const size = () => {
+        const w = Math.max(1, Math.round(innerWidth * SCALE)), h = Math.max(1, Math.round(innerHeight * SCALE));
+        if (haze.width !== w || haze.height !== h) { haze.width = w; haze.height = h; gl.viewport(0, 0, w, h); }
+        gl.uniform2f(uR, w, h);
+      };
+      const target = { x: .72, y: .62 }, cur = { x: .72, y: .62 };
+      let energy = .35, want = .35, last = 0, t0 = performance.now(), raf = 0;
+      const draw = (now) => {
+        cur.x += (target.x - cur.x) * .045; cur.y += (target.y - cur.y) * .045;
+        energy += (want - energy) * .03; want += (.35 - want) * .01;
+        gl.uniform1f(uT, (now - t0) / 1000); gl.uniform2f(uM, cur.x, cur.y); gl.uniform1f(uMi, energy);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+      };
+      const loop = (now) => { raf = requestAnimationFrame(loop); if (now - last < 33) return; last = now; draw(now); };
+      size();
+      haze.classList.add("on");
+      if (still) { draw(t0 + 4000); addEventListener("resize", () => { size(); draw(t0 + 4000); }); }
+      else {
+        addEventListener("resize", size);
+        addEventListener("pointermove", (ev) => { target.x = ev.clientX / innerWidth; target.y = 1 - ev.clientY / innerHeight; want = 1; }, { passive: true });
+        document.addEventListener("visibilitychange", () => { cancelAnimationFrame(raf); if (!document.hidden) raf = requestAnimationFrame(loop); });
+        raf = requestAnimationFrame(loop);
+      }
+    }
+  }
+
   // Navigation: frosted white once the page scrolls, and the menu on small screens.
   const nav = document.querySelector("[data-nav]");
   const onNav = () => nav && nav.classList.toggle("scrolled", window.scrollY > 24);
