@@ -166,7 +166,9 @@ button { font: inherit; color: inherit; }
 .more:hover .ic { transform: translateX(3px); }
 
 /* The sky: the painting stays in place behind the hero and the product window */
-.sky { position: relative; isolation: isolate; background: var(--sky); }
+/* The sticky painting would otherwise hang a screen's height past the hero; clipping keeps it inside (and, unlike
+   overflow: hidden, leaves sticky working). */
+.sky { position: relative; isolation: isolate; background: var(--sky); clip-path: inset(0); overflow: clip; }
 .sky-bg { position: sticky; top: 0; height: 100vh; margin-bottom: -100vh; z-index: -1; pointer-events: none;
   background:
     linear-gradient(180deg, rgba(14, 52, 130, .5) 0%, rgba(14, 52, 130, 0) 46%),
@@ -326,27 +328,56 @@ html[lang="sv"] .h1 { --h1: clamp(2.4rem, 6vw, 5.4rem); }
 .ticks .ic { margin-top: 3px; color: var(--blue); }
 .brush-ink { display: inline-block; font-family: var(--f-brush); font-weight: 400; letter-spacing: 0; color: var(--blue); font-size: .95em; line-height: 1; transform: rotate(-2deg); }
 
-/* Systems */
-.sys-box { padding: 12px; border-radius: 30px; background: #fff; border: 1px solid var(--line); box-shadow: 0 40px 90px -60px rgba(16, 40, 90, .45); }
-.sys-list { display: flex; gap: 4px; padding: 5px; margin-bottom: 8px; border-radius: 20px; background: var(--tint); overflow-x: auto; scrollbar-width: none; }
-.sys-list::-webkit-scrollbar { display: none; }
-.sys-tab { flex: 1 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 18px; border: 0; border-radius: 15px; background: transparent; cursor: pointer; font: 600 15px/1.2 var(--f-body); color: var(--ink-2); transition: background-color .2s ease, color .2s ease, box-shadow .2s ease; }
-.sys-tab:hover { color: var(--ink); }
-.sys-tab[aria-selected="true"] { background: #fff; color: var(--ink); box-shadow: 0 1px 3px rgba(16, 24, 40, .1), 0 0 0 1px rgba(16, 24, 40, .04); }
-.ex { font: 600 10px/1 var(--f-mono); font-style: normal; letter-spacing: .08em; text-transform: uppercase; padding: 4px 6px; border-radius: 5px; background: #fff1ea; color: #c4320a; }
-.sys-panel { display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); gap: clamp(24px, 4vw, 56px); align-items: center; padding: clamp(14px, 2.6vw, 32px); animation: panel-in .5s var(--ease); }
-.sys-panel[hidden] { display: none; }
-@media (min-width: 901px) {
-  .sys-stage { display: grid; }
-  .sys-panel { grid-area: 1 / 1; }
-  .sys-panel[hidden] { display: grid; visibility: hidden; animation: none; }
-}
-@keyframes panel-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-.sys-copy { display: grid; gap: 16px; }
-.sys-copy h3 { font: 800 clamp(1.5rem, 2.4vw, 2.1rem)/1.12 var(--f-display); letter-spacing: -.03em; text-wrap: balance; }
-.sys-copy p { color: var(--ink-2); }
-.sys-view { padding: clamp(18px, 3vw, 34px); border-radius: 22px; background: linear-gradient(180deg, rgba(14, 52, 130, .2), rgba(14, 52, 130, 0) 50%), url(img/hero-1400.webp) 70% 100% / cover; }
-.sys-view .win { box-shadow: 0 30px 60px -28px rgba(6, 26, 70, .55), 0 0 0 1px rgba(255, 255, 255, .6); }
+/* Example: one company's control room. A light app window on the painting, with counters, the flow through Company
+   Brain, a live feed and the automations' status. v3.js counts the numbers up and plays the feed. */
+.cr-stage { padding: clamp(14px, 3vw, 40px); border-radius: 30px; background: linear-gradient(180deg, rgba(14, 52, 130, .25), rgba(14, 52, 130, 0) 55%), url(img/hero-1400.webp) 70% 100% / cover; box-shadow: 0 40px 90px -60px rgba(16, 40, 90, .5); }
+.cr { border-radius: 16px; background: #fff; overflow: hidden; box-shadow: 0 40px 90px -36px rgba(6, 26, 70, .6), 0 0 0 1px rgba(255, 255, 255, .6); font-size: 13px; line-height: 1.45; }
+.cr-live { display: inline-flex; align-items: center; gap: 7px; flex: none; font: 500 12px/1 var(--f-body); color: #067647; }
+.cr-live i { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 0 rgba(23, 178, 106, .5); animation: live 2s ease-out infinite; }
+@keyframes live { 0% { box-shadow: 0 0 0 0 rgba(23, 178, 106, .5); } 100% { box-shadow: 0 0 0 9px rgba(23, 178, 106, 0); } }
+.cr-body { display: grid; gap: 14px; padding: 16px 18px 18px; background: #f6f7f9; }
+.cr-title { font-size: 14px; color: var(--ink-3); }
+.cr-title b { color: var(--ink); font-weight: 700; }
+.cr-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.kp { display: grid; gap: 6px; padding: 14px 16px; border-radius: 12px; background: #fff; border: 1px solid #eceef2; }
+.kp span { font-size: 12px; color: var(--ink-3); }
+.kp b { font: 800 clamp(1.4rem, 2.2vw, 1.85rem)/1 var(--f-display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cr-mid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 14px; }
+.cr-panel { min-width: 0; padding: 14px 16px; border-radius: 12px; background: #fff; border: 1px solid #eceef2; }
+.cr-h { margin-bottom: 10px; font: 500 11px/1.2 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: #98a2b3; }
+.cr-flow { width: 100%; height: auto; overflow: visible; }
+.cr-flow .fl { fill: none; stroke: #d0d9ea; stroke-width: 1.5; }
+.cr-flow .fd { fill: var(--blue); }
+.cr-flow .fd-out { fill: var(--orange); }
+.cr-flow .fn rect { fill: #fff; stroke: #e1e6ef; stroke-width: 1.2; }
+.cr-flow .fn circle { fill: var(--blue); }
+.cr-flow .fn-act circle { fill: var(--orange); }
+.cr-flow .fn text { font: 500 12.5px var(--f-body); fill: #344054; }
+.cr-flow .fhub rect { fill: #0c2554; }
+.cr-flow .fhub .fhub-glow { fill: var(--blue); opacity: .35; transform-box: fill-box; transform-origin: center; animation: hub 2.4s ease-in-out infinite; }
+@keyframes hub { 0%, 100% { transform: scale(1); opacity: .35; } 50% { transform: scale(1.12, 1.25); opacity: 0; } }
+.cr-flow .fhub text { font: 700 14px var(--f-display); fill: #fff; text-anchor: middle; }
+.cr-feed { display: grid; }
+.fe { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 10px; padding: 8px 0; border-top: 1px solid #f2f4f7; color: #344054; }
+.fe:first-child { border-top: 0; padding-top: 2px; }
+.fe time { font: 500 11.5px/1.5 var(--f-mono); color: #98a2b3; }
+.fe:last-child span { font-weight: 600; color: #067647; }
+.js .fe { opacity: 0; transform: translateY(6px); transition: opacity .45s ease, transform .5s var(--ease); }
+.js .fe.on { opacity: 1; transform: none; }
+.cr-cols, .cr-autos li { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) 70px 70px; gap: 14px; align-items: center; }
+.cr-cols { padding-bottom: 6px; font-size: 11.5px; color: #98a2b3; }
+.cr-cols span:nth-child(3) { grid-column: 3 / 5; }
+.cr-autos li { padding: 9px 0; border-top: 1px solid #f2f4f7; }
+.cr-autos b { font-weight: 600; font-size: 13px; }
+.st { justify-self: start; display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px 3px 7px; border-radius: 999px; font-size: 11.5px; font-weight: 500; white-space: nowrap; }
+.st i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.st-run { background: #ecfdf3; color: #067647; }
+.st-wait { background: #fffaeb; color: #b54708; }
+.st-sched { background: #f2f4f7; color: #475467; }
+.runs { font: 700 15px/1 var(--f-display); font-variant-numeric: tabular-nums; }
+.cr-spark { width: 61px; height: 22px; }
+.cr-spark rect { fill: #c7d7fe; }
+.cr-autos li:first-child .cr-spark rect { fill: var(--blue); }
 .sys-note { margin-top: 22px; font: 400 12.5px/1.4 var(--f-mono); color: var(--ink-3); text-align: center; }
 
 /* Built in blocks: a stack of wireframe bricks on a night-blue card. The six slots light up in turn as glowing bricks
@@ -387,6 +418,19 @@ html[lang="sv"] .h1 { --h1: clamp(2.4rem, 6vw, 5.4rem); }
 .js .bl-item:not(.on) .bl-meta { background: rgba(255, 255, 255, .05); color: rgba(255, 255, 255, .4); }
 .bl-item.now .bl-btn { background: rgba(255, 255, 255, .09); border-color: rgba(255, 255, 255, .16); }
 .bl-btn:focus-visible { outline-color: #fff; }
+.bl-pick-l { padding: 0 16px; font: 500 11.5px/1.2 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: rgba(255, 255, 255, .6); }
+.bl-pick { display: none; flex-wrap: wrap; gap: 6px; margin: 10px 16px 18px; }
+.js .bl-pick { display: flex; }
+.js .bl-pick-l { display: block; }
+.bl-pick-l { display: none; }
+.bl-pick-b { padding: 8px 14px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .22); background: transparent; color: rgba(255, 255, 255, .8); font: 600 13.5px/1 var(--f-body); cursor: pointer; transition: background-color .25s ease, color .25s ease, border-color .25s ease; }
+.bl-pick-b:hover { border-color: rgba(255, 255, 255, .5); color: #fff; }
+.bl-pick-b[aria-selected="true"] { background: #fff; border-color: #fff; color: #0c2554; }
+.bl-co + .bl-co { margin-top: 18px; }
+.js .bl-co:not(.on) { display: none; }
+.js .bl-co + .bl-co { margin-top: 0; }
+.bl-for { padding: 0 16px 8px; font-size: 13.5px; color: rgba(255, 255, 255, .6); }
+.bl-for b { color: #fff; font-weight: 600; }
 .bl-note { margin-top: 18px; padding: 0 16px; font-size: 12.5px; color: rgba(255, 255, 255, .55); }
 
 /* Pilot */
@@ -535,12 +579,14 @@ html[lang="sv"] .h1 { --h1: clamp(2.4rem, 6vw, 5.4rem); }
   .num-list { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 40px; }
 }
 @media (max-width: 900px) {
-  .sys-panel, .steps, .ideas, .ideas-list, .work-grid, .results, .price-grid, .faq-in, .reach { grid-template-columns: minmax(0, 1fr); }
+  .steps, .ideas, .ideas-list, .work-grid, .results, .price-grid, .faq-in, .reach { grid-template-columns: minmax(0, 1fr); }
   .case-xl { grid-row: auto; }
   .faq .sec-head { position: static; }
   .foot-in { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .foot-brand { grid-column: 1 / -1; }
   .htag { display: none; }
+  .cr-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cr-mid { grid-template-columns: minmax(0, 1fr); }
   .bl-card { grid-template-columns: minmax(0, 1fr); border-radius: 26px; }
   .bl-scene { min-height: 0; padding: 36px 20px 150px; }
   .bl-svg { width: min(100%, 360px); }
@@ -586,13 +632,19 @@ html[lang="sv"] .h1 { --h1: clamp(2.4rem, 6vw, 5.4rem); }
   .faq details p { padding-right: 22px; }
   .marquee ul { gap: 44px; padding-right: 44px; }
   .case-body { padding: 22px 20px 24px; }
-  .sys-view { padding: 14px; }
-  .sys-tab { flex: none; }
   .band { border-radius: 22px 22px 0 0; margin-top: -22px; }
   .bl-btn { grid-template-columns: auto minmax(0, 1fr); gap: 8px 14px; padding: 13px 14px; }
   .bl-n { align-self: start; margin-top: 4px; }
   .bl-meta { grid-column: 2; justify-self: start; }
   .bl-cap { left: 24px; right: 24px; bottom: 26px; }
+  .cr-body { padding: 12px; gap: 10px; }
+  .cr-cols { display: none; }
+  .cr-autos li { grid-template-columns: minmax(0, 1fr) auto; gap: 6px 10px; }
+  .cr-autos .st { grid-column: 1; grid-row: 2; }
+  .cr-autos .runs { grid-column: 2; grid-row: 1 / 3; }
+  .cr-spark { display: none; }
+  .cr-live { display: none; }
+  .cr-mid > .cr-panel:first-child { display: none; }  /* the flow's labels get too small on a phone */
 }
 
 /* Calm motion when the visitor asks for it */

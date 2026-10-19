@@ -85,44 +85,17 @@
     wide.addEventListener("change", apply);
   }
 
-  // Systems: tabs, chosen by click or arrow keys.
-  const box = document.querySelector("[data-tabs]");
-  if (box) {
-    const tabs = [...box.querySelectorAll('[role="tab"]')];
-    const list = tabs[0].parentElement;
-    const panels = tabs.map((t) => document.getElementById(t.getAttribute("aria-controls")));
-    let current = 0;
-    const select = (i, focus) => {
-      current = (i + tabs.length) % tabs.length;
-      tabs.forEach((t, n) => {
-        const on = n === current;
-        t.setAttribute("aria-selected", String(on));
-        t.tabIndex = on ? 0 : -1;
-        panels[n].hidden = !on;
-      });
-      if (focus) tabs[current].focus({ preventScroll: true });
-      if (list.scrollWidth > list.clientWidth) list.scrollTo({ left: Math.max(0, tabs[current].offsetLeft - 8), behavior: still ? "auto" : "smooth" });
-    };
-    tabs.forEach((t, n) => {
-      t.addEventListener("click", () => select(n, false));
-      t.addEventListener("keydown", (e) => {
-        const keys = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
-        if (e.key in keys) { e.preventDefault(); select(current + keys[e.key], true); }
-        else if (e.key === "Home") { e.preventDefault(); select(0, true); }
-        else if (e.key === "End") { e.preventDefault(); select(tabs.length - 1, true); }
-      });
-    });
-  }
-
-  // Built in blocks: the six blocks drop into the stack one by one, the list and the caption follow, then the stack
-  // clears and builds again. Picking a block in the list stops the loop and shows the stack up to that block.
+  // Made for your company: the chosen company's six blocks drop into the stack one by one, the list and the caption
+  // follow, then the stack clears and builds again. Picking another company starts its build; picking a block in the
+  // list stops the loop and shows the stack up to that block.
   const bc = document.querySelector("[data-blocks]");
   if (bc) {
     const lits = [...bc.querySelectorAll(".lit")].sort((a, b) => a.dataset.i - b.dataset.i);
-    const items = [...bc.querySelectorAll(".bl-item")];
+    const cos = [...bc.querySelectorAll(".bl-co")];
+    const picks = [...bc.querySelectorAll(".bl-pick-b")];
     const cap = bc.querySelector(".bl-cap"), count = bc.querySelector("[data-count]");
     const nameEl = bc.querySelector("[data-name]"), textEl = bc.querySelector("[data-text]");
-    const total = items.length;
+    let items = [...cos[0].querySelectorAll(".bl-item")];
     let n = 0, timer = 0, running = false, manual = false, inView = false;
     const show = (k) => {
       n = k;
@@ -135,7 +108,7 @@
       cap.classList.toggle("idle", k === 0);
     };
     const tick = () => {
-      if (n < total) { show(n + 1); timer = setTimeout(tick, n === total ? 3400 : 1300); return; }
+      if (n < items.length) { show(n + 1); timer = setTimeout(tick, n === items.length ? 3400 : 1300); return; }
       bc.classList.add("fading");
       timer = setTimeout(() => { show(0); bc.classList.remove("fading"); timer = setTimeout(tick, 700); }, 600);
     };
@@ -144,10 +117,27 @@
       if (go && !running) { running = true; timer = setTimeout(tick, n === 0 ? 300 : 900); }
       else if (!go && running) { running = false; clearTimeout(timer); }
     };
-    items.forEach((it, i) => it.querySelector("button").addEventListener("click", () => {
+    const pick = (ci, focus) => {
+      picks.forEach((b, i) => { b.setAttribute("aria-selected", String(i === ci)); b.tabIndex = i === ci ? 0 : -1; });
+      cos.forEach((c, i) => c.classList.toggle("on", i === ci));
+      if (focus) picks[ci].focus();
+      items.forEach((it) => it.classList.remove("on", "now"));
+      items = [...cos[ci].querySelectorAll(".bl-item")];
+      clearTimeout(timer); running = false; manual = false; bc.classList.remove("fading");
+      show(still ? items.length : 0);
+      sync();
+    };
+    picks.forEach((b, ci) => {
+      b.addEventListener("click", () => pick(ci, false));
+      b.addEventListener("keydown", (e) => {
+        const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+        if (d) { e.preventDefault(); pick((ci + d + picks.length) % picks.length, true); }
+      });
+    });
+    cos.forEach((c) => c.querySelectorAll(".bl-item").forEach((it, i) => it.querySelector("button").addEventListener("click", () => {
       manual = true; sync(); clearTimeout(timer); bc.classList.remove("fading"); show(i + 1);
-    }));
-    if (still) show(total);
+    })));
+    if (still) show(items.length);
     else {
       show(0);
       new IntersectionObserver(([en]) => { inView = en.isIntersecting; sync(); }, { threshold: .35 }).observe(bc);
@@ -155,9 +145,51 @@
     }
   }
 
+  // Example control room: the counters count up the first time it is seen, and the live feed fills in line by line,
+  // pauses, and plays again. The flow's dots are SVG animations, paused under reduced motion.
+  const cr = document.querySelector("[data-ctrl]");
+  if (cr) {
+    const locale = { en: "en-GB", fi: "fi-FI", sv: "sv-FI" }[root.lang] || "en-GB";
+    const euro = new Intl.NumberFormat(locale, { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
+    const fmt = (el, v) => el.dataset.kind === "eur" ? euro.format(v) : v + el.dataset.suf;
+    const nums = [...cr.querySelectorAll("[data-to]")];
+    const feed = [...cr.querySelectorAll(".fe")];
+    const flow = cr.querySelector(".cr-flow");
+    if (still) {
+      if (flow && flow.pauseAnimations) flow.pauseAnimations();
+    } else {
+      let counted = false, ftimer = 0, fn = 0, inView = false;
+      const count = () => {
+        counted = true;
+        const t0 = performance.now();
+        const step = (now) => {
+          const k = Math.min(1, (now - t0) / 1600), q = 1 - Math.pow(1 - k, 3);
+          nums.forEach((el) => { el.textContent = fmt(el, Math.round(Number(el.dataset.to) * q)); });
+          if (k < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      };
+      const play = () => {
+        if (fn < feed.length) { feed[fn].classList.add("on"); fn += 1; ftimer = setTimeout(play, fn === feed.length ? 4200 : 1100); return; }
+        feed.forEach((f) => f.classList.remove("on"));
+        fn = 0;
+        ftimer = setTimeout(play, 700);
+      };
+      nums.forEach((el) => { el.textContent = fmt(el, 0); });
+      const sync = () => {
+        const go = inView && !document.hidden;
+        if (go && !counted) count();
+        clearTimeout(ftimer);
+        if (go) ftimer = setTimeout(play, 400);
+      };
+      new IntersectionObserver(([en]) => { inView = en.isIntersecting; sync(); }, { threshold: .3 }).observe(cr);
+      document.addEventListener("visibilitychange", sync);
+    }
+  }
+
   // Sections rise in as they enter the screen. Blocks already on screen at load are left alone.
   if (!still && "IntersectionObserver" in window) {
-    const sel = ".sec-head, .sys-box, .bl-card, .step, .ideas, .case, .result, .num-list li, .price-card, .person, .faq-list, .final-in, .band-note";
+    const sel = ".sec-head, .cr-stage, .bl-card, .step, .ideas, .case, .result, .num-list li, .price-card, .person, .faq-list, .final-in, .band-note";
     const rio = new IntersectionObserver((entries) => entries.forEach((en) => {
       if (en.isIntersecting) { en.target.classList.add("in"); rio.unobserve(en.target); }
     }), { rootMargin: "0px 0px -8% 0px" });
