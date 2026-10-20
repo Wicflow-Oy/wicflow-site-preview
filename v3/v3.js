@@ -87,6 +87,68 @@ gl_FragColor=vec4(c,1.);}`;
     }
   }
 
+  // The hero's last word follows the clip behind it: the video's own clock says which clip is on screen, so the word
+  // changes with the cut, stops when the video stops, and starts over with the loop. The headline is laid out once
+  // with its longest word and those line breaks are kept, so only the last line's width glides between words.
+  const hw = document.querySelector(".vh-word");
+  const hv = document.querySelector(".vh-video");
+  if (hw && hv && !still) {
+    const h1 = hw.closest("h1");
+    const words = hw.dataset.words.split("|");
+    const clip = Number(hw.dataset.clip) || 2.2;
+    let el = hw.querySelector(".vh-w"), cur = 0, widths = [], tmr = 0;
+    const longest = () => widths.indexOf(Math.max(...widths));
+    const measure = () => {
+      const probe = el.cloneNode(false);
+      probe.className = "acc vh-w";
+      probe.style.cssText = "position:absolute;left:0;top:0;visibility:hidden";
+      hw.appendChild(probe);
+      widths = words.map((w) => { probe.textContent = w; return probe.getBoundingClientRect().width; });
+      probe.remove();
+    };
+    const lock = () => {
+      h1.querySelectorAll("br.vh-br").forEach((b) => b.remove());
+      h1.style.removeProperty("text-wrap");
+      hw.classList.remove("js-on");
+      hw.style.width = "";
+      el.textContent = words[longest()];
+      // the balanced layout with the longest word: note where each line starts, then pin those breaks
+      const items = [...h1.querySelectorAll(".vh-lw"), hw];
+      let top = items[0].offsetTop;
+      items.forEach((it, i) => {
+        if (i && it.offsetTop > top + 4) { const br = document.createElement("br"); br.className = "vh-br"; it.before(br); top = it.offsetTop; }
+      });
+      h1.style.setProperty("text-wrap", "wrap");
+      el.textContent = words[cur];
+      hw.classList.add("js-on");
+      hw.style.width = widths[cur] + "px";
+    };
+    const show = (i) => {
+      if (i === cur) return;
+      const old = el;
+      const nw = document.createElement("span");
+      nw.className = "acc vh-w is-in";
+      nw.textContent = words[i];
+      hw.appendChild(nw);
+      hw.style.width = widths[i] + "px";
+      requestAnimationFrame(() => requestAnimationFrame(() => { nw.classList.remove("is-in"); old.classList.add("is-out"); }));
+      setTimeout(() => old.remove(), 560);
+      el = nw; cur = i;
+    };
+    const setup = () => { measure(); lock(); };
+    (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => {
+      setup();
+      let rs = 0;
+      addEventListener("resize", () => { clearTimeout(rs); rs = setTimeout(setup, 160); }, { passive: true });
+      const tick = () => { const i = Math.floor((hv.currentTime || 0) / clip) % words.length; if (i !== cur) show(i); };
+      const run = () => { if (!tmr) tmr = setInterval(tick, 120); };
+      const halt = () => { clearInterval(tmr); tmr = 0; };
+      hv.addEventListener("playing", run);
+      hv.addEventListener("pause", halt);
+      if (!hv.paused) run();
+    });
+  }
+
   // Navigation: frosted white once the page scrolls, and the menu on small screens.
   const nav = document.querySelector("[data-nav]");
   const onNav = () => nav && nav.classList.toggle("scrolled", window.scrollY > 24);

@@ -1398,6 +1398,17 @@ p, li, summary, dd { text-wrap: pretty; }
   .nav-links.open .nav-links-cta { margin-top: 14px; padding: 15px 0; border: 0; border-radius: 999px; font-weight: 500; }
 }
 html.menu-lock { overflow: hidden; }
+/* the hero's last word follows the clip behind it (v3.js). Without the script (or under reduced motion) the first word
+   stands in the line as usual; with it the word sits in a box whose width glides to the next word, the old word lifts
+   away and the new one rises in, and the line breaks are kept still. */
+.vh-word { position: relative; display: inline-block; white-space: nowrap; text-align: left; }
+.vh-word:not(.js-on) .vh-sz { display: none; }
+.vh-word.js-on { transition: width .56s cubic-bezier(.2, .8, .2, 1); }
+.vh-word.js-on .vh-sz { display: inline-block; max-width: 0; visibility: hidden; }
+.vh-word.js-on .vh-w { position: absolute; left: 0; top: 0; white-space: nowrap; }
+.vh-w { filter: drop-shadow(0 2px 16px rgba(8, 36, 90, .32)) blur(0); transition: opacity .4s ease, transform .5s cubic-bezier(.2, .8, .2, 1), filter .4s ease; }
+.vh-w.is-in { opacity: 0; transform: translateY(.3em); filter: drop-shadow(0 2px 16px rgba(8, 36, 90, .32)) blur(6px); }
+.vh-w.is-out { opacity: 0; transform: translateY(-.3em); filter: drop-shadow(0 2px 16px rgba(8, 36, 90, .32)) blur(6px); transition-duration: .34s, .42s, .34s; }
 
 /* Company Brain at work, the work engine (part_brain.py, brain.js). One glass panel, mirror-symmetric around its
    centre: six sources | wires | the core | wires | finished work, over a strip of three counters whose dividers sit on
