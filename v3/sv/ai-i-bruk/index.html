@@ -15,7 +15,8 @@
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
 <link rel="preload" href="../../video/ro-poster.webp" as="image">
 <link rel="preload" href="../../assets/fonts/newsreader-opsz.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="../../assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../assets/fonts/stack-sans-headline.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../../assets/fonts/newsreader-opsz-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../../assets/fonts/fonts.css">
 <link rel="stylesheet" href="../../v3.css">
@@ -27,14 +28,66 @@
 <header class="nav" data-nav>
   <div class="wrap nav-in">
     <a class="brand" href="#top" aria-label="Wicflow"><span class="brand-mark" aria-hidden="true"></span><span>wicflow</span></a>
-    <nav class="nav-links" id="navlinks" aria-label="Huvudmeny"><a href="../#blocks">Arbetssätt</a><a href="../#work">Kundberättelser</a><a href="../#pilot">Så börjar vi</a><a href="../#systems">Exempelsystem</a><a href="../#pricing">Priser</a><a href="./" aria-current="page">AI i bruk</a><div class="lang lang-m" role="group" aria-label="Språk"><a href="../../ai-rollout/" hreflang="en" lang="en">EN</a><a href="../../fi/tekoaly-kayttoon/" hreflang="fi" lang="fi">FI</a><a href="../../sv/ai-i-bruk/" hreflang="sv" lang="sv" aria-current="true">SV</a></div><a class="nav-links-cta" href="https://wicflow.com/sv/kontakt/">Kostnadsfri pilot</a></nav>
+    <nav class="nav-links" id="navlinks" aria-label="Huvudmeny"><a href="../#blocks">Arbetssätt</a><a href="../#work">Kundberättelser</a><a href="../#pilot">Så börjar vi</a><a href="../#systems">Exempelsystem</a><a href="../#pricing">Priser</a><a href="./" aria-current="page">AI i bruk</a><div class="lang lang-m" role="group" aria-label="Språk"><a href="../../ai-rollout/" hreflang="en" lang="en">EN</a><a href="../../fi/tekoaly-kayttoon/" hreflang="fi" lang="fi">FI</a><a href="../../sv/ai-i-bruk/" hreflang="sv" lang="sv" aria-current="true">SV</a></div><a class="nav-links-cta" href="https://wicflow.com/sv/kontakt/">Ansök om pilot</a></nav>
     <div class="nav-end">
       <div class="lang" role="group" aria-label="Språk"><a href="../../ai-rollout/" hreflang="en" lang="en">EN</a><a href="../../fi/tekoaly-kayttoon/" hreflang="fi" lang="fi">FI</a><a href="../../sv/ai-i-bruk/" hreflang="sv" lang="sv" aria-current="true">SV</a></div>
-      <a class="btn btn-white btn-sm nav-cta" href="https://wicflow.com/sv/kontakt/">Kostnadsfri pilot</a>
+      <a class="btn btn-white btn-sm nav-cta" href="https://wicflow.com/sv/kontakt/">Ansök om pilot</a>
       <button class="nav-menu" type="button" aria-expanded="false" aria-controls="navlinks" data-open="Meny" data-close="Stäng menyn"><span class="nav-menu-l">Meny</span><i aria-hidden="true"></i></button>
     </div>
   </div>
 </header>
+<dialog class="apl" id="apply" aria-labelledby="apl-h" data-contact="https://wicflow.com/sv/kontakt/" data-mail="info@wicflow.com" data-subject="Pilotansökan"
+  data-req="Fyll i det här." data-bad-email="Kontrollera e-postadressen." data-step-of="Steg # av 3">
+  <div class="apl-in">
+    <button type="button" class="apl-x" data-apl-close aria-label="Stäng"><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5 5 15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+    <aside class="apl-side">
+      <p class="lbl">Pilotansökan</p>
+      <h2 class="apl-h" id="apl-h">Berätta var tiden går.</h2>
+      <p class="apl-lede">Piloten söks: vi bygger den första delen på vår bekostnad när vi ser att den tydligt lönar sig. Tre korta steg, ungefär två minuter.</p>
+      <div class="apl-look"><p class="apl-look-h">Det här söker vi</p><ul><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Ett arbete som kostar verklig tid eller affärer</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Någon som kan besluta om nästa steg</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Tillgång till verktygen och datan som arbetet sker i</span></li></ul></div>
+      <ol class="apl-steps" aria-hidden="true"><li class="apl-st on" data-st="0"><span class="apl-stn">01</span>Företaget</li><li class="apl-st" data-st="1"><span class="apl-stn">02</span>Arbetet</li><li class="apl-st" data-st="2"><span class="apl-stn">03</span>Ni</li></ol>
+    </aside>
+    <form class="apl-form" novalidate>
+      <p class="apl-of" aria-live="polite"></p>
+      <fieldset class="apl-page on" data-page="0">
+        <legend class="sr-only">Företaget</legend>
+        <label class="apl-f"><span>Företag</span><input name="company" autocomplete="organization" required></label>
+        <label class="apl-f"><span>Webbplats <span class="apl-opt">(valfritt)</span></span><input name="website" type="url" inputmode="url" autocomplete="url" placeholder="https://"></label>
+        <fieldset class="apl-g"><legend>Antal personer</legend><div class="apl-chips"><label class="apl-chip"><input type="radio" name="size" value="1–9" required><span>1–9</span></label><label class="apl-chip"><input type="radio" name="size" value="10–49" required><span>10–49</span></label><label class="apl-chip"><input type="radio" name="size" value="50–199" required><span>50–199</span></label><label class="apl-chip"><input type="radio" name="size" value="200+" required><span>200+</span></label></div></fieldset>
+        <label class="apl-f"><span>Bransch</span><input name="industry" placeholder="t.ex. fastighetsförvaltning, maskinhandel" required></label>
+      </fieldset>
+      <fieldset class="apl-page" data-page="1">
+        <legend class="sr-only">Arbetet</legend>
+        <label class="apl-f"><span>Vad tar mest tid för ert team, eller kostar er affärer, i dag?</span><textarea name="work" rows="4" placeholder="t.ex. Vi svarar på ungefär 40 offertförfrågningar i veckan för hand, och uppföljningen blir efter." required></textarea></label>
+        <fieldset class="apl-g"><legend>Var finns det? <span class="apl-opt">(valfritt)</span></legend><div class="apl-chips"><label class="apl-chip"><input type="checkbox" name="area" value="Försäljning och leads"><span>Försäljning och leads</span></label><label class="apl-chip"><input type="checkbox" name="area" value="Offerter"><span>Offerter</span></label><label class="apl-chip"><input type="checkbox" name="area" value="Kundservice"><span>Kundservice</span></label><label class="apl-chip"><input type="checkbox" name="area" value="Fakturering och administration"><span>Fakturering och administration</span></label><label class="apl-chip"><input type="checkbox" name="area" value="Rapportering"><span>Rapportering</span></label><label class="apl-chip"><input type="checkbox" name="area" value="Något annat"><span>Något annat</span></label></div></fieldset>
+        <fieldset class="apl-g"><legend>När vill ni börja?</legend><div class="apl-chips"><label class="apl-chip"><input type="radio" name="when" value="Nu" required><span>Nu</span></label><label class="apl-chip"><input type="radio" name="when" value="Inom tre månader" required><span>Inom tre månader</span></label><label class="apl-chip"><input type="radio" name="when" value="Vi undersöker ännu" required><span>Vi undersöker ännu</span></label></div></fieldset>
+      </fieldset>
+      <fieldset class="apl-page" data-page="2">
+        <legend class="sr-only">Ni</legend>
+        <div class="apl-2">
+          <label class="apl-f"><span>Namn</span><input name="name" autocomplete="name" required></label>
+          <label class="apl-f"><span>Roll</span><input name="role" autocomplete="organization-title" placeholder="t.ex. vd, försäljningschef" required></label>
+        </div>
+        <div class="apl-2">
+          <label class="apl-f"><span>E-post i arbetet</span><input name="email" type="email" autocomplete="email" required></label>
+          <label class="apl-f"><span>Telefon <span class="apl-opt">(valfritt)</span></span><input name="phone" type="tel" autocomplete="tel"></label>
+        </div>
+        <p class="apl-consent">Vi använder uppgifterna bara för att svara på er ansökan. <a href="https://wicflow.com/sv/dataskydd/" target="_blank" rel="noopener">Dataskydd</a></p>
+      </fieldset>
+      <div class="apl-done" hidden>
+        <span class="apl-ok" aria-hidden="true"><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <h3 class="apl-done-h" tabindex="-1">Tack</h3>
+        <p>Vi läser varje ansökan själva och svarar per e-post.</p>
+        <p class="apl-pv">Det här är en förhandsvisning, så ert e-postprogram öppnas med ansökan: tryck på skicka där.</p>
+        <button type="button" class="btn btn-ghost" data-apl-close>Stäng</button>
+      </div>
+      <div class="apl-nav">
+        <button type="button" class="btn btn-ghost apl-back" hidden>Tillbaka</button>
+        <button type="submit" class="btn btn-white apl-next" data-next="Fortsätt" data-send="Skicka ansökan">Fortsätt <svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+    </form>
+  </div>
+</dialog>
 
 <main id="main">
   <section class="vh rp-hero" id="top">

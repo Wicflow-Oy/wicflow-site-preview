@@ -15,7 +15,8 @@
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="preload" href="../video/ro-poster.webp" as="image">
 <link rel="preload" href="../assets/fonts/newsreader-opsz.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="../assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/stack-sans-headline.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../assets/fonts/newsreader-opsz-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../assets/fonts/fonts.css">
 <link rel="stylesheet" href="../v3.css">
@@ -27,14 +28,66 @@
 <header class="nav" data-nav>
   <div class="wrap nav-in">
     <a class="brand" href="#top" aria-label="Wicflow"><span class="brand-mark" aria-hidden="true"></span><span>wicflow</span></a>
-    <nav class="nav-links" id="navlinks" aria-label="Main menu"><a href="../#blocks">Our approach</a><a href="../#work">Work</a><a href="../#pilot">How we start</a><a href="../#systems">Example system</a><a href="../#pricing">Pricing</a><a href="./" aria-current="page">AI rollout</a><div class="lang lang-m" role="group" aria-label="Language"><a href="../ai-rollout/" hreflang="en" lang="en" aria-current="true">EN</a><a href="../fi/tekoaly-kayttoon/" hreflang="fi" lang="fi">FI</a><a href="../sv/ai-i-bruk/" hreflang="sv" lang="sv">SV</a></div><a class="nav-links-cta" href="https://wicflow.com/contact/">Free pilot</a></nav>
+    <nav class="nav-links" id="navlinks" aria-label="Main menu"><a href="../#blocks">Our approach</a><a href="../#work">Work</a><a href="../#pilot">How we start</a><a href="../#systems">Example system</a><a href="../#pricing">Pricing</a><a href="./" aria-current="page">AI rollout</a><div class="lang lang-m" role="group" aria-label="Language"><a href="../ai-rollout/" hreflang="en" lang="en" aria-current="true">EN</a><a href="../fi/tekoaly-kayttoon/" hreflang="fi" lang="fi">FI</a><a href="../sv/ai-i-bruk/" hreflang="sv" lang="sv">SV</a></div><a class="nav-links-cta" href="https://wicflow.com/contact/">Apply for a pilot</a></nav>
     <div class="nav-end">
       <div class="lang" role="group" aria-label="Language"><a href="../ai-rollout/" hreflang="en" lang="en" aria-current="true">EN</a><a href="../fi/tekoaly-kayttoon/" hreflang="fi" lang="fi">FI</a><a href="../sv/ai-i-bruk/" hreflang="sv" lang="sv">SV</a></div>
-      <a class="btn btn-white btn-sm nav-cta" href="https://wicflow.com/contact/">Free pilot</a>
+      <a class="btn btn-white btn-sm nav-cta" href="https://wicflow.com/contact/">Apply for a pilot</a>
       <button class="nav-menu" type="button" aria-expanded="false" aria-controls="navlinks" data-open="Menu" data-close="Close menu"><span class="nav-menu-l">Menu</span><i aria-hidden="true"></i></button>
     </div>
   </div>
 </header>
+<dialog class="apl" id="apply" aria-labelledby="apl-h" data-contact="https://wicflow.com/contact/" data-mail="info@wicflow.com" data-subject="Pilot application"
+  data-req="Please fill this in." data-bad-email="Please check the email address." data-step-of="Step # of 3">
+  <div class="apl-in">
+    <button type="button" class="apl-x" data-apl-close aria-label="Close"><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5 5 15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+    <aside class="apl-side">
+      <p class="lbl">Pilot application</p>
+      <h2 class="apl-h" id="apl-h">Tell us where the time goes.</h2>
+      <p class="apl-lede">The pilot is by application: we build the first piece at our cost when we can see it will clearly pay off. Three short steps, about two minutes.</p>
+      <div class="apl-look"><p class="apl-look-h">What we look for</p><ul><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>A piece of work that costs real time or deals</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Someone who can decide on the next step</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Access to the tools and data the work runs on</span></li></ul></div>
+      <ol class="apl-steps" aria-hidden="true"><li class="apl-st on" data-st="0"><span class="apl-stn">01</span>Company</li><li class="apl-st" data-st="1"><span class="apl-stn">02</span>The work</li><li class="apl-st" data-st="2"><span class="apl-stn">03</span>You</li></ol>
+    </aside>
+    <form class="apl-form" novalidate>
+      <p class="apl-of" aria-live="polite"></p>
+      <fieldset class="apl-page on" data-page="0">
+        <legend class="sr-only">Company</legend>
+        <label class="apl-f"><span>Company</span><input name="company" autocomplete="organization" required></label>
+        <label class="apl-f"><span>Website <span class="apl-opt">(optional)</span></span><input name="website" type="url" inputmode="url" autocomplete="url" placeholder="https://"></label>
+        <fieldset class="apl-g"><legend>People</legend><div class="apl-chips"><label class="apl-chip"><input type="radio" name="size" value="1–9" required><span>1–9</span></label><label class="apl-chip"><input type="radio" name="size" value="10–49" required><span>10–49</span></label><label class="apl-chip"><input type="radio" name="size" value="50–199" required><span>50–199</span></label><label class="apl-chip"><input type="radio" name="size" value="200+" required><span>200+</span></label></div></fieldset>
+        <label class="apl-f"><span>Industry</span><input name="industry" placeholder="e.g. property management, machinery trade" required></label>
+      </fieldset>
+      <fieldset class="apl-page" data-page="1">
+        <legend class="sr-only">The work</legend>
+        <label class="apl-f"><span>What takes your team the most time, or costs you deals, today?</span><textarea name="work" rows="4" placeholder="e.g. We answer about 40 quote requests a week by hand, and follow-ups slip." required></textarea></label>
+        <fieldset class="apl-g"><legend>Where is it? <span class="apl-opt">(optional)</span></legend><div class="apl-chips"><label class="apl-chip"><input type="checkbox" name="area" value="Sales and leads"><span>Sales and leads</span></label><label class="apl-chip"><input type="checkbox" name="area" value="Quotes"><span>Quotes</span></label><label class="apl-chip"><input type="checkbox" name="area" value="Customer service"><span>Customer service</span></label><label class="apl-chip"><input type="checkbox" name="area" value="Invoicing and admin"><span>Invoicing and admin</span></label><label class="apl-chip"><input type="checkbox" name="area" value="Reporting"><span>Reporting</span></label><label class="apl-chip"><input type="checkbox" name="area" value="Something else"><span>Something else</span></label></div></fieldset>
+        <fieldset class="apl-g"><legend>When would you like to start?</legend><div class="apl-chips"><label class="apl-chip"><input type="radio" name="when" value="Now" required><span>Now</span></label><label class="apl-chip"><input type="radio" name="when" value="Within 3 months" required><span>Within 3 months</span></label><label class="apl-chip"><input type="radio" name="when" value="Still exploring" required><span>Still exploring</span></label></div></fieldset>
+      </fieldset>
+      <fieldset class="apl-page" data-page="2">
+        <legend class="sr-only">You</legend>
+        <div class="apl-2">
+          <label class="apl-f"><span>Name</span><input name="name" autocomplete="name" required></label>
+          <label class="apl-f"><span>Role</span><input name="role" autocomplete="organization-title" placeholder="e.g. CEO, head of sales" required></label>
+        </div>
+        <div class="apl-2">
+          <label class="apl-f"><span>Work email</span><input name="email" type="email" autocomplete="email" required></label>
+          <label class="apl-f"><span>Phone <span class="apl-opt">(optional)</span></span><input name="phone" type="tel" autocomplete="tel"></label>
+        </div>
+        <p class="apl-consent">We use these details only to reply to your application. <a href="https://wicflow.com/privacy/" target="_blank" rel="noopener">Privacy</a></p>
+      </fieldset>
+      <div class="apl-done" hidden>
+        <span class="apl-ok" aria-hidden="true"><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <h3 class="apl-done-h" tabindex="-1">Thank you</h3>
+        <p>We read every application ourselves and reply by email.</p>
+        <p class="apl-pv">This is a preview, so your email app opens with the application: press send there.</p>
+        <button type="button" class="btn btn-ghost" data-apl-close>Close</button>
+      </div>
+      <div class="apl-nav">
+        <button type="button" class="btn btn-ghost apl-back" hidden>Back</button>
+        <button type="submit" class="btn btn-white apl-next" data-next="Continue" data-send="Send application">Continue <svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+    </form>
+  </div>
+</dialog>
 
 <main id="main">
   <section class="vh rp-hero" id="top">

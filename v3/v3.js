@@ -94,16 +94,17 @@ gl_FragColor=vec4(c,1.);}`;
   const hv = document.querySelector(".vh-video");
   if (hw && hv && !still) {
     const h1 = hw.closest("h1");
-    const words = hw.dataset.words.split("|");
+    const words = hw.dataset.words.split("|");  // an empty entry keeps the word of the clip before
     const clip = Number(hw.dataset.clip) || 2.2;
     let el = hw.querySelector(".vh-w"), cur = 0, widths = [], tmr = 0;
     const longest = () => widths.indexOf(Math.max(...widths));
+    const shown = (i) => { while (!words[i]) i = (i + words.length - 1) % words.length; return i; };
     const measure = () => {
       const probe = el.cloneNode(false);
       probe.className = "acc vh-w";
       probe.style.cssText = "position:absolute;left:0;top:0;visibility:hidden";
       hw.appendChild(probe);
-      widths = words.map((w) => { probe.textContent = w; return probe.getBoundingClientRect().width; });
+      widths = words.map((w) => { if (!w) return 0; probe.textContent = w; return probe.getBoundingClientRect().width; });
       probe.remove();
     };
     const lock = () => {
@@ -140,7 +141,7 @@ gl_FragColor=vec4(c,1.);}`;
       setup();
       let rs = 0;
       addEventListener("resize", () => { clearTimeout(rs); rs = setTimeout(setup, 160); }, { passive: true });
-      const tick = () => { const i = Math.floor((hv.currentTime || 0) / clip) % words.length; if (i !== cur) show(i); };
+      const tick = () => { const i = shown(Math.floor((hv.currentTime || 0) / clip) % words.length); if (i !== cur) show(i); };
       const run = () => { if (!tmr) tmr = setInterval(tick, 120); };
       const halt = () => { clearInterval(tmr); tmr = 0; };
       hv.addEventListener("playing", run);
@@ -1648,4 +1649,103 @@ gl_FragColor=vec4(c,1.);}`;
       window.addEventListener("resize", ask);
     }
   }
+})();
+
+/* The pilot application: every link to the contact page opens the dialog instead (without this script they still lead
+   there). Three steps, each checked before the next; sending opens the visitor's email app with the application, as
+   this preview has no form backend. Esc and the close buttons close it, and focus returns to the button that opened
+   it. */
+(() => {
+  const dlg = document.getElementById("apply");
+  if (!dlg || typeof dlg.showModal !== "function") return;
+  const root = document.documentElement;
+  const form = dlg.querySelector(".apl-form");
+  const pages = [...dlg.querySelectorAll(".apl-page")];
+  const steps = [...dlg.querySelectorAll(".apl-st")];
+  const of = dlg.querySelector(".apl-of");
+  const back = dlg.querySelector(".apl-back");
+  const next = dlg.querySelector(".apl-next");
+  const done = dlg.querySelector(".apl-done");
+  const nav = dlg.querySelector(".apl-nav");
+  const ARROW = next.querySelector("svg") ? next.querySelector("svg").outerHTML : "";
+  let page = 0, opener = null;
+
+  const show = (i) => {
+    page = i;
+    pages.forEach((p, n) => p.classList.toggle("on", n === i));
+    steps.forEach((s, n) => { s.classList.toggle("on", n === i); s.classList.toggle("done", n < i); });
+    of.textContent = dlg.dataset.stepOf.replace("#", i + 1);
+    back.hidden = i === 0;
+    next.innerHTML = (i === pages.length - 1 ? next.dataset.send : next.dataset.next) + " " + ARROW;
+  };
+  const clearErr = (box) => { box.classList.remove("bad"); const m = box.querySelector(".apl-err"); if (m) m.remove(); };
+  const err = (box, msg) => {
+    box.classList.add("bad");
+    if (!box.querySelector(".apl-err")) { const m = document.createElement("span"); m.className = "apl-err"; m.setAttribute("role", "alert"); m.textContent = msg; box.appendChild(m); }
+  };
+  const check = (i) => {
+    let ok = true, first = null;
+    pages[i].querySelectorAll(".apl-f").forEach((box) => {
+      const f = box.querySelector("input, textarea");
+      clearErr(box);
+      if (f.required && !f.value.trim()) { err(box, dlg.dataset.req); ok = false; first = first || f; }
+      else if (f.type === "email" && f.value && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f.value.trim())) { err(box, dlg.dataset.badEmail); ok = false; first = first || f; }
+    });
+    pages[i].querySelectorAll(".apl-g").forEach((g) => {
+      const req = g.querySelector("input[required]");
+      clearErr(g);
+      if (req && !g.querySelector("input:checked")) { err(g, dlg.dataset.req); ok = false; first = first || req; }
+    });
+    if (first) first.focus();
+    return ok;
+  };
+  const open = (ev) => {
+    if (ev) ev.preventDefault();
+    opener = ev ? ev.currentTarget : null;
+    form.reset();
+    dlg.querySelectorAll(".bad").forEach(clearErr);
+    done.hidden = true; nav.hidden = false;
+    show(0);
+    root.classList.add("apl-lock");
+    dlg.showModal();
+    const f = pages[0].querySelector("input");
+    if (f) setTimeout(() => f.focus(), 60);
+  };
+  const close = () => dlg.close();
+  dlg.addEventListener("close", () => { root.classList.remove("apl-lock"); if (opener) opener.focus(); });
+  dlg.addEventListener("click", (ev) => { if (ev.target === dlg) close(); });  // a click on the backdrop
+  dlg.querySelectorAll("[data-apl-close]").forEach((b) => b.addEventListener("click", close));
+  back.addEventListener("click", () => show(Math.max(0, page - 1)));
+  form.addEventListener("input", (ev) => { const box = ev.target.closest(".apl-f, .apl-g"); if (box && box.classList.contains("bad")) clearErr(box); });
+  form.addEventListener("submit", (ev) => {
+    ev.preventDefault();
+    if (!check(page)) return;
+    if (page < pages.length - 1) { show(page + 1); const f = pages[page].querySelector("input, textarea"); if (f) f.focus(); return; }
+    // the application as an email (no form backend in this preview)
+    const d = new FormData(form);
+    const lines = [];
+    pages.forEach((p) => {
+      p.querySelectorAll(".apl-f, .apl-g").forEach((box) => {
+        const label = (box.querySelector("legend, span") || {}).textContent || "";
+        const names = [...new Set([...box.querySelectorAll("input, textarea")].map((f) => f.name))];
+        const val = names.map((n) => d.getAll(n).join(", ")).join(", ").trim();
+        if (val) lines.push(label.replace(/\s*\(.*\)$/, "").trim() + ": " + val);
+      });
+    });
+    const company = (d.get("company") || "").toString().trim();
+    const subject = dlg.dataset.subject + (company ? ": " + company : "");
+    location.href = "mailto:" + dlg.dataset.mail + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(lines.join("\n"));
+    pages.forEach((p) => p.classList.remove("on"));
+    steps.forEach((s) => { s.classList.remove("on"); s.classList.add("done"); });
+    of.textContent = "";
+    nav.hidden = true;
+    done.hidden = false;
+    const h = done.querySelector(".apl-done-h");
+    const name = (d.get("name") || "").toString().trim().split(/\s+/)[0];
+    h.textContent = h.textContent.replace(/[,.]?\s*$/, "") + (name ? ", " + name : "") + ".";
+    h.focus();
+  });
+  // every pilot button: links to the contact page, and anything marked data-apply
+  const contact = dlg.dataset.contact;
+  document.querySelectorAll(`a[href="${contact}"], [data-apply]`).forEach((a) => a.addEventListener("click", open));
 })();

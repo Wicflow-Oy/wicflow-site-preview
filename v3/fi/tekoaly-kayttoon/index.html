@@ -15,7 +15,8 @@
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
 <link rel="preload" href="../../video/ro-poster.webp" as="image">
 <link rel="preload" href="../../assets/fonts/newsreader-opsz.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="../../assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../assets/fonts/stack-sans-headline.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../../assets/fonts/newsreader-opsz-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../../assets/fonts/fonts.css">
 <link rel="stylesheet" href="../../v3.css">
@@ -27,14 +28,66 @@
 <header class="nav" data-nav>
   <div class="wrap nav-in">
     <a class="brand" href="#top" aria-label="Wicflow"><span class="brand-mark" aria-hidden="true"></span><span>wicflow</span></a>
-    <nav class="nav-links" id="navlinks" aria-label="Päävalikko"><a href="../#blocks">Lähestymistapa</a><a href="../#work">Asiakastarinat</a><a href="../#pilot">Näin aloitamme</a><a href="../#systems">Esimerkkijärjestelmä</a><a href="../#pricing">Hinnat</a><a href="./" aria-current="page">Tekoäly käyttöön</a><div class="lang lang-m" role="group" aria-label="Kieli"><a href="../../ai-rollout/" hreflang="en" lang="en">EN</a><a href="../../fi/tekoaly-kayttoon/" hreflang="fi" lang="fi" aria-current="true">FI</a><a href="../../sv/ai-i-bruk/" hreflang="sv" lang="sv">SV</a></div><a class="nav-links-cta" href="https://wicflow.com/fi/ota-yhteytta/">Maksuton pilotti</a></nav>
+    <nav class="nav-links" id="navlinks" aria-label="Päävalikko"><a href="../#blocks">Lähestymistapa</a><a href="../#work">Asiakastarinat</a><a href="../#pilot">Näin aloitamme</a><a href="../#systems">Esimerkkijärjestelmä</a><a href="../#pricing">Hinnat</a><a href="./" aria-current="page">Tekoäly käyttöön</a><div class="lang lang-m" role="group" aria-label="Kieli"><a href="../../ai-rollout/" hreflang="en" lang="en">EN</a><a href="../../fi/tekoaly-kayttoon/" hreflang="fi" lang="fi" aria-current="true">FI</a><a href="../../sv/ai-i-bruk/" hreflang="sv" lang="sv">SV</a></div><a class="nav-links-cta" href="https://wicflow.com/fi/ota-yhteytta/">Hae pilottiin</a></nav>
     <div class="nav-end">
       <div class="lang" role="group" aria-label="Kieli"><a href="../../ai-rollout/" hreflang="en" lang="en">EN</a><a href="../../fi/tekoaly-kayttoon/" hreflang="fi" lang="fi" aria-current="true">FI</a><a href="../../sv/ai-i-bruk/" hreflang="sv" lang="sv">SV</a></div>
-      <a class="btn btn-white btn-sm nav-cta" href="https://wicflow.com/fi/ota-yhteytta/">Maksuton pilotti</a>
+      <a class="btn btn-white btn-sm nav-cta" href="https://wicflow.com/fi/ota-yhteytta/">Hae pilottiin</a>
       <button class="nav-menu" type="button" aria-expanded="false" aria-controls="navlinks" data-open="Valikko" data-close="Sulje valikko"><span class="nav-menu-l">Valikko</span><i aria-hidden="true"></i></button>
     </div>
   </div>
 </header>
+<dialog class="apl" id="apply" aria-labelledby="apl-h" data-contact="https://wicflow.com/fi/ota-yhteytta/" data-mail="info@wicflow.com" data-subject="Pilottihakemus"
+  data-req="Täyttäkää tämä kohta." data-bad-email="Tarkistakaa sähköpostiosoite." data-step-of="Vaihe #/3">
+  <div class="apl-in">
+    <button type="button" class="apl-x" data-apl-close aria-label="Sulje"><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5 5 15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+    <aside class="apl-side">
+      <p class="lbl">Pilottihakemus</p>
+      <h2 class="apl-h" id="apl-h">Kertokaa, mihin aika kuluu.</h2>
+      <p class="apl-lede">Pilottiin haetaan: rakennamme ensimmäisen osan omalla kustannuksellamme, kun näemme sen maksavan itsensä selvästi takaisin. Kolme lyhyttä vaihetta, noin kaksi minuuttia.</p>
+      <div class="apl-look"><p class="apl-look-h">Mitä etsimme</p><ul><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Työ, joka vie oikeasti aikaa tai maksaa kauppoja</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Joku, joka voi päättää seuraavasta askeleesta</span></li><li><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Pääsy työkaluihin ja tietoihin, joilla työ tehdään</span></li></ul></div>
+      <ol class="apl-steps" aria-hidden="true"><li class="apl-st on" data-st="0"><span class="apl-stn">01</span>Yritys</li><li class="apl-st" data-st="1"><span class="apl-stn">02</span>Työ</li><li class="apl-st" data-st="2"><span class="apl-stn">03</span>Yhteyshenkilö</li></ol>
+    </aside>
+    <form class="apl-form" novalidate>
+      <p class="apl-of" aria-live="polite"></p>
+      <fieldset class="apl-page on" data-page="0">
+        <legend class="sr-only">Yritys</legend>
+        <label class="apl-f"><span>Yritys</span><input name="company" autocomplete="organization" required></label>
+        <label class="apl-f"><span>Verkkosivu <span class="apl-opt">(vapaaehtoinen)</span></span><input name="website" type="url" inputmode="url" autocomplete="url" placeholder="https://"></label>
+        <fieldset class="apl-g"><legend>Henkilöstö</legend><div class="apl-chips"><label class="apl-chip"><input type="radio" name="size" value="1–9" required><span>1–9</span></label><label class="apl-chip"><input type="radio" name="size" value="10–49" required><span>10–49</span></label><label class="apl-chip"><input type="radio" name="size" value="50–199" required><span>50–199</span></label><label class="apl-chip"><input type="radio" name="size" value="200+" required><span>200+</span></label></div></fieldset>
+        <label class="apl-f"><span>Toimiala</span><input name="industry" placeholder="esim. isännöinti, konekauppa" required></label>
+      </fieldset>
+      <fieldset class="apl-page" data-page="1">
+        <legend class="sr-only">Työ</legend>
+        <label class="apl-f"><span>Mikä vie tiimiltänne eniten aikaa tai maksaa kauppoja tänään?</span><textarea name="work" rows="4" placeholder="esim. Vastaamme noin 40 tarjouspyyntöön viikossa käsin, ja seurannat jäävät tekemättä." required></textarea></label>
+        <fieldset class="apl-g"><legend>Millä alueella? <span class="apl-opt">(vapaaehtoinen)</span></legend><div class="apl-chips"><label class="apl-chip"><input type="checkbox" name="area" value="Myynti ja liidit"><span>Myynti ja liidit</span></label><label class="apl-chip"><input type="checkbox" name="area" value="Tarjoukset"><span>Tarjoukset</span></label><label class="apl-chip"><input type="checkbox" name="area" value="Asiakaspalvelu"><span>Asiakaspalvelu</span></label><label class="apl-chip"><input type="checkbox" name="area" value="Laskutus ja hallinto"><span>Laskutus ja hallinto</span></label><label class="apl-chip"><input type="checkbox" name="area" value="Raportointi"><span>Raportointi</span></label><label class="apl-chip"><input type="checkbox" name="area" value="Jokin muu"><span>Jokin muu</span></label></div></fieldset>
+        <fieldset class="apl-g"><legend>Milloin haluaisitte aloittaa?</legend><div class="apl-chips"><label class="apl-chip"><input type="radio" name="when" value="Heti" required><span>Heti</span></label><label class="apl-chip"><input type="radio" name="when" value="Kolmen kuukauden sisällä" required><span>Kolmen kuukauden sisällä</span></label><label class="apl-chip"><input type="radio" name="when" value="Selvitämme vielä" required><span>Selvitämme vielä</span></label></div></fieldset>
+      </fieldset>
+      <fieldset class="apl-page" data-page="2">
+        <legend class="sr-only">Yhteyshenkilö</legend>
+        <div class="apl-2">
+          <label class="apl-f"><span>Nimi</span><input name="name" autocomplete="name" required></label>
+          <label class="apl-f"><span>Rooli</span><input name="role" autocomplete="organization-title" placeholder="esim. toimitusjohtaja, myyntijohtaja" required></label>
+        </div>
+        <div class="apl-2">
+          <label class="apl-f"><span>Työsähköposti</span><input name="email" type="email" autocomplete="email" required></label>
+          <label class="apl-f"><span>Puhelin <span class="apl-opt">(vapaaehtoinen)</span></span><input name="phone" type="tel" autocomplete="tel"></label>
+        </div>
+        <p class="apl-consent">Käytämme tietoja vain hakemukseenne vastaamiseen. <a href="https://wicflow.com/fi/tietosuoja/" target="_blank" rel="noopener">Tietosuoja</a></p>
+      </fieldset>
+      <div class="apl-done" hidden>
+        <span class="apl-ok" aria-hidden="true"><svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 10.5 3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <h3 class="apl-done-h" tabindex="-1">Kiitos</h3>
+        <p>Luemme jokaisen hakemuksen itse ja vastaamme sähköpostilla.</p>
+        <p class="apl-pv">Tämä on esikatselu, joten sähköpostiohjelmanne avautuu hakemuksen kanssa: painakaa siellä lähetä.</p>
+        <button type="button" class="btn btn-ghost" data-apl-close>Sulje</button>
+      </div>
+      <div class="apl-nav">
+        <button type="button" class="btn btn-ghost apl-back" hidden>Takaisin</button>
+        <button type="submit" class="btn btn-white apl-next" data-next="Jatka" data-send="Lähetä hakemus">Jatka <svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+    </form>
+  </div>
+</dialog>
 
 <main id="main">
   <section class="vh rp-hero" id="top">
