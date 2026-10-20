@@ -163,15 +163,23 @@ gl_FragColor=vec4(c,1.);}`;
     menuBtn.setAttribute("aria-expanded", String(open));
     nav.classList.toggle("menu-open", open);
     root.classList.toggle("menu-lock", open);  // the page behind the open menu does not scroll
+    document.querySelectorAll("main, footer").forEach((el) => { el.inert = open; });  // nor takes focus
+    if (open) { const first = links.querySelector("a"); if (first) first.focus({ preventScroll: true }); }
     const label = menuBtn.querySelector(".nav-menu-l");
     if (label) label.textContent = open ? menuBtn.dataset.close : menuBtn.dataset.open;
   };
   if (menuBtn && links) {
     menuBtn.addEventListener("click", () => setMenu(menuBtn.getAttribute("aria-expanded") !== "true"));
     links.addEventListener("click", (e) => { if (e.target.closest("a")) setMenu(false); });
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && links.classList.contains("open")) { setMenu(false); menuBtn.focus(); } });
-    window.addEventListener("resize", () => { if (window.innerWidth > 1080) setMenu(false); });
+    document.addEventListener("click", (e) => { if (links.classList.contains("open") && !e.target.closest(".nav")) setMenu(false); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && links.classList.contains("open")) { setMenu(false); menuBtn.focus({ preventScroll: true }); } });
+    window.addEventListener("resize", () => { if (window.innerWidth > 1279) setMenu(false); });
   }
+
+  // The page's width without the scrollbar, for bands that leave the container (.bleed)
+  const vw = () => root.style.setProperty("--vw", root.clientWidth + "px");
+  vw();
+  window.addEventListener("resize", vw);
 
   // Counting a number up once, in the page's language (euros or plain numbers with a suffix).
   const locale = { en: "en-GB", fi: "fi-FI", sv: "sv-FI" }[root.lang] || "en-GB";
@@ -257,7 +265,7 @@ gl_FragColor=vec4(c,1.);}`;
       slot.appendChild(btn);
     }
     new IntersectionObserver(([en]) => { me.ratio = en.isIntersecting ? en.intersectionRatio : 0; pickDemo(); },
-      { threshold: [0, .1, .2, .35, .5, .65, .8, 1] }).observe(el);
+      { threshold: [...new Set([0, .1, .2, .35, .5, .65, .8, 1, me.threshold])].sort((a, b) => a - b) }).observe(el);
     document.addEventListener("visibilitychange", sync);
     sync();
     return api;
@@ -320,14 +328,15 @@ gl_FragColor=vec4(c,1.);}`;
   }
 })();
 
-/* Company Brain at work, the work engine (part_brain.py, brain.css). Three jobs from one morning in a 36 s loop through
-   WF.demo (it plays only while the panel is on screen and not paused; under reduced motion the HTML's finished first
-   job stays as it is). Each job: its source row lights, a comet runs up the wire to the core, the core's light swells
-   once, the job rides down the axis from lid to lid while the working plate is lit like the white brick in #blocks
-   and types its line, the result leaves through the right port and lands at the top of the finished work. The first
-   job waits for Mikko, who approves it. Never more than two things move at once; the loop ends with a 600 ms
-   cross-fade back to the start. The drawing (lids, hidden edges, axis, rails, bus, wires) is redrawn from the
-   measured boxes, so it stays exact at every width. */
+/* Company Brain at work, the work engine (part_brain.py, brain.css). Three jobs from one morning in a 34 s loop through
+   WF.demo (it plays only while the window is on screen and not paused; under reduced motion the HTML, the finished
+   morning, stays as it is). Each job: its source row lights, a comet runs up the wire to the core, the core's light swells
+   once, the job docks in each lid in turn (the studs under it step aside) while the working plate is lit like the
+   white brick in #blocks and types its line, the result leaves through the right port and lands at the top of the
+   finished work. The first job waits for Mikko, who approves it. Never more than two things move at once. The HTML is
+   the end of the loop (the third job done, the control room's figures), so the demo opens on it, cross-fades (600 ms)
+   to the start of the morning, and comes back to it every round. The drawing (lids, studs, bus, wires) is redrawn from the measured
+   boxes, so it stays exact at every width. The pause control sits in the caption row under the window. */
 (() => {
   const WF = window.WF;
   const root = document.querySelector("[data-cb]");
@@ -335,11 +344,12 @@ gl_FragColor=vec4(c,1.);}`;
   const dec = root.dataset.lang === "en" ? "." : ",";
   const $ = (sel, el = root) => el.querySelector(sel);
   const $$ = (sel, el = root) => [...el.querySelectorAll(sel)];
-  const stage = $(".cb-stage"), wireSvg = $(".cb-wires"), outs = $(".cb-outs"), foot = $(".cb-foot");
+  const stage = $(".cb-stage"), wireSvg = $(".cb-wires"), outs = $(".cb-outs");
+  const cap = root.parentElement.querySelector(".cb-dcap");
   const ins = $$(".cb-in");
   const core = $(".cb-core"), busSvg = $(".cb-bus-svg"), portL = $(".cb-port-l"), portR = $(".cb-port-r");
   const stack = $(".cb-stack"), tower = $(".cb-tower"), plates = $$(".cb-plate");
-  const lidBox = $(".cb-lids-in", tower), xBox = $(".cb-x", tower);
+  const lidBox = $(".cb-lids-in", tower);
   const chip = $(".cb-job"), chipText = $("[data-chip]", chip), learn = $("[data-learn]");
   const wires = Object.fromEntries($$(".cb-wire").map((g) => [g.dataset.w, g]));
   const stubL = $(".cb-stub-l"), stubR = $(".cb-stub-r");
@@ -360,9 +370,9 @@ gl_FragColor=vec4(c,1.);}`;
   const STUB = 14, FAN = .26;   // the shared stub; how far each wire's first control point leans towards its row
 
   // What is lit, so a redraw keeps it: the plate, the plate the left bus feeds, the right bus, the lid the chip is on.
-  // The HTML is the finished first job: the check plate is lit and both buses lead through it.
+  // The HTML is the finished third job: the check plate is lit and both buses lead through it.
   const st = { lit: 3, busL: 3, busR: true, chip: 3 };
-  const G = { w: 0, py: 0, mids: [], gut: 0, tops: [], lids: [] };
+  const G = { w: 0, py: 0, mids: [], gut: 0, tops: [], lids: [], sw: 0 };
 
   // ---- the drawing (the same as part_brain.py's) --------------------------------------------------------------------
   const f = (n) => String(Math.round(n * 10) / 10);
@@ -373,13 +383,14 @@ gl_FragColor=vec4(c,1.);}`;
     const cy = y - lid * .5, rx = Math.min(7, (w - inset) / studs * .19), ry = lid * .16, h = lid * .17;
     for (let i = 0; i < studs; i++) {
       const cx = x0 + inset / 2 + (w - inset) * (i + .5) / studs;
-      g += `<path class="cb-stud" d="M${f(cx - rx)} ${f(cy - h)}V${f(cy)}A${f(rx)} ${f(ry)} 0 0 0 ${f(cx + rx)} ${f(cy)}V${f(cy - h)}Z"/>` +
-        `<ellipse class="cb-stud" cx="${f(cx)}" cy="${f(cy - h)}" rx="${f(rx)}" ry="${f(ry)}"/>`;
+      g += `<g class="cb-st" data-x="${f(cx)}" data-r="${f(rx)}">` +
+        `<path class="cb-stud" d="M${f(cx - rx)} ${f(cy - h)}V${f(cy)}A${f(rx)} ${f(ry)} 0 0 0 ${f(cx + rx)} ${f(cy)}V${f(cy - h)}Z"/>` +
+        `<ellipse class="cb-stud" cx="${f(cx)}" cy="${f(cy - h)}" rx="${f(rx)}" ry="${f(ry)}"/></g>`;
     }
     return `<g class="cb-lid-g${on ? " on" : ""}">${g}</g>`;
   };
   // the tower: every lid sits on its face (its front edge on the face's top line, its back edge on the bottom line of
-  // the face above); the hidden back edges join the lids' back corners; the axis runs down the middle
+  // the face above)
   const drawTower = () => {
     const s = stack.getBoundingClientRect();
     if (!s.width) return;
@@ -387,15 +398,13 @@ gl_FragColor=vec4(c,1.);}`;
     const tops = plates.map((pl) => pl.getBoundingClientRect().top - s.top);
     G.tops = tops; G.lids = lids;
     const w = s.width;
+    G.sw = w;
     tower.setAttribute("viewBox", `0 0 ${f(w)} ${f(s.height)}`);
     lidBox.innerHTML = tops.map((t, k) => lidG(.5, w - .5, t + .5, lids[k] + 1, inset, studs, k === st.lit)).join("");
-    const top = tops[0] - lids[0] - .5, back = tops[3] - lids[3] - .5, ax = Math.floor(w / 2) + .5;
-    xBox.innerHTML = `<path class="cb-hid" d="M${f(.5 + inset)} ${f(top)}V${f(back)}M${f(w - .5 - inset)} ${f(top)}V${f(back)}"/>` +
-      `<path class="cb-axis" d="M${ax} ${f(top)}V${f(s.height)}"/>`;
   };
   const busLD = (k) => `M.5 ${f(G.py)}V${f(G.mids[k])}H${f(G.gut)}`;
   const busRD = () => `M${f(G.w - G.gut)} ${f(G.mids[3])}H${f(G.w - .5)}V${f(G.py)}`;
-  // the core's edges: dashed rails between the corner marks, a tap into every plate, the lit bus
+  // the core's edges carry only the lit bus: from the left port to the working plate, from the last plate to the right port
   const drawBus = () => {
     const c = core.getBoundingClientRect();
     if (!c.width) return;
@@ -403,10 +412,7 @@ gl_FragColor=vec4(c,1.);}`;
     G.w = c.width; G.py = p.top + p.height / 2 - c.top; G.gut = s.left - c.left;
     G.mids = plates.map((pl) => { const b = pl.getBoundingClientRect(); return b.top + b.height / 2 - c.top; });
     busSvg.setAttribute("viewBox", `0 0 ${f(c.width)} ${f(c.height)}`);
-    const w = c.width, h = c.height;
-    busSvg.innerHTML = `<path class="cb-rail" d="M.5 12V${f(h - 12)}M${f(w - .5)} 12V${f(h - 12)}"/>` +
-      G.mids.map((m) => `<path class="cb-tap" d="M0 ${f(m)}H${f(G.gut)}M${f(w - G.gut)} ${f(m)}H${f(w)}"/>`).join("") +
-      `<path class="cb-bus cb-bus-l${st.busL >= 0 ? " on" : ""}" d="${busLD(Math.max(0, st.busL))}"/>` +
+    busSvg.innerHTML = `<path class="cb-bus cb-bus-l${st.busL >= 0 ? " on" : ""}" d="${busLD(Math.max(0, st.busL))}"/>` +
       `<path class="cb-bus cb-bus-r${st.busR ? " on" : ""}" d="${busRD()}"/>`;
   };
   // the wires: each starts at its core port, runs the shared stub, then curves to its row with mirrored control points
@@ -428,10 +434,19 @@ gl_FragColor=vec4(c,1.);}`;
     stubL.setAttribute("d", `M${f(L.x)} ${f(L.y)}H${f(L.x - STUB)}`);
     stubR.setAttribute("d", `M${f(R.x)} ${f(R.y)}H${f(R.x + STUB)}`);
   };
+  // the chip docks in lid k: the studs under its footprint (plus 5 px) step aside, the others come back
+  const dock = () => {
+    const away = chip.classList.contains("out"), hw = chip.offsetWidth / 2 + 5, mid = G.sw / 2;
+    [...lidBox.children].forEach((g, i) => g.querySelectorAll(".cb-st").forEach((s) => {
+      s.classList.toggle("off", !away && i === st.chip && Math.abs(Number(s.dataset.x) - mid) < hw + Number(s.dataset.r));
+    }));
+  };
   const chipTo = (k) => {
     st.chip = k;
     if (G.tops.length) chip.style.setProperty("--y", `${f(G.tops[k] - G.lids[k] / 2)}px`);
+    dock();
   };
+  const chipShow = (on) => { chip.classList.toggle("out", !on); dock(); };
   const layout = () => {
     drawTower(); drawBus();
     if (!narrow.matches) drawWires();
@@ -480,7 +495,8 @@ gl_FragColor=vec4(c,1.);}`;
   const swell = (w) => { root.classList.add("swell"); w(900).then(() => root.classList.remove("swell")); };
   const clearPlates = () => {
     setLit(-1);
-    plates.forEach((pl) => { pl.classList.remove("done"); $("[data-l]", pl).textContent = ""; $("[data-t]", pl).textContent = ""; });
+    // [data-t] keeps its old value while the time fades out with its unit and tick; it is rewritten before .done returns
+    plates.forEach((pl) => { pl.classList.remove("done"); $("[data-l]", pl).textContent = ""; });
   };
   const setChip = (job) => {
     chipText.textContent = job.chip;
@@ -490,8 +506,8 @@ gl_FragColor=vec4(c,1.);}`;
     clearPlates();
     setBusL(-1); setBusR(false);
     chip.classList.add("out");
-    chipTo(0);
     setChip(jobs[0]);
+    chipTo(0);
     learn.textContent = jobs[0].learn;
     ins.forEach((el) => { el.classList.remove("on"); $(".cb-n", el).textContent = el.dataset.n; });
     Object.values(wires).forEach((g) => g.classList.remove("on", "run"));
@@ -502,11 +518,10 @@ gl_FragColor=vec4(c,1.);}`;
     val.done = D0; val.hours = H0; val.wait = W0;
     ["done", "hours", "wait"].forEach((k) => show(k, val[k]));
   };
-  reset();
   root.classList.add("cb-run");
 
   // the result lands at the top of the finished work: the last visible row fades, the others move down one place
-  // (FLIP, transform only) and the new one slides in 12 px from the left
+  // (FLIP, transform only) and, once they have moved most of the way, the new one slides in 12 px from the left
   const land = async (job, w) => {
     const rows = [...outs.children];
     const seen = rows.filter((r) => r.offsetParent);
@@ -524,13 +539,24 @@ gl_FragColor=vec4(c,1.);}`;
     keep.forEach((r, i) => { r.style.transition = "none"; r.style.transform = `translateY(${before[i] - r.getBoundingClientRect().top}px)`; });
     void outs.offsetWidth;
     keep.forEach((r) => { r.style.transition = "transform .42s cubic-bezier(.2, .8, .2, 1)"; r.style.transform = ""; });
-    await w(440);
+    await w(540);   // the rows' 420 ms, and the new row's 200 ms delay plus its 320 ms entry
     keep.forEach((r) => { r.style.transition = ""; });
+    row.classList.remove("enter");
     return row;
   };
+  // 15 ms a character at any frame rate: api.wait counts in whole frames, so a fixed step per character would type at
+  // the frame rate and stretch the loop. Each frame adds the time it took (at most 50 ms, so a pause doesn't jump).
+  const CH = 15;
   const type = async (el, text, w) => {
     el.classList.add("typing");
-    for (let i = 1; i <= text.length; i++) { el.textContent = text.slice(0, i); await w(21); }
+    let acc = 0, last = performance.now();
+    while (acc < text.length) {
+      await w(1);
+      const now = performance.now();
+      acc += Math.min(now - last, 50) / CH;
+      last = now;
+      el.textContent = text.slice(0, Math.min(text.length, Math.floor(acc) + 1));
+    }
     el.classList.remove("typing");
   };
   const el = (tag, cls, text) => { const n = document.createElement(tag); n.className = cls; n.textContent = text; return n; };
@@ -543,7 +569,7 @@ gl_FragColor=vec4(c,1.);}`;
     r.replaceChildren(el("i", "cb-av", job.av), el("span", "cb-time", job.at));
     s.classList.remove("fade"); r.classList.remove("fade");
     bump("wait", -1);
-    await w(1300);
+    await w(1100);
     s.classList.add("fade");
     await w(200);
     s.replaceChildren(el("span", "chip chip-ok", job.ok));
@@ -551,7 +577,10 @@ gl_FragColor=vec4(c,1.);}`;
     await w(240);
   };
 
-  const STEP = 1300;   // each plate, from the moment it lights to the next one
+  // the two fades that blank something (the restart and the learn line) run on real time, so they always finish:
+  // api.wait stops while the demo is paused or another one has the turn
+  const real = (ms) => new Promise((r) => setTimeout(r, ms));
+  const STEP = 1200;   // each plate, from the moment it lights to the next one
   const runJob = async (job, j, w, last) => {
     // 0.0 s: the source lights and hands the job over: one item fewer waiting there
     const row = ins[job.src], n = $(".cb-n", row);
@@ -564,7 +593,7 @@ gl_FragColor=vec4(c,1.);}`;
     // 1.2 s: the job enters: wire and port light, the core's light swells, the job rests on the top lid, plate 1 lights
     light("in", job.src, true); portL.classList.add("on");
     swell(w);
-    chipTo(0); chip.classList.remove("out");
+    chipTo(0); chipShow(true);
     setLit(0); setBusL(0);
     await w(200);
     for (let k = 0; k < 4; k++) {
@@ -583,13 +612,13 @@ gl_FragColor=vec4(c,1.);}`;
       }
       const text = job.lines[k].l;
       await type($("[data-l]", pl), text, w);
-      await w(Math.max(140, STEP - (k ? 540 : 200) - text.length * 21));
+      await w(Math.max(140, STEP - (k ? 540 : 200) - text.length * CH));
     }
     // ~6.6 s: the check plate is done and stays lit; the result leaves through the right bus and port
     $("[data-t]", plates[3]).textContent = job.lines[3].t;
     plates[3].classList.add("done");
     setBusL(-1); setBusR(true); portR.classList.add("on");
-    chip.classList.add("out");
+    chipShow(false);
     await w(160);
     comet("out", 0);
     await w(900);
@@ -598,7 +627,7 @@ gl_FragColor=vec4(c,1.);}`;
     if (job.ok) {
       // it waits for Mikko (one more item waiting for a person) until he approves it
       bump("wait", 1);
-      await w(2400);
+      await w(1700);
       await approve(job, out, w);
       bump("done", job.done);
       await w(200);
@@ -609,56 +638,70 @@ gl_FragColor=vec4(c,1.);}`;
       bump("done", job.done);
       await w(200);
       bump("hours", job.hours);
-      await w(600);
+      await w(500);
     }
     // the wires go quiet
     light("in", job.src, false); light("out", 0, false); setBusR(false);
     row.classList.remove("on"); out.classList.remove("on");
     portL.classList.remove("on"); portR.classList.remove("on");
-    await w(500);
+    await w(400);
     if (last) return;
     // the plates clear for the next job
     clearPlates();
     const next = jobs[(j + 1) % jobs.length];
     learn.style.opacity = "0";
-    await w(280);
+    await real(280);
     learn.textContent = next.learn;
     setChip(next);
+    chipTo(0);   // still hidden (.out), so it slides back to the top lid unseen and only fades in there
     learn.style.opacity = "";
-    await w(320);
+    await w(220);
   };
 
+  // the 600 ms cross-fade from the end of the morning back to its start, in real time: a pause or a lost turn can
+  // only land after it, on the clean start, never on a blank stage
+  const toStart = async () => {
+    stage.classList.add("fade");
+    Object.values(nums).forEach((n) => { n.style.opacity = "0"; });
+    await real(300);
+    reset();
+    stage.classList.remove("fade");
+    Object.values(nums).forEach((n) => { n.style.opacity = ""; });
+    await real(300);
+  };
+
+  // about 34 s a round: the end state (the HTML) holds a moment, fades to the start, and the three jobs run back to it
   WF.demo(root, async (api) => {
     const w = api.wait;
-    await w(400);
+    await w(1200);
     for (;;) {
+      await toStart();
+      await w(100);
       for (let j = 0; j < jobs.length; j++) await runJob(jobs[j], j, w, j === jobs.length - 1);
-      // cross-fade back to the start
-      stage.classList.add("fade");
-      Object.values(nums).forEach((n) => { n.style.opacity = "0"; });
-      await w(300);
-      reset();
-      stage.classList.remove("fade");
-      Object.values(nums).forEach((n) => { n.style.opacity = ""; });
-      await w(300);
+      await w(700);
     }
-  }, { pauseIn: foot });
+  }, { pauseIn: cap || undefined, label: cap ? cap.dataset.pauseLabel : undefined });
 })();
 
-/* The example control room (part_ctrl.py): a 24 s loop through WF.demo, event by event, never more than two things
-   moving at once. On first view the window settles from a slight tilt, the KPIs count once and the chart draws once
-   (its end point and callout appear only when the line reaches today). Then a cursor approves the first request (the
-   row confirms and collapses; the sidebar and subline counts go down), a log line arrives, a quote's stage changes
-   with a soft sweep, a new approval slides in and the cursor approves it (the invoices count clears and "Invoiced"
-   ticks up), and the loop resets with a true 600 ms cross-fade: a still copy of the panel fades out over the restored
-   one. On phones a tap ring replaces the arrow cursor.
-   Nothing here changes a card's height: rows collapse and arrive inside frozen boxes (.cc-fz, see ctrl.css).
-   The HTML is the full first state; under reduced motion still() shows the first approval done instead. */
+/* The example control room (part_ctrl.py). Three separate things, each started by what the visitor sees:
+   - the window shows as soon as it enters the screen (a 12 px rise and a fade, once), so there is never an empty gap
+     under the heading while the Brain above is still playing;
+   - the KPIs count up once when their row is in view, and the chart draws once when it is in view (its end point,
+     drop line and callout appear only when the line reaches today);
+   - the 22 s loop runs through WF.demo (its turn, the pause button in the caption row, reduced motion): the cursor
+     approves the invoice drafts and "Invoiced" ticks up, the approval lands in the log, Mikko's approval of a
+     reminder lands next and quote 2042's row follows, a new request takes the confirmed row's place and is approved,
+     and a still copy of the panel cross-fades the reset over 600 ms. On phones a tap ring replaces the cursor.
+   Never more than two things move at once, and only transform and opacity move: rows never collapse or grow (the
+   approvals and the log are frozen boxes, see ctrl.css). The HTML is the full first state; under reduced motion
+   still() shows the first steps done instead. */
 (() => {
   const WF = window.WF;
   const win = document.querySelector("[data-cc]");
   if (!WF || !win) return;
   const lang = document.documentElement.lang || "en";
+  const cap = win.closest(".cc").querySelector(".demo-cap") || win;
+  const label = win.dataset.ccLabel;
   const $ = (s, r = win) => r.querySelector(s);
   const $$ = (s, r = win) => [...r.querySelectorAll(s)];
   const fmt = (v, dec = 0) => {
@@ -673,6 +716,7 @@ gl_FragColor=vec4(c,1.);}`;
   const cursor = $(".cc-cursor"), tap = $(".cc-tap");
   const k3 = $("[data-cc-k3]"), row = $('[data-cc-row="2042"]');
   const after = $("[data-cc-after]").content.children;
+  const logTpl = [...$("[data-cc-logtpl]").content.children];
   const count = (k) => $(`[data-cc-n="${k}"]`);
   const dot = (i) => $(`[data-cc-b="${i}"]`);
   const phone = () => win.offsetWidth < 760;
@@ -684,32 +728,79 @@ gl_FragColor=vec4(c,1.);}`;
     el.textContent = v;
     el.classList.remove("is-roll"); void el.offsetWidth; el.classList.add("is-roll");
   };
+  const setWait = (n) => { setN(count("wait"), String(n)); count("wait2").textContent = String(n); };
   const ping = (i) => { const d = dot(i); if (!d) return; d.classList.remove("is-ping"); void d.offsetWidth; d.classList.add("is-ping"); };
   const shown = (el) => !!(el && el.offsetParent);
 
   const approveDone = (li) => li.classList.add("is-ok");
-  const addLogLine = () => log.prepend($("[data-cc-logtpl]").content.firstElementChild.cloneNode(true));
+  const addLogLine = (i) => log.prepend(logTpl[i].cloneNode(true));
   const changeRowNow = () => {
     const st = row.querySelector(".cc-stw"), nx = row.querySelector(".cc-nx");
     st.replaceChildren(after[0].cloneNode(true));
     nx.textContent = after[1].textContent;
   };
-
-  // reduced motion: the first approval done, its effects shown, nothing moving
-  const still = () => {
-    approveDone(list.firstElementChild);
-    count("inbox").textContent = "13";
-    count("wait").textContent = count("wait2").textContent = "2";
-    addLogLine();
-    changeRowNow();
+  const invoicedNow = () => {
+    k3.querySelector(".cc-num").textContent = fmt(Number(k3.dataset.ccK3));
+    k3.querySelector(".cc-kd").replaceChildren(after[2].cloneNode(true), " ", after[3].cloneNode(true));
   };
 
-  if (WF.still) { WF.demo(win, null, { still }); return; }
+  // reduced motion: the invoice drafts approved, the reminder sent, both in the log; nothing moving
+  const still = () => {
+    approveDone(list.firstElementChild);
+    count("invoice").textContent = "";
+    count("wait").textContent = count("wait2").textContent = "2";
+    invoicedNow();
+    addLogLine(0); addLogLine(1);
+    changeRowNow();
+  };
+  if (WF.still) { WF.demo(win, null, { still, pauseIn: cap, label }); return; }
 
-  // before it is seen: tilted and faded, KPIs at zero, the chart not yet drawn and its marker hidden
-  win.classList.add("cc-pre", "cc-pre-draw", "cc-pre-mark", "cc-pre-call");
+  const onScreen = (el) => { const r = el.getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0; };
+  const once = (el, ratio, fn, margin = "0px") => {
+    const io = new IntersectionObserver(([en]) => {
+      if (en.isIntersecting && en.intersectionRatio >= ratio - .001) { io.disconnect(); fn(); }
+    }, { threshold: [0, ratio], rootMargin: margin });
+    io.observe(el);
+    return io;
+  };
+  const rafTween = (ms, fn) => new Promise((res) => {
+    const t0 = performance.now();
+    const step = (now) => { const k = Math.min(1, (now - t0) / ms); fn(k); if (k < 1) requestAnimationFrame(step); else res(); };
+    requestAnimationFrame(step);
+  });
+
+  // 1. the window: shown as soon as its top is on the screen
+  if (!onScreen(win)) {
+    win.classList.add("cc-pre");
+    once(win, 0, () => {
+      win.classList.add("cc-rise");
+      win.classList.remove("cc-pre");
+    }, "0px 0px -8% 0px");
+  }
+
+  // 2. the KPIs count up once their row is in view; the chart draws once it is mostly in view
+  const kpiRow = $(".cc-kpis"), plot = $(".cc-plot");
   const nums = $$(".cc-kpis .cc-num").map((el) => ({ el, to: Number(el.dataset.ccTo), dec: Number(el.dataset.ccDec || 0) }));
-  nums.forEach((n) => { n.el.textContent = fmt(0, n.dec); });
+  let kpiIo = null;
+  const kpisFinal = () => nums.forEach((n) => { n.el.textContent = fmt(n.to, n.dec); });
+  if (!onScreen(kpiRow)) {
+    nums.forEach((n) => { n.el.textContent = fmt(0, n.dec); });
+    kpiIo = once(kpiRow, .4, () => {
+      kpiIo = null;
+      rafTween(900, (t) => nums.forEach((n) => { n.el.textContent = fmt(n.to * out(t), n.dec); }));
+    });
+  }
+  if (!onScreen(plot)) {
+    win.classList.add("cc-pre-draw", "cc-pre-mark", "cc-pre-call");
+    once(plot, .6, () => {
+      win.classList.add("cc-drawing");
+      win.classList.remove("cc-pre-draw");
+      setTimeout(() => win.classList.remove("cc-pre-mark"), 1450);
+      setTimeout(() => { win.classList.remove("cc-pre-call"); win.classList.remove("cc-drawing"); }, 1600);
+    });
+  }
+
+  // 3. the loop
   let A = null;
   // a tween that only advances while the demo plays (api.wait resolves on the next playing frame)
   const tween = async (ms, fn) => {
@@ -772,44 +863,51 @@ gl_FragColor=vec4(c,1.);}`;
     await A.wait(120);
     btn.classList.remove("is-press"); cursor.classList.remove("is-press");
   };
-  // the row confirms, then collapses inside the frozen list (the card keeps its height; the rows below move up)
+  // the row confirms in place (its content leaves, the confirmation rises in); it keeps its slot
   const approve = async (li) => {
     const btn = li.querySelector(".cc-go");
     await press(btn);
     approveDone(li);
-    await A.wait(1100);
+    await A.wait(420);
     btn.classList.remove("is-hover");
-    const h = li.offsetHeight;
-    li.style.overflow = "hidden";
-    await tween(320, (t) => { const k = out(t); li.style.height = `${h * (1 - k)}px`; li.style.opacity = String(1 - k); });
-    li.remove();
   };
 
-  // a new approval slides in at the top of the list, into the slot the first one left
+  // a new request takes the confirmed row's slot: the confirmation fades up and out, the new row rises in, and if
+  // the two differ in height the rows below glide to their places (FLIP, transform only)
   const arrive = async () => {
+    const old = list.firstElementChild;
     const li = $("[data-cc-tpl]").content.firstElementChild.cloneNode(true);
-    li.style.height = "0px"; li.style.overflow = "hidden"; li.style.opacity = "0";
-    list.prepend(li);
-    const h = li.scrollHeight;
-    await tween(380, (t) => { const k = out(t); li.style.height = `${h * k}px`; li.style.opacity = String(k); });
-    li.style.height = li.style.overflow = li.style.opacity = "";
+    await tween(200, (t) => { old.style.opacity = String(1 - t); old.style.transform = `translateY(${(-4 * t).toFixed(1)}px)`; });
+    const rest = [...list.children].slice(1);
+    const before = rest.map((el) => el.getBoundingClientRect().top);
+    li.style.opacity = "0";
+    old.replaceWith(li);
+    const dy = rest.map((el, i) => before[i] - el.getBoundingClientRect().top);
+    await tween(320, (t) => {
+      const k = out(t);
+      li.style.opacity = String(k);
+      li.style.transform = `translateY(${(6 * (1 - k)).toFixed(1)}px)`;
+      rest.forEach((el, i) => { el.style.transform = dy[i] ? `translateY(${(dy[i] * (1 - k)).toFixed(1)}px)` : ""; });
+    });
+    li.style.opacity = li.style.transform = "";
+    rest.forEach((el) => { el.style.transform = ""; });
     return li;
   };
 
   // a log line arrives at the top (FLIP: the entries glide to their new places). In a list the oldest visible one
   // slides down under the bottom fade; in the three-column layout it fades where it stands.
-  const logLine = async () => {
+  const logLine = async (i) => {
     const kids = [...log.children];
     const before = kids.map((el) => el.getBoundingClientRect());
-    addLogLine();
+    addLogLine(i);
     const li = log.firstElementChild;
     if (!shown(li)) return;
     const grid = getComputedStyle(log).display === "grid";
     const sz = log.parentElement.querySelector(".cc-sz");
     const k = [...sz.children].filter((el) => getComputedStyle(el).display !== "none").length;
-    const moves = kids.map((el, i) => {
+    const moves = kids.map((el, j) => {
       const a = el.getBoundingClientRect();
-      return { el, dx: before[i].left - a.left, dy: before[i].top - a.top, pin: grid && i + 1 >= k };
+      return { el, dx: before[j].left - a.left, dy: before[j].top - a.top, pin: grid && j + 1 >= k };
     });
     li.style.transition = "none"; li.style.opacity = "0";
     await tween(380, (t) => {
@@ -822,7 +920,7 @@ gl_FragColor=vec4(c,1.);}`;
     li.style.opacity = li.style.transform = li.style.transition = "";
   };
 
-  // quote 2042: the stage chip and the next step cross-fade while a soft band sweeps the row
+  // quote 2042: Mikko approved the reminder, so its status chip and next step cross-fade while a soft band sweeps
   const changeRow = async () => {
     if (!shown(row)) { await A.wait(1400); return; }
     const st = row.querySelector(".cc-stw"), nx = row.querySelector(".cc-nx");
@@ -836,14 +934,13 @@ gl_FragColor=vec4(c,1.);}`;
     row.classList.remove("is-sweep");
   };
 
-  // the invoices went out: "Invoiced in October" ticks up and its delta changes
+  // the invoices went out: "Invoiced in October" ticks up by 9 720 € and its delta changes
   const invoiced = async () => {
     const n = k3.querySelector(".cc-num"), d = k3.querySelector(".cc-kd");
     const from = Number(n.dataset.ccTo), to = Number(k3.dataset.ccK3);
     d.style.opacity = "0";
     await tween(700, (t) => { n.textContent = fmt(from + (to - from) * out(t)); });
-    d.innerHTML = "";
-    d.append(after[2].cloneNode(true), " ", after[3].cloneNode(true));
+    d.replaceChildren(after[2].cloneNode(true), " ", after[3].cloneNode(true));
     d.style.opacity = "";
   };
 
@@ -859,83 +956,61 @@ gl_FragColor=vec4(c,1.);}`;
     count("wait").textContent = count("wait2").textContent = String(list.children.length);
     await tween(600, (t) => { ghost.style.opacity = String(1 - t); });
     ghost.remove();
-    setN(count("inbox"), "14"); setN(count("invoice"), "4");
+    setN(count("invoice"), "4");
   };
 
   WF.demo(win, async (api) => {
     A = api;
-    let first = true;
+    // if the loop gets its turn before the KPI row was seen (the visitor came from below), show the real figures
+    if (kpiIo) { kpiIo.disconnect(); kpiIo = null; kpisFinal(); }
+    await A.wait(1200);
     for (;;) {
-      if (first) {
-        first = false;
-        // the window settles from a slight tilt (a transition, so it finishes even if paused mid-way)
-        win.classList.add("cc-settle");
-        await A.wait(16);
-        win.classList.remove("cc-pre");
-        // 0.6 s: the KPIs count once; 1.2 s: the chart draws once (1.5 s wipe)
-        await A.wait(600);
-        tween(900, (t) => nums.forEach((n) => { n.el.textContent = fmt(n.to * out(t), n.dec); }));
-        await A.wait(600);
-        win.classList.remove("cc-settle");
-        win.classList.add("cc-drawing");
-        win.classList.remove("cc-pre-draw");
-        // the line reaches today: first the point and its leader, then the callout
-        await A.wait(1450);
-        win.classList.remove("cc-pre-mark");
-        await A.wait(120);
-        win.classList.remove("cc-pre-call");
-        await A.wait(230);
-        win.classList.remove("cc-drawing");
-      } else {
-        await A.wait(3000);
-      }
-      // 3 s: the cursor approves the first request; the counts go down
+      // the cursor approves the invoice drafts; the counts go down and "Invoiced" ticks up
       await enter();
       await approve(list.firstElementChild);
-      setN(count("inbox"), "13"); setN(count("wait"), "2");
-      count("wait2").textContent = "2";
-      await A.wait(300);
-      ping(2);
-      await leave();
-      // 7 s: what just happened lands in the log
-      await A.wait(500);
-      await logLine();
-      // 9 s: quote 2042's reminder goes out
-      await A.wait(1000);
-      ping(1);
-      await A.wait(400);
-      await changeRow();
-      // 15 s: a new approval arrives
-      await A.wait(4400);
-      ping(3);
-      await A.wait(500);
-      const li = await arrive();
-      setN(count("wait"), "3");
-      count("wait2").textContent = "3";
-      // 17.5 s: the cursor approves it; the invoices count clears and "Invoiced" ticks up
-      await A.wait(1200);
-      await enter();
-      await approve(li);
-      setN(count("invoice"), ""); setN(count("wait"), "2");
-      count("wait2").textContent = "2";
+      setN(count("invoice"), ""); setWait(2);
       await A.wait(200);
       await invoiced();
+      ping(3);
       await leave();
-      // 23.4 s: cross-fade back to the start
-      await A.wait(1300);
+      // what just happened lands in the log
+      await A.wait(300);
+      await logLine(0);
+      // Mikko approves the reminder to Rantakartano; the quote follow-ups block sends it and the row follows
+      await A.wait(1800);
+      await logLine(1);
+      await A.wait(300);
+      ping(0);
+      await A.wait(300);
+      await changeRow();
+      // a new request takes the confirmed row's place
+      await A.wait(2800);
+      const li = await arrive();
+      setWait(3);
+      // and is approved
+      await A.wait(1400);
+      await enter();
+      await approve(li);
+      setWait(2);
+      await leave();
+      // cross-fade back to the start
+      await A.wait(2400);
       await reset();
+      await A.wait(1600);
     }
-  }, { still, threshold: .3, pauseIn: win.closest(".cc").querySelector(".cc-under") || win });
+  }, { still, threshold: .3, pauseIn: cap, label });
 })();
 
 /* Our approach (#blocks): the stack follows the method, then plays an example company's blocks when one is picked.
-   Desktop and tablet: as each step crosses the middle of the screen (IntersectionObserver, rootMargin -50% 0 -50% 0)
-   the sticky stack moves on: 0 ghost outline, 1 the free pilot, 2 the next blocks, 3 all of it running. The 1px rail
-   fills with the reading position (a passive scroll listener, only while the section is on screen). Nothing here
-   pins or steers the scroll. Reaching the list keeps the full stack as it is; picking a company in "See the blocks
-   for" plays that company's six blocks into the stack one by one, in its own order (data-mt-order), while the matching
-   row is marked. Phone: the stack sits once above the steps and builds once when it is seen. Reduced motion:
-   everything is shown at once. */
+   Desktop and tablet: the step being read is worked out from the scroll position (the last step whose top has passed
+   the middle of the screen; the company list once its top has), in one passive scroll listener with one rAF, active
+   only while the section is on screen. So a jump, a reload that restores the scroll position or find-in-page always
+   lands in the right state. The sticky stack moves on with it: 0 ghost outline, 1 the free pilot, 2 the next blocks,
+   3 all of it running; the 1px rail fills with the reading position. Nothing here pins or steers the scroll. Reaching
+   the list keeps the full stack as it is; picking a company in "See the blocks for" plays that company's six blocks
+   into the stack one by one, in its own order (data-mt-order), while the matching row is marked (about 4 s, started
+   only by a click, so it needs no pause control). Phone: the stack sits once above the steps and builds once when it
+   is seen. Reduced motion: everything is shown at once. */
 (() => {
   const run = document.querySelector("[data-mt]");
   if (!run) return;
@@ -953,23 +1028,28 @@ gl_FragColor=vec4(c,1.);}`;
   const BASE = lits.map((_, i) => i);
   const STATES = [0, 1, 5, 6];  // blocks lit at each step of the method
   const DROP = 420;              // stagger between blocks dropping together: over half the 820 ms drop, so at most two move at once
-  let ci = 0, token = 0, cur = -1;
-  const inMid = new Set();
+  let ci = 0, token = 0, cur = -1, wanted = null;
   const wait = (ms) => new Promise((res) => setTimeout(res, ms));
   const orderOf = (k) => {
     const o = (panels[k] && panels[k].dataset.mtOrder || "").split(",").map(Number);
     return o.length === lits.length && o.every((n) => lits[n]) ? o : BASE;
   };
 
-  // Light the first n blocks of an order; the ones newly lit drop in one after another.
+  // Light the first n blocks of an order; the ones newly lit drop in one after another. The labels of the pilot and
+  // of the top block wait until their own block has landed (--mt-dp, --mt-dt on the stage).
   const light = (n, order = BASE, stagger = DROP) => {
     const want = new Set(order.slice(0, n));
+    const land = {};
     let q = 0;
     order.forEach((slot) => {
-      const l = lits[slot], on = want.has(slot);
-      l.style.transitionDelay = on && !l.classList.contains("on") ? `${q++ * stagger}ms` : "";
+      const l = lits[slot], on = want.has(slot), drop = on && !l.classList.contains("on");
+      const d = drop ? q++ * stagger : 0;
+      l.style.transitionDelay = drop ? `${d}ms` : "";
+      land[slot] = drop ? d + 520 : 0;
       l.classList.toggle("on", on);
     });
+    stage.style.setProperty("--mt-dp", `${land[0] || 0}ms`);
+    stage.style.setProperty("--mt-dt", `${land[lits.length - 1] || 0}ms`);
   };
   const rowsOf = (k) => [...panels[k].querySelectorAll("[data-mt-row]")];
   const settle = () => panels.forEach((p) => {
@@ -987,14 +1067,42 @@ gl_FragColor=vec4(c,1.);}`;
     steps.forEach((st, i) => { st.classList.toggle("is-on", i === s); st.classList.toggle("is-past", i < s); });
   };
 
+  // Arriving at the list: the stack stays (or becomes) whole; nothing replays until a company is picked.
+  const toCompanies = () => {
+    if (cur === "co") return;
+    token++; settle();
+    cur = "co"; stage.dataset.s = "co";
+    light(lits.length, orderOf(ci));
+    steps.forEach((st) => { st.classList.remove("is-on"); st.classList.add("is-past"); });
+  };
+
+  // Where the reader is: the company list once its top is above the middle of the screen, otherwise the last step
+  // whose top is (the first step before any has).
+  const where = () => {
+    const mid = innerHeight * .5;
+    if (zone.getBoundingClientRect().top < mid) return "co";
+    let s = 0;
+    steps.forEach((st, i) => { if (st.getBoundingClientRect().top < mid) s = i; });
+    return s;
+  };
+  // Acts only when that place changes (or when asked to), so scrolling a little never interrupts a company playing.
+  const sync = (force) => {
+    if (still || phone.matches) return;
+    const w = where();
+    if (w === wanted && !force) return;
+    wanted = w;
+    if (w === "co") toCompanies(); else toStep(w);
+  };
+
   // An example company, picked from its tab: the stack clears, then its blocks drop in one by one in its own order,
-  // and the row of each block is marked while it lands. The rows themselves stay fully readable.
+  // and the row of each block is marked while it lands. The rows themselves stay fully readable. On phones the stack
+  // is a screen or more above the tabs, so the panel just switches: no row-by-row marking for blocks nobody sees.
   const play = async (k) => {
     const my = ++token;
     cur = "co"; stage.dataset.s = "co";
     settle();
     const rows = rowsOf(k), order = orderOf(k);
-    if (still) { light(lits.length, order, 0); return; }
+    if (still || phone.matches) { light(lits.length, order, 0); return; }
     panels[k].classList.add("is-playing");
     light(0, order);  // the stack fades out where it is
     await wait(380);
@@ -1008,18 +1116,8 @@ gl_FragColor=vec4(c,1.);}`;
     await wait(500);
     if (my !== token) return;
     settle();
-    // played from a tab while the steps were in the middle of the screen: give the stack back to the step there
-    const st = steps.find((x) => inMid.has(x));
-    if (!inMid.has(zone) && st && !phone.matches) toStep(Number(st.dataset.mtStep));
-  };
-
-  // Arriving at the list: the stack stays (or becomes) whole; nothing replays until a company is picked.
-  const toCompanies = () => {
-    if (cur === "co") return;
-    token++; settle();
-    cur = "co"; stage.dataset.s = "co";
-    light(lits.length, orderOf(ci));
-    steps.forEach((st) => { st.classList.remove("is-on"); st.classList.add("is-past"); });
+    // played from a tab while a step was being read: give the stack back to that step
+    if (!phone.matches && where() !== "co") sync(true);
   };
 
   // The segmented control: tabs with arrow keys; a thumb slides under the chosen one.
@@ -1071,17 +1169,6 @@ gl_FragColor=vec4(c,1.);}`;
   }
   stage.dataset.s = "0"; light(0, BASE, 0);
 
-  // Desktop and tablet: the step crossing the middle of the screen sets the stack; the list's zone switches to the
-  // companies. Phone: none of this (the stack is not beside the steps there).
-  const mid = new IntersectionObserver((entries) => entries.forEach((en) => {
-    if (en.isIntersecting) inMid.add(en.target); else inMid.delete(en.target);
-    if (!en.isIntersecting || phone.matches) return;
-    if (en.target === zone) toCompanies();
-    else toStep(Number(en.target.dataset.mtStep));
-  }), { rootMargin: "-50% 0px -50% 0px" });
-  steps.forEach((s) => mid.observe(s));
-  mid.observe(zone);
-
   // Phone: the stack builds once, step by step, when it is seen.
   let built = false;
   new IntersectionObserver(async ([en]) => {
@@ -1094,202 +1181,141 @@ gl_FragColor=vec4(c,1.);}`;
     }
   }, { threshold: .5 }).observe(stage);
 
-  // The rail fills with the reading position: how far the middle of the screen is through the steps.
+  // Desktop and tablet: one passive scroll listener while the section is on screen fills the rail with the reading
+  // position (how far the middle of the screen is through the steps) and sets the step from it.
   let raf = 0;
-  const fill = () => {
+  const frame = () => {
     raf = 0;
     const r = stepsBox.getBoundingClientRect(), h = steps[steps.length - 1].offsetTop || 1;
     const p = Math.min(1, Math.max(0, (innerHeight / 2 - r.top - 6) / h));
     stepsBox.style.setProperty("--p", p.toFixed(4));
+    sync();
   };
-  const onScroll = () => { if (!raf) raf = requestAnimationFrame(fill); };
+  const onScroll = () => { if (!raf) raf = requestAnimationFrame(frame); };
   new IntersectionObserver(([en]) => {
     if (en.isIntersecting) { window.addEventListener("scroll", onScroll, { passive: true }); onScroll(); }
     else window.removeEventListener("scroll", onScroll);
-  }).observe(stepsBox);
+  }).observe(run);
   new ResizeObserver(onScroll).observe(stepsBox);
+  phone.addEventListener("change", () => { wanted = null; onScroll(); });
 })();
 
-/* The offer (part_offer.py): the AI rollout band widens from inset to the full page as its centre travels from the
-   bottom of the screen to the middle. It reads the scroll position (a passive listener plus one requestAnimationFrame
-   per frame) and only sets --rb-p, which the CSS turns into the clip-path and the glow. It never pins or steers the
-   scroll. Under reduced motion the band is shown open. */
+/* The offer (part_offer.py). The AI rollout band is still (it only rises in once, through data-rv), so the one script
+   here is for the team on a tablet or phone: when the row of portraits scrolls sideways, its wrapper (.tm-scroll)
+   becomes a labelled, focusable region (role="region", arrow keys scroll it) while the ul inside keeps its list
+   semantics, and the "1 / 5" count under it follows the card at the left edge. Passive listeners only; nothing moves
+   on its own. */
 (() => {
-  const band = document.querySelector("[data-rb]");
-  if (!band) return;
-  const WF = window.WF || {};
-  const still = WF.still ?? window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (still) { band.style.setProperty("--rb-p", "1"); return; }
-  let raf = 0, last = -1;
-  const update = () => {
+  const box = document.querySelector("[data-tm]");
+  const list = box && box.querySelector(".tm-list");
+  const count = document.querySelector("[data-tm-count]");
+  if (!list) return;
+  const cards = [...list.children];
+  let raf = 0, scrolls = null;
+  const show = () => {
     raf = 0;
-    const r = band.getBoundingClientRect(), vh = window.innerHeight || 1;
-    const centre = r.top + r.height / 2;
-    let p = (vh - centre) / (vh * 0.5);             // 0 with the centre at the bottom edge, 1 at the middle
-    p = Math.min(1, Math.max(0, p));
-    p = p * p * (3 - 2 * p);                        // ease in and out
-    const v = Math.round(p * 1000) / 1000;
-    if (v !== last) { last = v; band.style.setProperty("--rb-p", String(v)); }
+    if (!count) return;
+    const x = box.getBoundingClientRect().left + parseFloat(getComputedStyle(box).scrollPaddingInlineStart || 0);
+    let i = 0, best = Infinity;
+    cards.forEach((c, k) => { const d = Math.abs(c.getBoundingClientRect().left - x); if (d < best) { best = d; i = k; } });
+    // the last card can't reach the left edge: once the row is scrolled to its end, count the last one
+    if (box.scrollLeft + box.clientWidth >= box.scrollWidth - 2) i = cards.length - 1;
+    count.textContent = `${i + 1} / ${cards.length}`;
   };
-  const ask = () => { if (!raf) raf = requestAnimationFrame(update); };
-  window.addEventListener("scroll", ask, { passive: true });
-  window.addEventListener("resize", ask, { passive: true });
-  update();
+  const fit = () => {
+    const now = box.scrollWidth > box.clientWidth + 1;
+    if (now === scrolls) return;
+    scrolls = now;
+    if (now) { box.tabIndex = 0; box.setAttribute("role", "region"); box.setAttribute("aria-label", box.dataset.tmLabel || ""); }
+    else { box.removeAttribute("tabindex"); box.removeAttribute("role"); box.removeAttribute("aria-label"); }
+  };
+  box.addEventListener("scroll", () => { if (!raf) raf = requestAnimationFrame(show); }, { passive: true });
+  window.addEventListener("resize", () => { fit(); show(); }, { passive: true });
+  fit();
+  show();
 })();
 
 /* How we start (part_pilot.py, src/parts/pilot.css). Everything is in the HTML and readable without this script.
-   1 The steps: on wide screens the three stills share one sticky place. The step whose copy has passed a line (set so
-     both changes happen while the still is pinned) is the current one: its still cross-fades in and its copy lights
-     up. Nothing steers the scroll: an IntersectionObserver turns a passive scroll listener on only near the story.
-   2 What a pilot can be: an accordion (real buttons with aria-expanded and aria-controls, arrow keys between them).
-     It moves on by itself about every 6 s through WF.demo (so it has a pause button, waits while it is off screen,
-     hovered or focused, and stays put under reduced motion) until the visitor picks one. */
+   1 The band: its width is the page's width less the scrollbar (--pl-vw), so its insets match the hero's on every
+     system. The still is placed so its horizon (half the image's height) falls between the heading and the path, in
+     every language and width (--pl-hz, --pl-iw); it is measured again when the band changes size.
+   2 The path draws once, left to right (top to bottom on phones), when it comes into view, and lights each milestone
+     as it reaches it. Under reduced motion it is simply drawn. Nothing listens to the wheel or touch, nothing loops. */
 (() => {
   const WF = window.WF || {};
-  const wide = window.matchMedia("(min-width: 861px)");
+  const sec = document.getElementById("pilot");
+  const band = sec && sec.querySelector(".pl-band");
+  if (!band) return;
+  const top = band.querySelector(".pl-top");
+  const path = band.querySelector(".pl-path");
+  const R = 2000 / 1132; // the still's width over its height
+  const wide = window.matchMedia("(min-width: 901px)");
 
-  const story = document.querySelector("[data-pl-story]");
-  if (story && "IntersectionObserver" in window) {
-    const figs = [...story.querySelectorAll(".pl-fig")];
-    const copies = [...story.querySelectorAll(".pl-copy")];
-    // Each copy has its own line to pass, placed so the changes fall evenly inside the stretch where the still is
-    // pinned, with a margin at both ends: the first a little after the still pins, the last well before it leaves.
-    let lines = copies.map(() => window.innerHeight * 0.36);
-    const measure = () => {
-      if (!wide.matches || copies.length < 2) return;
-      const pinned = story.offsetHeight - figs[0].offsetHeight;
-      const top = parseFloat(getComputedStyle(figs[0]).top) || 96;
-      const n = copies.length - 1;
-      const m = Math.min(40, pinned / 4);
-      lines = copies.map((c, k) => {
-        if (k === 0) return Infinity;
-        const at = n === 1 ? pinned / 2 : m + (k - 1) * (pinned - 2 * m) / (n - 1);
-        return top + (c.offsetTop - copies[0].offsetTop) - at;
-      });
-    };
-    let cur = 0;
-    const set = (i) => {
-      if (i === cur) return;
-      cur = i;
-      figs.forEach((f, k) => f.classList.toggle("is-on", k === i));
-      copies.forEach((c, k) => c.classList.toggle("is-on", k === i));
-    };
-    const pick = () => {
-      if (!wide.matches) return;
-      let i = 0;
-      copies.forEach((c, k) => { if (c.getBoundingClientRect().top < lines[k]) i = k; });
-      set(i);
-    };
-    // while the story is near the screen, a passive scroll listener reads the copies' positions once per frame
-    let ask = 0;
-    const later = () => { if (!ask) ask = requestAnimationFrame(() => { ask = 0; pick(); }); };
-    new IntersectionObserver(([en]) => {
-      if (en.isIntersecting) window.addEventListener("scroll", later, { passive: true });
-      else window.removeEventListener("scroll", later);
-      pick();
-    }, { rootMargin: "50% 0px 50% 0px" }).observe(story);
-    const mode = () => { story.classList.toggle("pl-live", wide.matches); measure(); pick(); };
-    wide.addEventListener("change", mode);
-    window.addEventListener("resize", () => { measure(); later(); }, { passive: true });
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(mode);
-    mode();
-  }
+  const fit = () => {
+    sec.style.setProperty("--pl-vw", document.documentElement.clientWidth + "px");
+    const b = band.getBoundingClientRect();
+    const head = top.getBoundingClientRect().bottom - b.top;
+    const foot = path.getBoundingClientRect().top - b.top;
+    // the horizon a little below the middle of the open sky between the words and the path
+    const hz = Math.round(head + Math.max(0, foot - head) * 0.55);
+    // wide enough to reach the band's top from the horizon (and its foot too on wide screens; phones fade it out)
+    let w = Math.max(b.width, 2 * hz * R);
+    if (wide.matches) w = Math.max(w, 2 * (b.height - hz) * R);
+    band.style.setProperty("--pl-hz", hz + "px");
+    band.style.setProperty("--pl-iw", Math.ceil(w + 2) + "px");
+    band.classList.add("pl-fit");
+  };
+  let ask = 0;
+  const later = () => { if (!ask) ask = requestAnimationFrame(() => { ask = 0; fit(); }); };
+  fit();
+  window.addEventListener("resize", later, { passive: true });
+  if ("ResizeObserver" in window) new ResizeObserver(later).observe(band);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(later);
 
-  const box = document.querySelector("[data-pl-ideas]");
-  if (box) {
-    box.classList.add("pl-js");
-    const items = [...box.querySelectorAll(".pl-it")];
-    const btns = items.map((li) => li.querySelector(".pl-ib"));
-    const views = [...box.querySelectorAll(".pl-v")];
-    const crumbs = [...box.querySelectorAll(".pl-cb")];
-    const win = box.querySelector(".pl-win");
-    const bar = box.querySelector(".pl-win .win-bar");
-    let cur = 0, manual = false, hold = false;
-
-    // the open text keeps the height of the longest one, so nothing below moves as the items change
-    const fit = () => {
-      box.style.setProperty("--pl-ipl", "0");
-      let most = 1;
-      items.forEach((li) => {
-        const p = li.querySelector(".pl-ip p");
-        const lh = parseFloat(getComputedStyle(p).lineHeight) || 26;
-        most = Math.max(most, Math.round((p.getBoundingClientRect().height - 20) / lh));
-      });
-      box.style.setProperty("--pl-ipl", String(most));
-    };
-    let fitting = 0;
-    window.addEventListener("resize", () => { if (!fitting) fitting = requestAnimationFrame(() => { fitting = 0; fit(); }); }, { passive: true });
-    fit();
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
-
-    const open = (i) => {
-      if (i === cur) return;
-      cur = i;
-      items.forEach((li, k) => li.classList.toggle("is-on", k === i));
-      btns.forEach((b, k) => b.setAttribute("aria-expanded", String(k === i)));
-      views.forEach((v, k) => v.classList.toggle("is-on", k === i));
-      crumbs.forEach((c, k) => c.classList.toggle("is-on", k === i));
-    };
-    const stop = () => {
-      if (manual) return;
-      manual = true;
-      box.classList.remove("pl-auto");
-      items.forEach((li) => li.style.removeProperty("--t"));
-      const pause = win && win.querySelector(".demo-pause");
-      if (pause) pause.remove();
-    };
-    btns.forEach((b, i) => {
-      b.addEventListener("click", () => { stop(); open(i); });
-      b.addEventListener("keydown", (ev) => {
-        const to = { ArrowDown: i + 1, ArrowUp: i - 1, Home: 0, End: btns.length - 1 }[ev.key];
-        if (to === undefined) return;
-        ev.preventDefault();
-        btns[(to + btns.length) % btns.length].focus();
-      });
-    });
-    box.addEventListener("pointerenter", () => { hold = true; });
-    box.addEventListener("pointerleave", () => { hold = false; });
-    box.addEventListener("focusin", () => { hold = true; });
-    box.addEventListener("focusout", (ev) => { if (!box.contains(ev.relatedTarget)) hold = false; });
-
-    const EVERY = 6000;
-    const demo = WF.demo && WF.demo(box, async (api) => {
-      let t = 0;
-      while (!manual) {
-        const t0 = performance.now();
-        await api.wait(100);
-        if (manual) break;
-        if (hold) continue;
-        t += Math.min(160, performance.now() - t0);
-        items[cur].style.setProperty("--t", Math.min(1, t / EVERY).toFixed(3));
-        if (t >= EVERY) {
-          t = 0;
-          const was = items[cur];
-          open((cur + 1) % items.length);
-          was.style.setProperty("--t", "0");
-        }
-      }
-    }, { pauseIn: bar || win, still() {} });
-    if (demo) box.classList.add("pl-auto");
+  if (!WF.still && "IntersectionObserver" in window) {
+    band.classList.add("pl-anim");
+    const io = new IntersectionObserver(([en]) => {
+      if (!en.isIntersecting) return;
+      band.classList.add("pl-go");
+      io.disconnect();
+    }, { rootMargin: "0px 0px -14% 0px", threshold: 0.6 });
+    io.observe(path);
   }
 })();
 
-/* The proof (#work, part_work.py): the one big figure rises into place the first time it comes on screen, with its
-   line fading in just before and the hairline under it drawing after (never more than two of them moving at once).
-   It is only armed while it is still below the screen, so it is never hidden from someone already looking at it;
-   under reduced motion, or without IntersectionObserver, it is simply there. */
+/* The proof (#work, part_work.py).
+   1. The opener rises into place the first time it comes on screen: the figure's line fades in, the figure rises out
+      of its mask just after, and the ledger of the other numbers fades in as the line settles (never more than two of
+      them moving at once). It is only armed while it is still below the screen, so it is never hidden from someone
+      already looking at it; under reduced motion, or without IntersectionObserver, it is simply there.
+   2. On a phone, "What we built" shows three of its six rows and a button for the rest (CSS shows the cut only below
+      641px; without script all six rows show). The button is a one-way disclosure: it opens the list, steps aside and
+      hands focus to the first row it revealed. */
 (() => {
-  const big = document.querySelector("[data-pf-big]");
   const WF = window.WF || {};
-  if (!big || WF.still || !("IntersectionObserver" in window)) return;
-  if (big.getBoundingClientRect().top < window.innerHeight) return;
-  big.classList.add("pf-arm");
-  const io = new IntersectionObserver((entries) => entries.forEach((en) => {
-    if (!en.isIntersecting) return;
-    big.classList.add("pf-on");
-    io.disconnect();
-  }), { rootMargin: "0px 0px -30% 0px" });
-  io.observe(big);
+
+  const open = document.querySelector("[data-pf-open]");
+  if (open && !WF.still && "IntersectionObserver" in window && open.getBoundingClientRect().top >= window.innerHeight) {
+    open.classList.add("pf-arm");
+    const io = new IntersectionObserver((entries) => entries.forEach((en) => {
+      if (!en.isIntersecting) return;
+      open.classList.add("pf-on");
+      io.disconnect();
+    }), { rootMargin: "0px 0px -25% 0px" });
+    io.observe(open);
+  }
+
+  const led = document.querySelector("[data-pf-led]");
+  const more = led && led.querySelector(".pf-led-more");
+  if (led && more) {
+    led.classList.add("is-cut");
+    more.addEventListener("click", () => {
+      led.classList.remove("is-cut");
+      more.setAttribute("aria-expanded", "true");
+      const first = led.querySelectorAll("li")[3];
+      if (first) { first.setAttribute("tabindex", "-1"); first.focus({ preventScroll: true }); }
+    });
+  }
 })();
 
 /* The AI rollout demo (part_ra.py, parts/ra.css): the admin view and the team's workspace react to the same events in
@@ -1298,7 +1324,8 @@ gl_FragColor=vec4(c,1.);}`;
    1. Jari attaches the week's hours, types his question and sends it.
    2. The assistant's turn opens with the rules check, step by step; the admin's checks today go up by one.
    3. The answer streams in, then the result card, then what it cost and how long it took.
-   4. The admin: spend +0,04 €, adoption 7 → 8 of 12 (Jari's ring closes after the figure), time saved +12 min.
+   4. The admin: spend +0,04 €, adoption 7 → 8 of 12 (then Jari's ring closes and this week's bar grows to 8, in the
+      accent), time saved +12 min.
    5. A pasted line with a personal ID number is flagged and masked before sending; "2 blocked" becomes 3.
    6. A 600 ms cross-fade back to the start.
    Each admin reaction moves two things only: the value ticks once and the change shows for a moment in the card's
@@ -1313,10 +1340,11 @@ gl_FragColor=vec4(c,1.);}`;
   const q = (s) => root.querySelector(s);
   const qa = (s) => [...root.querySelectorAll(s)];
 
-  // The stage is drawn at 1200 px and scales as one picture down to 1000 px (below that, ra.css stacks it).
+  // The stage is drawn at 1200 px and scales as one picture down to a 1120 px container (k >= .93, so its small text
+  // stays readable); below that, ra.css stacks it.
   const size = () => {
     const w = root.clientWidth;
-    root.style.setProperty("--k", w >= 1000 ? Math.min(1, w / 1200).toFixed(4) : "1");
+    root.style.setProperty("--k", w >= 1120 ? Math.min(1, w / 1200).toFixed(4) : "1");
   };
   size();
 
@@ -1352,7 +1380,8 @@ gl_FragColor=vec4(c,1.);}`;
     users: q("[data-rw-users]"), pct: q("[data-rw-pct]"), spend: q("[data-rw-spend]"), checks: qa("[data-rw-checks]"),
     blocked: q("[data-rw-blocked]"), saved: q("[data-rw-saved]"), jmin: q("[data-rw-jmin]"),
   };
-  const jr = q("[data-rw-jr]");
+  const jr = q("[data-rw-jr]"), wk4 = q(".rw-wk:last-child i");  // Jari's ring and this week's bar
+  const WK4_START = (7 / 8).toFixed(3);  // the bars are drawn to 8 users; this week has 7 until Jari joins
   const part = (k) => q(`[data-rw-part="${k}"]`);
   const P = { msg: part("msg"), turn: part("turn"), ans: part("ans"), res: part("res"), cost: part("cost") };
   const steps = qa(".rw-st:not(.rw-st-sum)"), sum = q(".rw-st-sum");
@@ -1391,7 +1420,7 @@ gl_FragColor=vec4(c,1.);}`;
     V.users.textContent = "7"; V.pct.textContent = pct(58); V.spend.innerHTML = eur(612);
     V.checks.forEach((c) => { c.textContent = "41"; });
     V.blocked.textContent = "2"; V.saved.innerHTML = hm(130); V.jmin.textContent = "31";
-    jr.classList.remove("on", "rw-tn");
+    jr.classList.remove("on", "rw-tn"); wk4.style.setProperty("--h", WK4_START);
     dls.forEach((dl) => { dl.textContent = ""; });
     qa(".rw-tick, .is-d").forEach((el) => el.classList.remove("rw-tick", "is-d", "is-dr"));
     fit();
@@ -1402,6 +1431,7 @@ gl_FragColor=vec4(c,1.);}`;
   const run = async (api) => {
     let T = 0;
     const sleep = async (ms) => { await api.wait(ms); T += ms; };
+    const real = (ms) => new Promise((r) => setTimeout(r, ms));  // real time, which a pause doesn't stop
     const at = (s) => sleep(Math.max(0, s * 1000 - T));
     for (;;) {
       T = 0;
@@ -1442,7 +1472,8 @@ gl_FragColor=vec4(c,1.);}`;
       await at(11.2);
       hit("adopt", "adopt"); set(V.users, "8"); V.pct.textContent = pct(67);
       await at(11.7);
-      jr.classList.add("on", "rw-tn");  // Jari's ring draws once the figure has settled
+      // Jari's ring draws once the figure has settled, and this week's bar grows to 8 with it (the two things moving)
+      jr.classList.add("on", "rw-tn"); wk4.style.setProperty("--h", "1");
       await at(13.2);
       hit("saved", "saved"); set(V.saved, hm(142));
       await at(13.8);
@@ -1456,17 +1487,19 @@ gl_FragColor=vec4(c,1.);}`;
       pii.classList.remove("is-flag"); pii.classList.add("is-masked"); guard.classList.add("is-hit");
       await at(17.3);
       hit("rules", "block", true); set(V.blocked, "3");
-      // 6. hold, then cross-fade back to the start
+      // 6. hold, then cross-fade back to the start. The faded half runs on real time, so a pause or a scroll to
+      //    another demo can't leave the stage blank: the stop lands on the clean start state.
       await at(19.4);
       stage.classList.add("rw-fading");
-      await at(19.7);
+      await real(300); T += 300;
       rewind();
       stage.classList.remove("rw-fading");
       await at(20.0);
     }
   };
 
-  const api = WF.demo(root, run, { still: fit, pauseIn: q(".rw-foot") });
+  // the pause control goes in the caption row, with its own constant name (the pressed state says if it is paused)
+  const api = WF.demo(root, run, { still: fit, pauseIn: q(".rw-foot"), label: root.dataset.rwPause });
   if (api) rewind(); else fit();
 })();
 
@@ -1572,8 +1605,9 @@ gl_FragColor=vec4(c,1.);}`;
       const io = new IntersectionObserver(([en]) => {
         if (!en.isIntersecting) return;
         io.disconnect();
-        // the marker's own fade-in also ends an animation (and bubbles up here): wait for the swing itself
-        const end = (ev) => { if (ev.animationName !== "rp-swing") return; run.removeEventListener("animationend", end); xt.classList.add("rp-done"); };
+        // the marker's own fade-in also ends an animation (and bubbles up here): wait for the swing itself (rp-swing,
+        // or rp-swing-sm on phones)
+        const end = (ev) => { if (!ev.animationName.startsWith("rp-swing")) return; run.removeEventListener("animationend", end); xt.classList.add("rp-done"); };
         run.addEventListener("animationend", end);
         xt.classList.add("rp-go");
       }, { rootMargin: "0px 0px -20% 0px" });
@@ -1582,71 +1616,129 @@ gl_FragColor=vec4(c,1.);}`;
   }
 })();
 
-/* Who we work with and what we believe: the logo row drifts only while it is on screen and can be paused, and the
-   statement's words light up as it is read. Both follow the visitor; nothing here pins or steers the scroll. */
+/* Who we work with and what we believe: the statement's words light up as it is read, and the client row now and then
+   trades one logo for the next client's. Both follow the visitor; nothing here pins or steers the scroll.
+   One thing moves at a time on this screen: the row waits while the hero's video is playing above it, while the
+   statement below it is lighting up (a word lit in the last 0.9 s), and while the pointer rests on it. Once the visitor
+   stops to read, the row may trade a logo; the statement then holds still. */
 (() => {
   const WF = window.WF || {};
   const still = WF.still ?? window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // The logo row: CSS moves it; this sets its pace, stops it while it is off screen and adds a pause button (WCAG 2.2.2).
-  const mq = document.querySelector("[data-tw-mq]");
-  if (mq && !still) {
-    // The pace is in pixels per second, not seconds per loop: what the eye reads as "drifting" is the speed, so a longer
-    // row (or a wider screen) gets a longer loop. On a resize it keeps its place in the loop.
-    const PX_S = 28;
-    const track = mq.querySelector(".tw-track"), list = mq.querySelector(".tw-list");
-    let dur = 0;
-    const pace = () => {
-      const d = list.offsetWidth / PX_S;
-      if (!d || Math.abs(d - dur) < .5) return;
-      const a = track.getAnimations?.()[0];
-      const at = a && dur ? (Number(a.currentTime) % (dur * 1000)) / (dur * 1000) : 0;
-      dur = d;
-      track.style.animationDuration = d.toFixed(2) + "s";
-      const b = track.getAnimations?.()[0];
-      if (b && at) b.currentTime = at * d * 1000;
-    };
-    pace();
-    if ("ResizeObserver" in window) new ResizeObserver(pace).observe(list);
-
-    new IntersectionObserver(([en]) => mq.classList.toggle("tw-off", !en.isIntersecting)).observe(mq);
-    // a toggle button: its name stays "Pause the logo row" and aria-pressed says whether the row is paused
-    const btn = document.createElement("button");
-    btn.type = "button"; btn.className = "tw-btn";
-    btn.setAttribute("aria-label", mq.dataset.twPause);
-    const draw = () => {
-      const held = mq.classList.contains("tw-held");
-      btn.innerHTML = held ? '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.8 10 6l-7 4.2z" fill="currentColor"/></svg>'
-        : '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 2h2v8H3zM7 2h2v8H7z" fill="currentColor"/></svg>';
-      btn.setAttribute("aria-pressed", String(held));
-    };
-    btn.addEventListener("click", () => { mq.classList.toggle("tw-held"); draw(); });
-    draw();
-    mq.after(btn);
-  }
-
-  // The statement (data-sm-st, after "The statement" in v3.js): its words light up from grey to white in reading order
-  // as it moves up the screen. It starts when its top passes 86 % of the screen's height and is fully lit when its last
-  // line is 62 % of the way down.
+  // The statement (data-sm-st): its words light up from .45 to full white in reading order as it moves up the screen.
+  // It starts when its top passes 86 % of the screen's height and is fully lit when its middle reaches 60 %, so a
+  // visitor who stops with it in the middle of the screen, or a little below, reads it all lit. The payoff (.sm-acc,
+  // the warm italic) lights together with the last word, never after it. And a visitor who stops scrolling for a second
+  // with the statement's middle in the upper 70 % of the screen sees the rest of it light up by itself, word by word;
+  // it then stays lit until the statement drops back below the line where it starts.
   const st = document.querySelector("[data-sm-st]");
+  const words = st ? [...st.querySelectorAll(".sm-w")] : [];
+  const acc = st && st.querySelector(".sm-acc");
+  const litShare = () => {
+    const r = st.getBoundingClientRect(), vh = window.innerHeight;
+    return Math.min(1, Math.max(0, (vh * .86 - r.top) / (vh * .86 - vh * .6 + r.height / 2)));
+  };
+  let litAt = -1e6;  // when a word last changed
+  const stLighting = () => performance.now() - litAt < 900;
   if (st) {
-    const words = [...st.querySelectorAll(".sm-w, .sm-acc")];
-    if (still) words.forEach((w) => w.classList.add("on"));
+    const all = acc ? [...words, acc] : words;
+    if (still) all.forEach((w) => w.classList.add("on"));
     else {
-      let lit = -1, raf = 0;
+      let lit = -1, raf = 0, floor = 0, idle = 0, fill = 0;
+      const show = (n) => {
+        if (n === lit) return;
+        lit = n; litAt = performance.now();
+        words.forEach((w, i) => w.classList.toggle("on", i < n));
+        if (acc) acc.classList.toggle("on", n >= words.length);
+      };
       const paint = () => {
         raf = 0;
+        const share = litShare();
+        clearTimeout(fill);  // the visitor scrolls again: the scroll leads, from what is lit
+        if (share === 0) floor = 0;  // below its start line: it may light up afresh
+        show(Math.max(floor, Math.round(share * words.length)));
+        clearTimeout(idle);
+        idle = setTimeout(settle, 1000);
+      };
+      // the visitor has stopped: if the statement is well on screen, light the rest of it, one word every 60 ms
+      const settle = () => {
         const r = st.getBoundingClientRect(), vh = window.innerHeight;
-        const n = Math.round(Math.min(1, Math.max(0, (vh * .86 - r.top) / (r.height + vh * .24))) * words.length);
-        if (n !== lit) { lit = n; words.forEach((w, i) => w.classList.toggle("on", i < n)); }
+        const mid = r.top + r.height / 2;
+        if (mid > vh * .7 || r.bottom < 0 || lit >= words.length) return;
+        const step = () => {
+          floor = Math.max(floor, lit) + 1;
+          show(Math.min(words.length, floor));
+          if (floor < words.length) fill = setTimeout(step, 60);
+        };
+        step();
       };
       const ask = () => { if (!raf) raf = requestAnimationFrame(paint); };
       new IntersectionObserver(([en]) => {
         if (en.isIntersecting) window.addEventListener("scroll", ask, { passive: true });
-        else window.removeEventListener("scroll", ask);
+        else { window.removeEventListener("scroll", ask); clearTimeout(idle); }
         ask();
       }).observe(st);
       window.addEventListener("resize", ask);
+    }
+  }
+
+  // The client row: five or six still cells. Every 2.8 s one cell (in a scattered order) hands its logo to the next client in
+  // the queue, so all seventeen come round in about 35 s. The first cell keeps Maatori, the case the page leads with.
+  // WF.demo runs it only while the row is on screen and its turn, adds the pause control at the row's end, and under
+  // reduced motion never starts it (the first logos stay). Where the row has five cells (960px and wider), the sixth
+  // cell is hidden and its logo joins the queue; when the screen narrows past 960px (a tablet turned upright), any
+  // cell that shows up empty is filled from the queue at once.
+  const row = document.querySelector("[data-tw]");
+  const tpl = row && row.querySelector("template[data-tw-q]");
+  if (row && tpl && WF.demo) {
+    const cells = [...row.querySelectorAll(".tw-c")];
+    const queue = [...tpl.content.querySelectorAll("img")];
+    const order = [2, 5, 3, 1, 4].filter((i) => i < cells.length);
+    // the hero's video, as v3.js plays and pauses it (on screen, the visitor's own pause, a hidden tab): its own state,
+    // not a second guess at when it plays
+    const video = document.querySelector(".vh video");
+    const heroMoving = () => !!video && !video.paused && !video.ended;
+    const held = () => heroMoving() || stLighting() || row.matches(":hover");
+    const toQueue = (old) => { const back = old.cloneNode(true); back.classList.remove("on", "out"); queue.push(back); };
+    const later = (ms) => new Promise((res) => setTimeout(res, ms));
+    // a hidden cell gives its logo to the queue; a shown cell without one takes the next logo straight away
+    const fit = () => cells.forEach((c) => {
+      const hidden = c.offsetParent === null, img = c.querySelector("img.on");
+      if (hidden && img) { toQueue(img); img.remove(); }
+      else if (!hidden && !img && queue.length) {
+        const n = document.importNode(queue.shift(), true);
+        n.classList.add("on");
+        c.appendChild(n);
+      }
+    });
+    // the old logo lifts away first; the next one rises in once it has all but gone, so the two never overlap
+    const swap = async (cell) => {
+      if (!queue.length) return;
+      const old = cell.querySelector("img.on");
+      const img = document.importNode(queue.shift(), true);
+      cell.appendChild(img);
+      try { await img.decode(); } catch (err) { /* shown when it arrives */ }
+      if (old) {
+        old.classList.remove("on"); old.classList.add("out");
+        setTimeout(() => old.remove(), 420);
+        toQueue(old);
+        await later(200);
+      }
+      img.getBoundingClientRect();  // start from the hidden state, so the rise is drawn
+      img.classList.add("on");
+    };
+    const demo = WF.demo(row, async (api) => {
+      for (let k = 0; ; k++) {
+        await api.wait(2800);
+        while (held()) await api.wait(400);
+        fit();
+        const live = order.filter((i) => cells[i].offsetParent !== null);
+        if (live.length) await swap(cells[live[k % live.length]]);
+      }
+    }, { pauseIn: row.parentElement.querySelector("[data-tw-cap]") || row, label: row.dataset.twPause, threshold: .6 });
+    if (demo) {
+      row.parentElement.classList.add("tw-has-pause");
+      window.matchMedia("(max-width: 959px)").addEventListener("change", fit);
     }
   }
 })();
@@ -1654,7 +1746,7 @@ gl_FragColor=vec4(c,1.);}`;
 /* The pilot application: every link to the contact page opens the dialog instead (without this script they still lead
    there). Three steps, each checked before the next; sending opens the visitor's email app with the application, as
    this preview has no form backend. Esc and the close buttons close it, and focus returns to the button that opened
-   it. */
+   it (or to the Menu button, when it was the menu's own link). */
 (() => {
   const dlg = document.getElementById("apply");
   if (!dlg || typeof dlg.showModal !== "function") return;
@@ -1667,6 +1759,7 @@ gl_FragColor=vec4(c,1.);}`;
   const next = dlg.querySelector(".apl-next");
   const done = dlg.querySelector(".apl-done");
   const nav = dlg.querySelector(".apl-nav");
+  const doneH = done.querySelector(".apl-done-h"), doneBase = doneH.textContent.trim().replace(/[,.]$/, "");
   const ARROW = next.querySelector("svg") ? next.querySelector("svg").outerHTML : "";
   let page = 0, opener = null;
 
@@ -1696,7 +1789,17 @@ gl_FragColor=vec4(c,1.);}`;
       clearErr(g);
       if (req && !g.querySelector("input:checked")) { err(g, dlg.dataset.req); ok = false; first = first || req; }
     });
-    if (first) first.focus();
+    if (first) {
+      first.focus();
+      // with several messages, bring the last one into view too (on the phone sheet it can sit under the buttons),
+      // but not so far that the focused field leaves the top (a phone held sideways is too short for both)
+      const es = pages[i].querySelectorAll(".apl-err");
+      if (es.length > 1) {
+        es[es.length - 1].scrollIntoView({ block: "nearest" });
+        const box = first.closest(".apl-f, .apl-g");
+        if (box.getBoundingClientRect().top < dlg.getBoundingClientRect().top) box.scrollIntoView({ block: "start" });
+      }
+    }
     return ok;
   };
   const open = (ev) => {
@@ -1708,14 +1811,22 @@ gl_FragColor=vec4(c,1.);}`;
     show(0);
     root.classList.add("apl-lock");
     dlg.showModal();
+    dlg.scrollTop = 0;  // the dialog keeps its scroll from the last visit otherwise
     const f = pages[0].querySelector("input");
     if (f) setTimeout(() => f.focus(), 60);
   };
   const close = () => dlg.close();
-  dlg.addEventListener("close", () => { root.classList.remove("apl-lock"); if (opener) opener.focus(); });
+  const seen = (el) => !!el && (el.checkVisibility ? el.checkVisibility({ visibilityProperty: true }) : el.getClientRects().length > 0);
+  dlg.addEventListener("close", () => {
+    root.classList.remove("apl-lock");
+    // the menu's own pilot link is hidden once the menu closes: then focus goes back to the Menu button. preventScroll:
+    // the page has not moved, and focusing the sticky nav would otherwise scroll it by half a screen (scroll-padding-top)
+    const to = seen(opener) ? opener : [document.querySelector(".nav-menu"), document.querySelector(".nav-cta")].find(seen);
+    if (to) to.focus({ preventScroll: true });
+  });
   dlg.addEventListener("click", (ev) => { if (ev.target === dlg) close(); });  // a click on the backdrop
   dlg.querySelectorAll("[data-apl-close]").forEach((b) => b.addEventListener("click", close));
-  back.addEventListener("click", () => show(Math.max(0, page - 1)));
+  back.addEventListener("click", () => { show(Math.max(0, page - 1)); const f = pages[page].querySelector("input, textarea"); if (f) f.focus(); });  // Back hides itself on step 1
   form.addEventListener("input", (ev) => { const box = ev.target.closest(".apl-f, .apl-g"); if (box && box.classList.contains("bad")) clearErr(box); });
   form.addEventListener("submit", (ev) => {
     ev.preventDefault();
@@ -1740,10 +1851,9 @@ gl_FragColor=vec4(c,1.);}`;
     of.textContent = "";
     nav.hidden = true;
     done.hidden = false;
-    const h = done.querySelector(".apl-done-h");
     const name = (d.get("name") || "").toString().trim().split(/\s+/)[0];
-    h.textContent = h.textContent.replace(/[,.]?\s*$/, "") + (name ? ", " + name : "") + ".";
-    h.focus();
+    doneH.textContent = doneBase + (name ? ", " + name : "") + ".";  // from the base, so a second send greets only the new name
+    doneH.focus();
   });
   // every pilot button: links to the contact page, and anything marked data-apply
   const contact = dlg.dataset.contact;
